@@ -1,0 +1,14 @@
+I want to create a python project that analyze multiplexed immunoflorecence images Tl using deep learning models. It can be splitted into several parts.
+
+This is a python project that analyze multiplexed immunoflorecent images using deep learning models.
+It can be splitted into several parts.
+
+I want you to generate prompt for specific parts and include input and output specifications and store them as further prompt files.
+
+1. The first part is converting a qptiff file into zarr arrays.
+2. The second part is preprocess that image and tile it into different regions of certain size.
+3. The third part is build a pytorch dataloader that loads this zarr file. I already have a file that you can adapt to.
+4. Then we need to train a pytorch masked autoencoder model on the tiles.
+5. Then we need to use the trained encoder to encode all tiles and save the results.
+6. Then we will run a kmeans clustering on the tiles and return the cluster number for each tile.
+7. Then we map the color of the cluter back on to the original slide for visualizaiton.
