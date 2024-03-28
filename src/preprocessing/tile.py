@@ -11,6 +11,33 @@ import tifffile as tf
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import random
+from matplotlib.patches import Rectangle
+import imageio
+import zarr
+
+colors = [
+    (0, 0, 139),  # cd117, mast cell, myeloid, darkblue
+    (173, 216, 230),  # cd11c, myeloid, lightblue
+    (135, 206, 250),  # cd14, myeloid,lightblue
+    (212, 226, 228),  # cd163, myeloid,lightblue
+    (70, 130, 180),  # cd16, monocyte, mid blue
+    (149, 229, 68),  # cd20, b cell, green
+    (25, 25, 112), # cd31, stromal, dark blue
+    (228, 82, 50), # cd3, t cell, orange
+    (255, 165, 0), # cd4, t cell, orange
+    (176, 226, 219), # cd68, myeloid, lightblue
+    (255, 140, 0), # cd8a, t cell, orange
+    (255, 127, 80), # cd94, t cell, orange
+    (228, 71, 184), # dna1, dna, grey
+    (255, 99, 71), # foxp3, t cell, orange
+    (255, 182, 193), # GFAP
+    (176, 226, 219), # hla-dr, antigen, lightgreen
+    (73, 52, 229), # mpo, neutrophil, purple
+    (0, 255, 255), # Olig2
+    (255, 255, 0), # P2PY12
+    (238, 130, 238), # Sox2
+    (50, 205, 50) # Sox9
+]
 
 def calculate_polygon_area(coords):
     """Calculate the area of a polygon using the shoelace formula.
@@ -25,7 +52,6 @@ def calculate_polygon_area(coords):
     y = np.array([coord[1] for coord in coords])
 
     return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
-
 
 def gen_tiles(slide: str, mat_data, tile_size: int = 128, 
               output_path: str = None) -> np.ndarray:
@@ -89,9 +115,37 @@ def gen_tiles(slide: str, mat_data, tile_size: int = 128,
 
     centroid_coords = sorted(centroid_coords, key=lambda x: (x[0], x[1]))
     centroid_coords = [(round(x, 3), round(y, 3)) for x, y in centroid_coords]
-    
+
+
+    num_channels, height, width = image.shape
+    brightness_factor = 3.0
+
+    # Initialize a composite image with 3 channels for RGB
+    composite_image = np.zeros((height, width, 3), dtype=np.float32)
+    global_max = np.max(image)
+    for i in range(num_channels):
+        color = colors[i]
+        channel_normalized = image[i, :, :] / global_max
+        for j in range(3):  # RGB channels
+            composite_image[:, :, j] += channel_normalized * color[j]
+
+    # Normalize the composite image to be in the range [0, 1]
+
+    composite_image = np.clip(composite_image / np.max(composite_image, axis = (0,1))*brightness_factor, 0, 1)
+
+
+    # Plot the composite image
+    plt.figure(figsize=(15, 15))  # Adjust the figure size as needed
+    plt.imshow(composite_image)
+
+    # Plot each boundary
+    for boundary_coords in sample_boundaries_coords:
+        # Convert list of tuples to a numpy array for easy slicing
+        boundary_array = np.array(boundary_coords)
+        plt.plot(boundary_array[:, 0], boundary_array[:, 1], color='cyan', linewidth=0.5)  # Adjust color and linewidth as desired
+
     # Size of the square centered on each centroid
-    half_side_length = 5  # Half the side length of the square, for a total side length of 10
+    half_side_length = 5  # Half the side length of the square, for a total side length of 10 pixels
 
     positions = []
 
@@ -102,14 +156,23 @@ def gen_tiles(slide: str, mat_data, tile_size: int = 128,
         bottom_left_y = centroid_y - half_side_length
 
         positions.append((bottom_left_y, bottom_left_x))
- 
+        # Create and add the square as a rectangle patch
+        centroid_square = Rectangle((bottom_left_x, bottom_left_y), 2*half_side_length, 2*half_side_length,
+                                            linewidth=0.5, edgecolor='yellow', facecolor='none')  # Adjust as needed
+        plt.gca().add_patch(centroid_square)
+    
+    tiles_output_path = os.path.join(output_path, 'tiles')
+    os.makedirs(tiles_output_path, exist_ok=True)
+    image_filename = 'composite_with_centroids.png'
+    full_image_path = os.path.join(tiles_output_path, image_filename)
+    plt.savefig(full_image_path, dpi=300)
+    plt.clf()
+
     with open(os.path.join(output_path, f'positions_{tile_size}.csv'), 'w') as f:
         f.write(' ,h,w\n')
         for i, (h, w) in enumerate(positions):
             f.write(f'{i},{h},{w}\n')
     print(f'Generated {len(positions)} tiles for slide with shape {slide.shape}')
-
-
 
 def save_img(output_path: str, task: str, tile_size: int, img: np.ndarray):
     ''' Save image to output path '''
