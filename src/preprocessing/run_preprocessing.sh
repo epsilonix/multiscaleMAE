@@ -1,3 +1,6 @@
 #!/bin/bash
 #
-python /gpfs/scratch/ss14424/CANVAS-ss/src/preprocessing/preprocess.py /gpfs/scratch/ss14424/CANVAS-ss/LungData/LUAD_IMC_MaskTif /gpfs/scratch/ss14424/CANVAS-ss/img_output_128
+python /gpfs/scratch/ss14424/CANVAS-sc/src/preprocessing/preprocess.py \
+/gpfs/scratch/ss14424/Brain/BrainData/BRAIN_IMG_GliomaTif \
+/gpfs/scratch/ss14424/Brain/BrainData/BRAIN_IMC_CellType \
+/gpfs/scratch/ss14424/Brain/cells/img_output
