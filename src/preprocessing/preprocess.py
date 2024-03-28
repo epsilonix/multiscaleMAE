@@ -4,6 +4,7 @@ import os
 sys.path.append('/gpfs/scratch/ss14424/canvas-sc/src')
 from preprocessing import io, tile
 from scipy.io import loadmat
+import tifffile as tf
 
 def main():
     root_path = sys.argv[1]
