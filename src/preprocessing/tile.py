@@ -48,7 +48,7 @@ def gen_tiles(slide: str, mat_data, tile_size: int = 128,
     boundaries_info = mat_data['Boundaries']
 
     # Correct dimensions of the matrix
-    correct_dimensions = image.shape[1:3][::-1]
+    correct_dimensions = slide.shape[1:3][::-1]
 
     # Initialize a list to hold the coordinates for all boundaries
     all_boundaries_coords = []
