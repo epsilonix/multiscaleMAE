@@ -30,6 +30,7 @@ def calculate_polygon_area(coords):
 def gen_tiles(slide: str, mat_data, tile_size: int = 128, 
               output_path: str = None) -> np.ndarray:
     ''' Generate tiles for a given slide '''
+    print(f'Slide type is {type(slide)}')
     if output_path is None: output_path = f'{os.path.dirname(slide)}'
     output_path += '/tiles/'
     os.makedirs(output_path, exist_ok=True)
@@ -41,8 +42,8 @@ def gen_tiles(slide: str, mat_data, tile_size: int = 128,
     print(f'ZARR IMG has a dimension of {slide.shape}')
     # Generate and save thumbnail
     print('Generating thumbnail...')
-    thumbnail = gen_thumbnail(slide, scaling_factor=tile_size // 4)
-    save_img(output_path, 'thumbnail', tile_size // 4, thumbnail)
+    #thumbnail = gen_thumbnail(slide, scaling_factor=tile_size // 4)
+    #save_img(output_path, 'thumbnail', tile_size // 4, thumbnail)
     # Generate and save mask
 
     boundaries_info = mat_data['Boundaries']
