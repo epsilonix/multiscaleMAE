@@ -161,10 +161,7 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 128,
                                             linewidth=0.5, edgecolor='yellow', facecolor='none')  # Adjust as needed
         plt.gca().add_patch(centroid_square)
     
-    tiles_output_path = os.path.join(output_path, 'tiles')
-    os.makedirs(tiles_output_path, exist_ok=True)
-    image_filename = 'composite_with_centroids.png'
-    full_image_path = os.path.join(tiles_output_path, image_filename)
+    full_image_path = os.path.join(output_path, image_filename)
     plt.savefig(full_image_path, dpi=300)
     plt.clf()
 
