@@ -25,7 +25,7 @@ def main():
             mat_dir = os.path.join(mat_path, output_file_base + ".mat")
             mat_data = loadmat(mat_dir)
             
-            tile.gen_tiles(zarr_array, mat_data, tile_size, output_file_path)
+            tile.gen_tiles(input_file, zarr_array, mat_data, tile_size, output_file_path)
             print(f"Finished processing {file}")
 
 if __name__ == '__main__':
