@@ -15,7 +15,7 @@ def qptiff_to_zarr(input_file, output_root, chunk_size=(None, 256, 256)):
     
     
     # Check if Zarr dataset already exists at the path
-    if os.path.exists(output_zarr) and zarr.is_zarr(output_zarr):
+    if os.path.exists(output_zarr):
         print(f"Zarr dataset already exists at {output_zarr}. Consider handling this scenario appropriately.")
         # Options: return existing dataset, delete and recreate, etc.
         return zarr.open(output_zarr, mode='a')  # Open in append mode as a placeholder action
