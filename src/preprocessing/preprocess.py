@@ -1,7 +1,7 @@
 # Preprocess all data from a directory
 import sys
 import os
-sys.path.append('/gpfs/scratch/ss14424/CANVAS-ss/src')
+sys.path.append('/gpfs/scratch/ss14424/canvas-sc/src')
 from preprocessing import io, tile
 from scipy.io import loadmat
 
