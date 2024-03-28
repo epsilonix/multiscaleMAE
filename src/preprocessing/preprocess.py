@@ -21,7 +21,7 @@ def main():
             zarr_array = io.qptiff_to_zarr(input_file, output_path)
             output_file_base = file.replace('.tif', '')
             output_file_path = os.path.join(output_path, output_file_base)
-            
+            print(f'Obtaining mat for {file}')
             mat_dir = os.path.join(mat_path, output_file_base + ".mat")
             mat_data = loadmat(mat_dir)
             
