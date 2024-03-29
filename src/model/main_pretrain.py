@@ -6,7 +6,7 @@
 # MAE: https://github.com/facebookresearch/mae
 # --------------------------------------------------------
 import sys
-sys.path.append('/gpfs/scratch/ss14424/CANVAS-ss/src')
+sys.path.append('/gpfs/scratch/ss14424/CANVAS-sc/src')
 
 import argparse
 import datetime
@@ -75,7 +75,7 @@ def get_args_parser():
     # Dataset parameters
     parser.add_argument('--data_path', default='', type=str,
                         help='dataset path')
-    parser.add_argument('--tile_size', default=128, type=int,
+    parser.add_argument('--tile_size', default=10, type=int,
                         help='Sample tile size.')
 
     parser.add_argument('--output_dir', default='',

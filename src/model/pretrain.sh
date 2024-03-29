@@ -18,10 +18,10 @@ torchrun \
     --standalone \
     --nnodes=1 \
     --nproc_per_node=1 \
-    /gpfs/scratch/ss14424/CANVAS-ss/src/model/main_pretrain.py \
-        --epoch 2000 \
+    /gpfs/scratch/ss14424/CANVAS-sc/src/model/main_pretrain.py \
+        --epoch 5 \
         --batch_size 32 \
-        --tile_size 128 \
-        --output_dir "/gpfs/scratch/ss14424/Brain/model_output_glioma_128" \
-        --log_dir "/gpfs/scratch/ss14424/Brain/logs" \
-        --data_path "/gpfs/scratch/ss14424/Brain/img_output_glioma_128"
+        --tile_size 10 \
+        --output_dir "/gpfs/scratch/ss14424/Brain/cells/model_output" \
+        --log_dir "/gpfs/scratch/ss14424/Brain/cells/logs" \
+        --data_path "/gpfs/scratch/ss14424/Brain/cells/img_output"
