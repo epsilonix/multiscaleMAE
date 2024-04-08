@@ -6,15 +6,15 @@ import numpy as np
 import pandas as pd
 
 import sys
-sys.path.append('/gpfs/scratch/ss14424/CANVAS-ss/src')
+sys.path.append('/gpfs/scratch/ss14424/CANVAS-sc/src')
 
 from tqdm import tqdm
 
 def main():
     # Initialize CANVAS
-    model_path = '/gpfs/scratch/ss14424/Brain/model_output_glioma_128/checkpoint-1999.pth'
-    data_path = '/gpfs/scratch/ss14424/Brain/img_output_glioma_64'
-    save_path = '/gpfs/scratch/ss14424/Brain/analysis_output_glioma_64_sig28/'
+    model_path = '/gpfs/scratch/ss14424/Brain/tiles-cleaned/model-output/checkpoint-1500.pth'
+    data_path = '/gpfs/scratch/ss14424/Brain/tiles-cleaned/img-output-64'
+    save_path = '/gpfs/scratch/ss14424/Brain/tiles-cleaned/analysis_output/'
     canvas = Canvas(model_path, data_path, save_path)
 
 #    #Generate embeddings
@@ -51,7 +51,7 @@ def main():
     canvas.color_umap(dataloader)
 #    
     # Clustering
-    canvas.clustering(n_clusters = 28)
+    canvas.clustering(n_clusters = 30)
     
     # heatmap
     #canvas.heatmap()
