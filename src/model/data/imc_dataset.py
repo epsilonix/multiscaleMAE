@@ -25,7 +25,14 @@ class NPYDataset(SlideDataset):
         return slide
 
     def read_region(self, pos_x, pos_y, width, height):
+        print(f"pos_x: {pos_x}, pos_y: {pos_y}, width: {width}, height: {height}")
         ''' Read a numpy slide region '''
+        
+        pos_x = int(pos_x)
+        pos_y = int(pos_y)
+        width = int(width)
+        height = int(height
+        
         region_np = self.slide[:, pos_x:pos_x+width, pos_y:pos_y+height].copy()
         # Swap channel to last dimension
         region_np = region_np.swapaxes(0, 1).swapaxes(1, 2)
