@@ -155,11 +155,12 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 128,
         bottom_left_x = centroid_x - half_side_length
         bottom_left_y = centroid_y - half_side_length
 
-        positions.append((bottom_left_y, bottom_left_x))
-        # Create and add the square as a rectangle patch
-        centroid_square = Rectangle((bottom_left_x, bottom_left_y), 2*half_side_length, 2*half_side_length,
-                                            linewidth=0.5, edgecolor='yellow', facecolor='none')  # Adjust as needed
-        plt.gca().add_patch(centroid_square)
+        if bottom_left_x >= 0 and bottom_left_y >= 0:
+            positions.append((bottom_left_y, bottom_left_x))
+            # Create and add the square as a rectangle patch
+            centroid_square = Rectangle((bottom_left_x, bottom_left_y), 2*half_side_length, 2*half_side_length,
+                                                linewidth=0.5, edgecolor='yellow', facecolor='none')  # Adjust as needed
+            plt.gca().add_patch(centroid_square)
     
     full_image_path = os.path.join(output_path, image_filename)
     plt.savefig(full_image_path, dpi=300)
