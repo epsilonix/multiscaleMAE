@@ -17,6 +17,9 @@ class SlideDataset(data.Dataset):
         '''
         self.root_path = root_path
         self.tile_size = tile_size
+        
+        print(f'slide_dataset thinks tile_size is {tile_size}')
+        
         self.transform = transform
 
         if tile_size is not None:

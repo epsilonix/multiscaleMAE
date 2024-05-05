@@ -122,6 +122,9 @@ class SlidesDataset(data.Dataset):
         print(f'class SlidesDataset was initialized with root path: {slides_root_path}')
         self.slides_root_path = slides_root_path
         self.tile_size = tile_size
+        
+        print(f'imc_dataset thinks tile_size is {tile_size}')
+        
         self.transform = transform
         # Get id and path for all slides
         slide_ids = self.get_slide_paths(slides_root_path)
