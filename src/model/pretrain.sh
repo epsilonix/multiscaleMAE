@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=1
 #SBATCH --gres=gpu:1
 #SBATCH --job-name=pretrain_MAE
-#SBATCH --output=/gpfs/scratch/ss14424/Brain/logs/pretrain_%j.log
+#SBATCH --output=/gpfs/scratch/ss14424/logs/pretrain_%j.log
 
 #unset PYTHONPATH
 #module load anaconda3/gpu/5.2.0
@@ -23,5 +23,5 @@ torchrun \
         --batch_size 32 \
         --tile_size 10 \
         --output_dir "/gpfs/scratch/ss14424/Brain/cells/model_output" \
-        --log_dir "/gpfs/scratch/ss14424/Brain/logs" \
+        --log_dir "/gpfs/scratch/ss14424/logs" \
         --data_path "/gpfs/scratch/ss14424/Brain/cells/img_output"
