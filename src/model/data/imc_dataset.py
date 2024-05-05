@@ -31,7 +31,7 @@ class NPYDataset(SlideDataset):
         pos_x = int(pos_x)
         pos_y = int(pos_y)
         width = int(width)
-        height = int(height
+        height = int(height)
         
         region_np = self.slide[:, pos_x:pos_x+width, pos_y:pos_y+height].copy()
         # Swap channel to last dimension
