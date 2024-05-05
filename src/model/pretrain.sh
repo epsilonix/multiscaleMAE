@@ -18,8 +18,8 @@ torchrun \
     --standalone \
     --nnodes=1 \
     --nproc_per_node=10 \
-    /gpfs/scratch/ss14424/CANVAS-sc/src/model/main_pretrain.py \
-        --epoch 2 \
+    /gpfs/scratch/ss14424/singlecell/src/model/main_pretrain.py \
+        --epoch 1 \
         --batch_size 32 \
         --tile_size 10 \
         --output_dir "/gpfs/scratch/ss14424/Brain/cells/model_output" \
