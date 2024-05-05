@@ -54,7 +54,7 @@ def calculate_polygon_area(coords):
     return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
 
 def gen_tiles(image, slide: str, mat_data, tile_size: int = 128, 
-              output_path: str = None, image_filename) -> np.ndarray:
+              output_path: str = None, image_filename: str = None) -> np.ndarray:
     ''' Generate tiles for a given slide '''
     print(f'Slide type is {type(slide)}')
     if output_path is None: output_path = f'{os.path.dirname(slide)}'
