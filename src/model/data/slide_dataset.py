@@ -28,6 +28,9 @@ class SlideDataset(data.Dataset):
 
     def __getitem__(self, index):
         image = self.read_region(self.tile_pos[index][0], self.tile_pos[index][1], self.tile_size, self.tile_size)
+        
+        print("Image dimensions before transformation:", image.size())
+
         if self.transform is not None:
             transformed_image = self.transform(image)
         else:
