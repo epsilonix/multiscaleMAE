@@ -28,7 +28,9 @@ def main():
             
             image = tf.imread(input_file)
             
-            tile.gen_tiles(image, zarr_array, mat_data, tile_size, output_file_path)
+            image_filename = file.replace('.tif', '.png')
+            
+            tile.gen_tiles(image, zarr_array, mat_data, tile_size, output_file_path, image_filename)
             print(f"Finished processing {file}")
 
 if __name__ == '__main__':
