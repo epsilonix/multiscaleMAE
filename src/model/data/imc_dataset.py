@@ -25,7 +25,7 @@ class NPYDataset(SlideDataset):
         return slide
 
     def read_region(self, pos_x, pos_y, width, height):
-        print(f"pos_x: {pos_x}, pos_y: {pos_y}, width: {width}, height: {height}")
+        #print(f"pos_x: {pos_x}, pos_y: {pos_y}, width: {width}, height: {height}")
         ''' Read a numpy slide region '''
         
         pos_x = int(pos_x)
