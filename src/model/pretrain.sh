@@ -17,7 +17,7 @@ source activate /gpfs/home/ss14424/.conda/envs/canvas-env
 torchrun \
     --standalone \
     --nnodes=1 \
-    --nproc_per_node=10 \
+    --nproc_per_node=1 \
     /gpfs/scratch/ss14424/singlecell/src/model/main_pretrain.py \
         --epoch 1000 \
         --batch_size 32 \
