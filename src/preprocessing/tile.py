@@ -145,7 +145,7 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 128,
         plt.plot(boundary_array[:, 0], boundary_array[:, 1], color='cyan', linewidth=0.5)  # Adjust color and linewidth as desired
 
     # Size of the square centered on each centroid
-    half_side_length = 5  # Half the side length of the square, for a total side length of 10 pixels
+    half_side_length = 10  # Half the side length of the square, for a total side length of 20 pixels
 
     positions = []
 
