@@ -19,6 +19,10 @@ def main():
 
 #    #Generate embeddings
     dataloader = canvas.load_dataset()
+    
+    first_batch = next(iter(dataloader))
+    for idx, (data, target) in enumerate(first_batch):
+        print(f"Data index: {idx}, Data shape: {data.shape}, Target: {target}")
     model = canvas.load_model(dataloader)
     canvas.get_tile_embedding(dataloader, model, save_full_emb = True)
 #
