@@ -145,7 +145,7 @@ def main(args):
             ])
 
     from data.imc_dataset import CANVASDataset, SlidesDataset
-    tile_size = 10
+    tile_size = 20
     dataset_train = SlidesDataset(args.data_path, tile_size = tile_size, transform = transform_codex, dataset_class = CANVASDataset)
 
     if True:  # args.distributed:
