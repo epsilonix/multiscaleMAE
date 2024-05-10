@@ -145,6 +145,9 @@ class Canvas:
                 img_tensor, (labels, locations) = sample
                 data_idx = batch_idx * batch_size
                 temp_size = img_tensor.shape[0]
+                
+                print(f"Batch {batch_idx} - Tile sizes: {img_tensor.shape}")
+                
                 embedding = self.proc_embedding(img_tensor, model)
                 sample_name_list.extend(labels)
                 tile_location_list.extend(locations)
