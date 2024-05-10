@@ -98,7 +98,7 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 128,
             all_boundaries_coords.append(boundary_coords)
 
     # Select 20% of the coordinates randomly
-    sample_boundaries_coords = random.sample(all_boundaries_coords, 200)
+    sample_boundaries_coords = random.sample(all_boundaries_coords, 100)
     
     centroid_coords = []
 
