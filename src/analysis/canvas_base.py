@@ -97,7 +97,7 @@ class Canvas:
         model.eval()
         return model 
     
-    def custom_collate_fn(batch):
+    def custom_collate_fn(self,batch):
         for idx, (data, _) in enumerate(batch):
             print(f"Batch index: {idx}, Data shape: {data.shape}")
             if data.shape != torch.Size([17, 224, 224]):  # Expected shape
@@ -122,7 +122,7 @@ class Canvas:
         dataloader= torch.utils.data.DataLoader(
             dataset, 
             batch_size=batch_size,
-            collate_fn=custom_collate_fn,
+            collate_fn=self.custom_collate_fn,
             num_workers=num_workers,
             drop_last=False,
         )
