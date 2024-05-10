@@ -97,15 +97,27 @@ class Canvas:
         model.eval()
         return model 
     
-    def custom_collate_fn(self,batch):
-        for idx, (data, _) in enumerate(batch):
+    def custom_collate_fn(self, batch):
+        data_list = []  # To accumulate tensors of data
+        targets_list = []  # To accumulate tensors of targets
+
+        for idx, (data, target) in enumerate(batch):
             print(f"Batch index: {idx}, Data shape: {data.shape}")
             if data.shape != torch.Size([17, 224, 224]):  # Expected shape
                 print(f"Error with batch index: {idx}, shape: {data.shape}")
+            else:
+                data_list.append(data)
+                targets_list.append(target)
 
-            # Continue with normal collation process if all tensors are correct
-            data, targets = zip(*batch)
-            return torch.stack(data, 0), torch.stack(targets, 0)
+        # Check if data_list is empty which means no data has correct shape
+        if not data_list:
+            raise ValueError("All data in this batch have incorrect shapes.")
+
+        # Stacking the list of tensors into a single tensor
+        data_stacked = torch.stack(data_list, 0)
+        targets_stacked = torch.stack(targets_list, 0)
+        return data_stacked, targets_stacked
+
 
     def load_dataset(self, batch_size = 64, num_workers = 20):
         # Predefined parameters
