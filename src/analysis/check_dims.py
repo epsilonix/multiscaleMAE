@@ -1,28 +1,31 @@
-import zarr
 import os
+import zarr
 
-def check_tensor_dimensions(base_path, expected_shape=(17, 224, 224)):
-    """
-    Walk through directories to find zarr files and check their tensor dimensions.
-    """
-    # Walk through all subdirectories in the base path
-    for root, dirs, files in os.walk(base_path):
-        for file in files:
-            # Check if the file is a Zarr file (assuming naming or extension here, adjust as necessary)
-            if file.endswith('.zarr'):
-                file_path = os.path.join(root, file)
-                try:
-                    # Load the Zarr file
-                    z = zarr.open(file_path, mode='r')
-                    # Get the shape of the dataset, assuming it is stored directly at the root of the Zarr file
-                    shape = z.shape
+# Define the base path where your folders with `.zarr` files are located
+base_path = '/gpfs/scratch/ss14424/Brain/cells/img_output_10/'
 
-                    # Check if the shape matches the expected dimensions
-                    if shape != expected_shape:
-                        print(f"Dimension mismatch in {file_path}: expected {expected_shape}, found {shape}")
-                except Exception as e:
-                    print(f"Error processing file {file_path}: {e}")
+# Define the expected shape
+expected_shape = (17, 224, 224)
 
-if __name__ == '__main__':
-    base_path = '/gpfs/scratch/ss14424/Brain/cells/img_output_10'
-    check_tensor_dimensions(base_path)
+# Iterate over each folder in the base path
+for folder in os.listdir(base_path):
+    folder_path = os.path.join(base_path, folder)
+    if os.path.isdir(folder_path):
+        # Find all `.zarr` files in this folder
+        zarr_files = [file for file in os.listdir(folder_path) if file.endswith('.zarr')]
+        # Check each `.zarr` file in this folder
+        for zarr_file in zarr_files:
+            zarr_file_path = os.path.join(folder_path, zarr_file)
+            try:
+                # Load the Zarr array
+                zarr_array = zarr.open(zarr_file_path, mode='r')
+                # Check the shape
+                if zarr_array.shape != expected_shape:
+                    print(f"Mismatch in file {zarr_file_path}: expected {expected_shape}, found {zarr_array.shape}")
+                else:
+                    print(f"File {zarr_file_path} has the correct shape.")
+                print(f"Successfully loaded Zarr file: {zarr_file_path}")
+            except Exception as e:
+                print(f"Error checking file {zarr_file_path}: {str(e)}")
+        # Print message indicating the completion of processing for this folder
+        print(f"Finished checking all Zarr files in folder {folder}.")
