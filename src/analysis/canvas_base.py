@@ -61,7 +61,7 @@ class Canvas:
 
     def __init__(self, model_path : str, data_path : str, save_path : str,
                  tile_size : int = 10, 
-                 device : str = 'cpu') -> None:
+                 device : str = 'cuda:0') -> None:
         self.model_path = model_path
         self.data_path = data_path
         self.save_path = save_path
@@ -85,33 +85,27 @@ class Canvas:
 
     def load_model(self, dataloader, 
                    norm_pix_loss = False, model_name = 'mae_vit_large_patch16'):
-#        num_channels = len(dataloader.dataset.common_channel_names)
-#        from model import models_mae
-#        model = models_mae.__dict__[model_name](norm_pix_loss=norm_pix_loss, 
-#                                                in_chans = num_channels)
-#        model.to(self.device)
-#        print('Model initialized')
-#        state_dict = torch.load(self.model_path)['model']
-#        model.load_state_dict(state_dict)
-#        print('State dicts loaded')
-#        model.eval()
-#        return model
-    
         num_channels = len(dataloader.dataset.common_channel_names)
         from model import models_mae
         model = models_mae.__dict__[model_name](norm_pix_loss=norm_pix_loss, 
-                                                in_chans=num_channels)
+                                                in_chans = num_channels)
         model.to(self.device)
         print('Model initialized')
-
-        # Check if CUDA is available and set map_location accordingly
-        map_location = 'cuda:0' if torch.cuda.is_available() else 'cpu'
-        state_dict = torch.load(self.model_path, map_location=map_location)['model']
-
+        state_dict = torch.load(self.model_path)['model']
         model.load_state_dict(state_dict)
         print('State dicts loaded')
         model.eval()
-        return model
+        return model 
+    
+    def custom_collate_fn(batch):
+    for idx, (data, _) in enumerate(batch):
+        print(f"Batch index: {idx}, Data shape: {data.shape}")
+        if data.shape != torch.Size([17, 224, 224]):  # Expected shape
+            print(f"Error with batch index: {idx}, shape: {data.shape}")
+
+        # Continue with normal collation process if all tensors are correct
+        data, targets = zip(*batch)
+        return torch.stack(data, 0), torch.stack(targets, 0)
 
     def load_dataset(self, batch_size = 64, num_workers = 20):
         # Predefined parameters
@@ -128,6 +122,7 @@ class Canvas:
         dataloader= torch.utils.data.DataLoader(
             dataset, 
             batch_size=batch_size,
+            collate_fn=custom_collate_fn,
             num_workers=num_workers,
             drop_last=False,
         )
