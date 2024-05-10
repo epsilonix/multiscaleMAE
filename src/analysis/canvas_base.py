@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 import sys
-sys.path.append('/gpfs/scratch/ss14424/CANVAS-sc/src')
+sys.path.append('/gpfs/scratch/ss14424/singlecell/src')
 
 from tqdm import tqdm
 
