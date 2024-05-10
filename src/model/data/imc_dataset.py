@@ -108,7 +108,7 @@ class CANVASDataset(ZarrDataset):
 
     def get_channel_idx(self, channel_names):
         ''' Get channel index from channel names '''
-        channel_df = pd.read_csv('/gpfs/scratch/ss14424/Brain/cells/img_output/channels.csv')
+        channel_df = pd.read_csv('/gpfs/scratch/ss14424/Brain/cells/channels.csv')
 
         channel_dict = dict(zip(channel_df['marker'], channel_df['channel']))
 
