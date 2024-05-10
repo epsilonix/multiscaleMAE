@@ -85,13 +85,29 @@ class Canvas:
 
     def load_model(self, dataloader, 
                    norm_pix_loss = False, model_name = 'mae_vit_large_patch16'):
+#        num_channels = len(dataloader.dataset.common_channel_names)
+#        from model import models_mae
+#        model = models_mae.__dict__[model_name](norm_pix_loss=norm_pix_loss, 
+#                                                in_chans = num_channels)
+#        model.to(self.device)
+#        print('Model initialized')
+#        state_dict = torch.load(self.model_path)['model']
+#        model.load_state_dict(state_dict)
+#        print('State dicts loaded')
+#        model.eval()
+#        return model
+    
         num_channels = len(dataloader.dataset.common_channel_names)
         from model import models_mae
         model = models_mae.__dict__[model_name](norm_pix_loss=norm_pix_loss, 
-                                                in_chans = num_channels)
+                                                in_chans=num_channels)
         model.to(self.device)
         print('Model initialized')
-        state_dict = torch.load(self.model_path)['model']
+
+        # Check if CUDA is available and set map_location accordingly
+        map_location = 'cuda:0' if torch.cuda.is_available() else 'cpu'
+        state_dict = torch.load(self.model_path, map_location=map_location)['model']
+
         model.load_state_dict(state_dict)
         print('State dicts loaded')
         model.eval()
