@@ -9,8 +9,9 @@
 #SBATCH --job-name=infer_MAE
 #SBATCH --output=/gpfs/scratch/ss14424/logs/infer_%j.log
 
-source activate /gpfs/home/ss14424/.conda/envs/canvas-env
+export NUMBA_DISABLE_JIT=1
+export NUMBA_DISABLE_CACHE=1
 
-export NUMBA_CACHE_DIR=/dev/null
+source activate /gpfs/home/ss14424/.conda/envs/canvas-env
 
 python src/analysis/canvas_base.py

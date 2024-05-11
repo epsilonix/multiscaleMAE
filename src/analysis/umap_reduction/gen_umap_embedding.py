@@ -1,11 +1,9 @@
 import os
-import numba
+
 import sys
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Disable JIT compilation entirely
-numba.config.DISABLE_JIT = 1
 
 # Now, import UMAP safely
 import umap
