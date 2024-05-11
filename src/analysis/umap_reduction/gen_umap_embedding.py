@@ -1,11 +1,14 @@
-import sys
 import os
+import numba
+import sys
 import numpy as np
-import umap
 import matplotlib.pyplot as plt
 
-from numba import config
-config.DISABLE_JIT = 1  # Disable JIT compilation entirely
+# Disable JIT compilation entirely
+numba.config.DISABLE_JIT = 1
+
+# Now, import UMAP safely
+import umap
 
 def main():
     emb_path = sys.argv[1]
