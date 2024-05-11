@@ -100,26 +100,26 @@ class Canvas:
     
     def custom_collate_fn(self, batch):
         data_list = []
-        targets_list = []
+        sample_names = []
+        coordinates_list = []
 
-        for idx, (data, targets) in enumerate(batch):
-            print(f"Batch index: {idx}, Data shape: {data.shape}, Targets: {targets}")
+        for idx, (data, (sample_name, coordinates)) in enumerate(batch):
+            print(f"Batch index: {idx}, Data shape: {data.shape}, Sample Name: {sample_name}, Coordinates: {coordinates}")
             if data.shape != torch.Size([17, 224, 224]):
                 print(f"Error with batch index: {idx}, shape: {data.shape}")
                 continue
 
             data_list.append(data)
-            targets_list.append(targets)  # Just append the tuple for now to inspect it
-
-        print("Sample target from batch:", targets_list[0])  # Print the first tuple to inspect
+            sample_names.append(sample_name)
+            coordinates_list.append(torch.tensor(coordinates))
 
         if not data_list:
             raise ValueError("All data in this batch have incorrect shapes.")
 
         data_stacked = torch.stack(data_list, 0)
-        # Temporarily comment out the problematic line to see tuple contents
-        # targets_stacked = torch.stack(targets_list, 0)
-        return data_stacked, targets_list  # Return the list for now to avoid the error and inspect the output
+        coordinates_stacked = torch.stack(coordinates_list, 0)
+        return data_stacked, (sample_names, coordinates_stacked)  # Return data in the expected format
+
 
 
 
@@ -172,9 +172,6 @@ class Canvas:
                 img_tensor, (labels, locations) = sample
                 data_idx = batch_idx * batch_size
                 temp_size = img_tensor.shape[0]
-                
-                print(f"Batch {batch_idx} - Tile sizes: {img_tensor.shape}")
-                
                 embedding = self.proc_embedding(img_tensor, model)
                 sample_name_list.extend(labels)
                 tile_location_list.extend(locations)
@@ -200,7 +197,6 @@ class Canvas:
                      'sample_name' : os.path.join(output_path, 'sample_name.npy')}
         self.step_dict[output_suffix] = tile_dict
         self.flush_step_dict()
-
     def proc_embedding(self, img_tensor, model):
         imgs = img_tensor.to(self.device).float()
         mask_ratio = 0
