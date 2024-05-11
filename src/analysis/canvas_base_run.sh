@@ -11,4 +11,6 @@
 
 source activate /gpfs/home/ss14424/.conda/envs/canvas-env
 
+export NUMBA_CACHE_DIR=/dev/null
+
 python src/analysis/canvas_base.py
