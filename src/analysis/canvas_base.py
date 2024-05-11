@@ -104,9 +104,8 @@ class Canvas:
         coordinates_list = []
 
         for idx, (data, (sample_name, coordinates)) in enumerate(batch):
-            print(f"Batch index: {idx}, Data shape: {data.shape}, Sample Name: {sample_name}, Coordinates: {coordinates}")
             if data.shape != torch.Size([17, 224, 224]):
-                print(f"Error with batch index: {idx}, shape: {data.shape}")
+                print(f"Skipping batch index: {idx}, shape: {data.shape}")
                 continue
 
             data_list.append(data)
@@ -118,6 +117,9 @@ class Canvas:
 
         data_stacked = torch.stack(data_list, 0)
         coordinates_stacked = torch.stack(coordinates_list, 0)
+
+        assert len(sample_names) == data_stacked.size(0), "Sample names and data batch size mismatch."
+
         return data_stacked, (sample_names, coordinates_stacked)  # Return data in the expected format
 
 
