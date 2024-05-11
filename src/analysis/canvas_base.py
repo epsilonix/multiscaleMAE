@@ -98,29 +98,29 @@ class Canvas:
         model.eval()
         return model 
     
-    def custom_collate_fn(self, batch):
-        data_list = []
-        sample_names = []
-        coordinates_list = []
-
-        for idx, (data, (sample_name, coordinates)) in enumerate(batch):
-            if data.shape != torch.Size([17, 224, 224]):
-                print(f"Skipping batch index: {idx}, shape: {data.shape}")
-                continue
-
-            data_list.append(data)
-            sample_names.append(sample_name)
-            coordinates_list.append(torch.tensor(coordinates))
-
-        if not data_list:
-            raise ValueError("All data in this batch have incorrect shapes.")
-
-        data_stacked = torch.stack(data_list, 0)
-        coordinates_stacked = torch.stack(coordinates_list, 0)
-
-        assert len(sample_names) == data_stacked.size(0), "Sample names and data batch size mismatch."
-
-        return data_stacked, (sample_names, coordinates_stacked)  # Return data in the expected format
+#    def custom_collate_fn(self, batch):
+#        data_list = []
+#        sample_names = []
+#        coordinates_list = []
+#
+#        for idx, (data, (sample_name, coordinates)) in enumerate(batch):
+#            if data.shape != torch.Size([17, 224, 224]):
+#                print(f"Skipping batch index: {idx}, shape: {data.shape}")
+#                continue
+#
+#            data_list.append(data)
+#            sample_names.append(sample_name)
+#            coordinates_list.append(torch.tensor(coordinates))
+#
+#        if not data_list:
+#            raise ValueError("All data in this batch have incorrect shapes.")
+#
+#        data_stacked = torch.stack(data_list, 0)
+#        coordinates_stacked = torch.stack(coordinates_list, 0)
+#
+#        assert len(sample_names) == data_stacked.size(0), "Sample names and data batch size mismatch."
+#
+#        return data_stacked, (sample_names, coordinates_stacked)  # Return data in the expected format
 
 
 
@@ -131,7 +131,7 @@ class Canvas:
         from torchvision import transforms
         transform_codex = transforms.Compose([
                 transforms.ToTensor(),
-                transforms.Resize(input_size, interpolation = 2),
+                transforms.Resize((input_size,input_size), interpolation = 2),
                 ])
 
         from model.data.imc_dataset import CANVASDatasetWithLocation, SlidesDataset
@@ -140,7 +140,7 @@ class Canvas:
         dataloader= torch.utils.data.DataLoader(
             dataset, 
             batch_size=batch_size,
-            collate_fn=self.custom_collate_fn,
+#            collate_fn=self.custom_collate_fn,
             num_workers=num_workers,
             drop_last=False,
         )
