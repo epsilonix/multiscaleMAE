@@ -10,9 +10,9 @@ from sklearn.metrics import silhouette_score
 import sklearn.cluster as cluster
 
 def main():
-    emb_path = sys.argv[1]
-    n_clusters = int(sys.argv[2])
-    save_path = sys.argv[3]
+    emb_path = '/gpfs/scratch/ss14424/Brain/cells/analysis_output/tile_embedding/embedding_mean.npy'
+    n_clusters = 28
+    save_path = '/gpfs/scratch/ss14424/Brain/cells/analysis_output/labels'
 
     clustering(emb_path, n_clusters, save_path)
 
