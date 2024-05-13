@@ -10,10 +10,8 @@ def main():
     root_path = sys.argv[1]
     mat_path = sys.argv[2]
     output_path = sys.argv[3]
-    if len(sys.argv) > 4:
-        tile_size = int(sys.argv[4])
-    else:
-        tile_size = 20
+    tile_size = int(sys.argv[4])
+
     # List all files end with .qptiff
     for file in os.listdir(root_path):
         if file.endswith(".tif"):

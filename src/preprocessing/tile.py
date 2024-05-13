@@ -53,7 +53,7 @@ def calculate_polygon_area(coords):
 
     return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
 
-def gen_tiles(image, slide: str, mat_data, tile_size: int = 128, 
+def gen_tiles(image, slide: str, mat_data, tile_size: int = 20, 
               output_path: str = None, image_filename: str = None) -> np.ndarray:
     ''' Generate tiles for a given slide '''
     print(f'Slide type is {type(slide)}')
@@ -93,13 +93,8 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 128,
         # Calculate the area of the boundary
         area = calculate_polygon_area(boundary_coords)
 
-        # Only add the boundary if its area is <= 100
-        if area <= 144:
-            all_boundaries_coords.append(boundary_coords)
+        all_boundaries_coords.append(boundary_coords)
 
-    # Select 20% of the coordinates randomly
-    sample_boundaries_coords = random.sample(all_boundaries_coords, 100)
-    
     centroid_coords = []
 
     for boundary_coords in sample_boundaries_coords:
@@ -138,39 +133,48 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 128,
     plt.figure(figsize=(15, 15))  # Adjust the figure size as needed
     plt.imshow(composite_image)
 
-    # Plot each boundary
-    for boundary_coords in sample_boundaries_coords:
+     # Initialize list to keep track of centroids and their types
+    positions = []
+
+    # Plot each boundary and calculate centroids
+    for boundary_info in all_boundaries_coords:
+        # Extract the boundary coordinates and cell type
+        boundary_coords, cell_type = boundary_info
+
         # Convert list of tuples to a numpy array for easy slicing
         boundary_array = np.array(boundary_coords)
         plt.plot(boundary_array[:, 0], boundary_array[:, 1], color='cyan', linewidth=0.5)  # Adjust color and linewidth as desired
 
+        # Calculate centroid
+        centroid_x = round(np.mean(boundary_array[:, 0]), 3)
+        centroid_y = round(np.mean(boundary_array[:, 1]), 3)
+        positions.append((centroid_x, centroid_y, cell_type))
+
     # Size of the square centered on each centroid
-    half_side_length = 10  # Half the side length of the square, for a total side length of 20 pixels
+    half_side_length = tile_size / 2  
 
-    positions = []
-
-    # Plot a square centered on each centroid in `centroid_coords`
-    for centroid_x, centroid_y in centroid_coords:
+    # Plot a square centered on each centroid in `positions`
+    for centroid_x, centroid_y, cell_type in positions:
         # Calculate the bottom-left corner of the square
         bottom_left_x = centroid_x - half_side_length
         bottom_left_y = centroid_y - half_side_length
 
-        if bottom_left_x >= 0 and bottom_left_y >= 0:
-            positions.append((bottom_left_y, bottom_left_x))
-            # Create and add the square as a rectangle patch
-            centroid_square = Rectangle((bottom_left_x, bottom_left_y), 2*half_side_length, 2*half_side_length,
-                                                linewidth=0.5, edgecolor='yellow', facecolor='none')  # Adjust as needed
-            plt.gca().add_patch(centroid_square)
+        # Create and add the square as a rectangle patch
+        centroid_square = Rectangle((bottom_left_x, bottom_left_y), 2 * half_side_length, 2 * half_side_length,
+                                    linewidth=0.5, edgecolor='yellow', facecolor='none')  # Adjust as needed
+        plt.gca().add_patch(centroid_square)
     
     full_image_path = os.path.join(output_path, image_filename)
     plt.savefig(full_image_path, dpi=300)
     plt.clf()
+    
+    sample_positions_100_cells = random.sample(positions, 100)
 
     with open(os.path.join(output_path, f'positions_{tile_size}.csv'), 'w') as f:
-        f.write(' ,h,w\n')
-        for i, (h, w) in enumerate(positions):
-            f.write(f'{i},{h},{w}\n')
-    print(f'Generated {len(positions)} tiles for slide with shape {slide.shape}')
+        f.write(' ,h,w,celltype\n')
+        for i, (h, celltype) in enumerate(sample_positions_100_cells):
+            f.write(f'{i},{h},{celltype}\n')
+    print(f'Generated {len(sample_positions_100_cells)} tiles for slide with shape {slide.shape}')
 
 def save_img(output_path: str, task: str, tile_size: int, img: np.ndarray):
     ''' Save image to output path '''
