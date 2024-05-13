@@ -9,12 +9,12 @@ from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 import sklearn.cluster as cluster
 
-def main():
-    emb_path = '/gpfs/scratch/ss14424/Brain/cells/analysis_output/tile_embedding/embedding_mean.npy'
-    n_clusters = 20
-    save_path = '/gpfs/scratch/ss14424/Brain/cells/analysis_output/labels_20'
-
-    clustering(emb_path, n_clusters, save_path)
+#def main():
+#    emb_path = '/gpfs/scratch/ss14424/Brain/cells/analysis_output/tile_embedding/embedding_mean.npy'
+#    n_clusters = 20
+#    save_path = '/gpfs/scratch/ss14424/Brain/cells/analysis_output/labels_20'
+#
+#    clustering(emb_path, n_clusters, save_path)
 
 def clustering(emb_path, n_clusters, save_path):
 

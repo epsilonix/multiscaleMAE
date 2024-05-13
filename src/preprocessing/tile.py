@@ -97,7 +97,7 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
 
     centroid_coords = []
 
-    for boundary_coords in sample_boundaries_coords:
+    for boundary_coords in all_boundaries_coords:
         # Convert list of tuples to a numpy array for easy mathematical operations
         boundary_array = np.array(boundary_coords)
 

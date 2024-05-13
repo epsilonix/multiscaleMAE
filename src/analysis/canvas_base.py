@@ -23,33 +23,33 @@ def main():
     model = canvas.load_model(dataloader)
     canvas.get_tile_embedding(dataloader, model, save_full_emb = True)
 #
-#    # Generate UMAP
-    canvas.get_umap()
-    color_map = {
-        'red': 'CD117',
-        'green': 'CD11c',
-        'blue': 'CD14',
-        'cyan': 'CD163',
-        'magenta': 'CD16',
-        'yellow': 'CD20',
-        'orange': 'CD31',
-        'lime': 'CD3',
-        'pink': 'CD4',
-        'grey': 'CD68',
-        'olive': 'CD8',
-        'brown': 'CD94',
-        'navy': 'DNA1',
-        'teal': 'FoxP3',
-        'maroon': 'HLA-DR',
-        'purple': 'MPO',
-        'gold': 'Olig2',
-        'lavender': 'P2PY12',
-        'skyblue': 'Sox2', 
-        'violet': 'Sox9' 
-    }
-#    # Plot umap
-    canvas.get_umap_mosaic(dataloader, color_map)
-    canvas.color_umap(dataloader)
+##    # Generate UMAP
+#    canvas.get_umap()
+#    color_map = {
+#        'red': 'CD117',
+#        'green': 'CD11c',
+#        'blue': 'CD14',
+#        'cyan': 'CD163',
+#        'magenta': 'CD16',
+#        'yellow': 'CD20',
+#        'orange': 'CD31',
+#        'lime': 'CD3',
+#        'pink': 'CD4',
+#        'grey': 'CD68',
+#        'olive': 'CD8',
+#        'brown': 'CD94',
+#        'navy': 'DNA1',
+#        'teal': 'FoxP3',
+#        'maroon': 'HLA-DR',
+#        'purple': 'MPO',
+#        'gold': 'Olig2',
+#        'lavender': 'P2PY12',
+#        'skyblue': 'Sox2', 
+#        'violet': 'Sox9' 
+#    }
+##    # Plot umap
+#    canvas.get_umap_mosaic(dataloader, color_map)
+#    canvas.color_umap(dataloader)
 #    
     # Clustering
     canvas.clustering(n_clusters = 30)
@@ -307,8 +307,8 @@ class Canvas:
 #            if os.path.exists(self.step_dict[output_suffix]['labels']):
 #                print('Embedding already exist, skipping')
 #                return 
-        from analysis.clustering import kmeans
-        kmeans.clustering(self.step_dict['tile_embedding']['embedding_mean'], self.step_dict['umap']['coord'], n_clusters, save_path)
+        from analysis.clustering import kmeans_no_umap
+        kmeans_no_umap.clustering(self.step_dict['tile_embedding']['embedding_mean'], n_clusters, save_path)
         data_dict = {'labels' : save_path}
         self.step_dict[output_suffix] = data_dict
         self.flush_step_dict()
