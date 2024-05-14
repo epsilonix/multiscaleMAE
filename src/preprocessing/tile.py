@@ -72,12 +72,12 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
     #save_img(output_path, 'thumbnail', tile_size // 4, thumbnail)
     # Generate and save mask
 
+    # Extract 'Boundaries' and 'cellTypes' data
     boundaries_info = mat_data['Boundaries']
-    
     cell_types = mat_data['cellTypes']
 
-    # Correct dimensions of the matrix
-    correct_dimensions = slide.shape[1:3][::-1]
+    # Correct dimensions of the image
+    correct_dimensions = image.shape[1:3][::-1]  # Assuming 'image' is defined elsewhere
 
     # Initialize a list to hold the coordinates for all boundaries
     all_boundaries_coords = []
@@ -94,28 +94,14 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
 
         # Calculate the area of the boundary
         area = calculate_polygon_area(boundary_coords)
-        
+
+        # Get the corresponding cell type, handle empty or undefined types
         cell_type = cell_types[i][0][0] if cell_types[i][0].size > 0 else 'Unknown'
 
         all_boundaries_coords.append((boundary_coords, cell_type))
 
-    centroid_coords = []
 
-    for boundary_coords in all_boundaries_coords:
-        # Convert list of tuples to a numpy array for easy mathematical operations
-        boundary_array = np.array(boundary_coords)
-
-        # Calculate the mean of x and y coordinates
-        centroid_x = np.mean(boundary_array[:, 0])
-        centroid_y = np.mean(boundary_array[:, 1])
-
-        # Append the centroid coordinates as a tuple to the list
-        centroid_coords.append((centroid_x, centroid_y))
-
-    centroid_coords = sorted(centroid_coords, key=lambda x: (x[0], x[1]))
-    centroid_coords = [(round(x, 3), round(y, 3)) for x, y in centroid_coords]
-
-
+    # Assuming 'image' and 'colors' are defined elsewhere
     num_channels, height, width = image.shape
     brightness_factor = 3.0
 
@@ -129,20 +115,17 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
             composite_image[:, :, j] += channel_normalized * color[j]
 
     # Normalize the composite image to be in the range [0, 1]
-
-    composite_image = np.clip(composite_image / np.max(composite_image, axis = (0,1))*brightness_factor, 0, 1)
-
+    composite_image = np.clip(composite_image / np.max(composite_image, axis=(0, 1)) * brightness_factor, 0, 1)
 
     # Plot the composite image
     plt.figure(figsize=(15, 15))  # Adjust the figure size as needed
     plt.imshow(composite_image)
 
-     # Initialize list to keep track of centroids and their types
+    # Initialize list to keep track of centroids and their types
     positions = []
 
     # Plot each boundary and calculate centroids
     for boundary_info in all_boundaries_coords:
-        print(f'boundary_info is {boundary_info}')
         # Extract the boundary coordinates and cell type
         boundary_coords, cell_type = boundary_info
 
@@ -156,7 +139,7 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
         positions.append((centroid_x, centroid_y, cell_type))
 
     # Size of the square centered on each centroid
-    half_side_length = tile_size / 2  
+    half_side_length = tile_size / 2    # Half the side length of the square, for a total side length of 10 pixels
 
     # Plot a square centered on each centroid in `positions`
     for centroid_x, centroid_y, cell_type in positions:
@@ -168,10 +151,11 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
         centroid_square = Rectangle((bottom_left_x, bottom_left_y), 2 * half_side_length, 2 * half_side_length,
                                     linewidth=0.5, edgecolor='yellow', facecolor='none')  # Adjust as needed
         plt.gca().add_patch(centroid_square)
-    
+
     full_image_path = os.path.join(output_path, image_filename)
     plt.savefig(full_image_path, dpi=300)
     plt.clf()
+
     
     sample_positions_100_cells = random.sample(positions, 100)
 
