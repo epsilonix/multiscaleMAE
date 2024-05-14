@@ -75,12 +75,17 @@ class SlideDataset(data.Dataset):
         tile_pos = df[["height", "width"]].to_numpy()
         cell_types = df["celltype"].values
 
+        # Define the path where the cell types will be saved
+        save_path = 'gpfs/scratch/ss14424/Brain/cells/analysis_output/celltype.npy'
+
+        # Ensure the directory exists
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+
         # Save the cell types to a NumPy file
-        np.save('gpfs/scratch/ss14424/Brain/cells/analysis_output/celltype.npy', cell_types)
-        print("Cell types saved to celltype.npy")
+        np.save(save_path, cell_types)
+        print(f"Cell types saved to {save_path}")
 
         return tile_pos
-
     # Generate tiles from mask
     def load_tiling_mask(self, mask_path, tile_size):
         ''' Load tissue mask to generate tiles '''
