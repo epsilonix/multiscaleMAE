@@ -27,6 +27,8 @@ class SlideDataset(data.Dataset):
             self.tile_pos = self.load_tiles(tile_size)
 
     def __getitem__(self, index):
+        print(f"Position X: {self.tile_pos[index][0]}, Position Y: {self.tile_pos[index][1]}")  # Add this line for debugging
+
         image = self.read_region(self.tile_pos[index][0], self.tile_pos[index][1], self.tile_size, self.tile_size)
         
         #print("Image dimensions before transformation:", image.size)
@@ -69,7 +71,7 @@ class SlideDataset(data.Dataset):
     def load_tiles(self, tile_size):
         ''' Load tile positions from disk and save cell types to celltype.npy '''
         tile_path = f'{self.root_path}/tiles/positions_{tile_size}.csv'
-        df = pd.read_csv(tile_path, names=["index", "height", "width", "celltype"])
+        df = pd.read_csv(tile_path)
 
         # Extract the tile positions and cell types
         tile_pos = df[["height", "width"]].to_numpy()
