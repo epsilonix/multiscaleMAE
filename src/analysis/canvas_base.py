@@ -52,7 +52,7 @@ def main():
 #    canvas.color_umap(dataloader)
 #    
     # Clustering
-    canvas.clustering(n_clusters = 30)
+    canvas.clustering(n_clusters = 20)
     
     # heatmap
     #canvas.heatmap()
