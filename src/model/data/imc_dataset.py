@@ -212,7 +212,7 @@ class SlidesDataset(data.Dataset):
                     print(f'{slides_root_path}/{slide_id}/data.zarr')
                     #channel_df = pd.read_csv(f'{slides_root_path}/{slide_id}/channels.csv')
                     
-                    parent_directory = os.path.dirname(slides_root_path)
+                    parent_directory = os.path.dirname(os.path.dirname(slides_root_path))
                     channel_path = os.path.join(parent_directory, 'channels.csv')
                     
                     channel_df = pd.read_csv(channel_path)
