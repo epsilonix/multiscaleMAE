@@ -211,7 +211,11 @@ class SlidesDataset(data.Dataset):
                 if mat.shape[0] == 17:
                     print(f'{slides_root_path}/{slide_id}/data.zarr')
                     #channel_df = pd.read_csv(f'{slides_root_path}/{slide_id}/channels.csv')
-                    channel_df = pd.read_csv(f'{slides_root_path}/channels.csv')
+                    
+                    parent_directory = os.path.dirname(slides_root_path)
+                    channel_path = os.path.join(parent_directory, 'channels.csv')
+                    
+                    channel_df = pd.read_csv(channel_path)
                     channel_dict = dict(zip(channel_df['channel'], channel_df['marker']))
                     slide_channels.append(mat.shape[0])
                     slide_channel_dicts.append(channel_dict)
