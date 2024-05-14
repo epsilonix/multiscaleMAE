@@ -76,7 +76,7 @@ class SlideDataset(data.Dataset):
         cell_types = df["celltype"].values
 
         # Save the cell types to a NumPy file
-        np.save('gpfs/scratch/ss14424]/Brain/cells/analysis_output/celltype.npy', cell_types)
+        np.save('gpfs/scratch/ss14424/Brain/cells/analysis_output/celltype.npy', cell_types)
         print("Cell types saved to celltype.npy")
 
         return tile_pos
