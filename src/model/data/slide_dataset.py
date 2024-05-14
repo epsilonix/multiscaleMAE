@@ -74,7 +74,7 @@ class SlideDataset(data.Dataset):
         df = pd.read_csv(tile_path)
 
         # Extract the tile positions and cell types
-        tile_pos = df[["height", "width"]].to_numpy()
+        tile_pos = df[["h", "w"]].to_numpy()
         cell_types = df["celltype"].values
 
         # Define the path where the cell types will be saved
