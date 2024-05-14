@@ -225,7 +225,7 @@ class SlidesDataset(data.Dataset):
         # Check if all slides have the same channels
         print(f'Found {len(slide_ids)} slides with {slide_channels} channels')
 
-        common_channels_path = f'{slides_root_path}/common_channels.txt'
+        common_channels_path = f'/gpfs/scratch/ss14424/Brain/common_channels.txt'
         print(f'IDENT common_channels_path is {common_channels_path}')
         if not os.path.exists(common_channels_path):
             common_channels = self.get_common_channels(slide_channel_dicts)
