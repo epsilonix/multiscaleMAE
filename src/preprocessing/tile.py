@@ -73,6 +73,8 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
     # Generate and save mask
 
     boundaries_info = mat_data['Boundaries']
+    
+    cell_types = mat_data['cellTypes']
 
     # Correct dimensions of the matrix
     correct_dimensions = slide.shape[1:3][::-1]
@@ -92,8 +94,10 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
 
         # Calculate the area of the boundary
         area = calculate_polygon_area(boundary_coords)
+        
+        cell_type = cell_types[i][0][0] if cell_types[i][0].size > 0 else 'Unknown'
 
-        all_boundaries_coords.append(boundary_coords)
+        all_boundaries_coords.append((boundary_coords, cell_type))
 
     centroid_coords = []
 
