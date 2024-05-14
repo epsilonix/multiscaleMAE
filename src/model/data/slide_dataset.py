@@ -69,7 +69,7 @@ class SlideDataset(data.Dataset):
     def load_tiles(self, tile_size):
         ''' Load tile positions from disk and save cell types to celltype.npy '''
         tile_path = f'{self.root_path}/tiles/positions_{tile_size}.csv'
-        df = pd.read_csv(tile_path, header=None, names=["index", "height", "width", "celltype"])
+        df = pd.read_csv(tile_path, names=["index", "height", "width", "celltype"])
 
         # Extract the tile positions and cell types
         tile_pos = df[["height", "width"]].to_numpy()
