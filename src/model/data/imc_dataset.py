@@ -161,7 +161,7 @@ class SlidesDataset(data.Dataset):
 
     def get_common_channel_names(self, root_path):
         print(f'Root path:{root_path}')
-        with open(f'{root_path}/common_channels.txt', 'r') as f:
+        with open('/gpfs/scratch/ss14424/Brain/common_channels.txt', 'r') as f:
             channel_names = f.read().splitlines()
         return channel_names
 
