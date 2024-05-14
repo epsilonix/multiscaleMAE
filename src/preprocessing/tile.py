@@ -139,7 +139,7 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
         positions.append((centroid_x, centroid_y, cell_type))
 
     # Size of the square centered on each centroid
-    half_side_length = tile_size / 2    # Half the side length of the square, for a total side length of 10 pixels
+    half_side_length = tile_size / 2   
 
     # Plot a square centered on each centroid in `positions`
     for centroid_x, centroid_y, cell_type in positions:
@@ -161,9 +161,10 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
 
     with open(os.path.join(output_path, f'positions_{tile_size}.csv'), 'w') as f:
         f.write(' ,h,w,celltype\n')
-        for i, (h, celltype) in enumerate(sample_positions_100_cells):
-            f.write(f'{i},{h},{celltype}\n')
+        for i, (h, w, celltype) in enumerate(sample_positions_100_cells):
+            f.write(f'{i},{h},{w},{celltype}\n')
     print(f'Generated {len(sample_positions_100_cells)} tiles for slide with shape {slide.shape}')
+
 
 def save_img(output_path: str, task: str, tile_size: int, img: np.ndarray):
     ''' Save image to output path '''
