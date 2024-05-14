@@ -72,7 +72,7 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
     #save_img(output_path, 'thumbnail', tile_size // 4, thumbnail)
     # Generate and save mask
 
-    # Extract 'Boundaries' and 'cellTypes' data
+        # Extract 'Boundaries' and 'cellTypes' data
     boundaries_info = mat_data['Boundaries']
     cell_types = mat_data['cellTypes']
 
@@ -95,11 +95,13 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
         # Calculate the area of the boundary
         area = calculate_polygon_area(boundary_coords)
 
+
+
         # Get the corresponding cell type, handle empty or undefined types
         cell_type = cell_types[i][0][0] if cell_types[i][0].size > 0 else 'Unknown'
 
-        all_boundaries_coords.append((boundary_coords, cell_type))
-
+        if area > 20 and area < 200:
+            all_boundaries_coords.append((boundary_coords, cell_type))
 
     # Assuming 'image' and 'colors' are defined elsewhere
     num_channels, height, width = image.shape
@@ -136,10 +138,13 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
         # Calculate centroid
         centroid_x = round(np.mean(boundary_array[:, 0]), 3)
         centroid_y = round(np.mean(boundary_array[:, 1]), 3)
-        positions.append((centroid_x, centroid_y, cell_type))
+
+        # Exclude centroids within 5 pixels of the boundary
+        if 10 <= centroid_x <= width - 10 and 10 <= centroid_y <= height - 10:
+            positions.append((centroid_x, centroid_y, cell_type))
 
     # Size of the square centered on each centroid
-    half_side_length = tile_size / 2   
+    half_side_length = tile_size / 2  # Half the side length of the square, for a total side length of 10 pixels
 
     # Plot a square centered on each centroid in `positions`
     for centroid_x, centroid_y, cell_type in positions:
