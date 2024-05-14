@@ -60,10 +60,25 @@ class SlideDataset(data.Dataset):
         ''' Save a thumbnail of the slide '''
         raise NotImplementedError
 
+#    def load_tiles(self, tile_size):
+#        ''' load tiles positions from disk '''
+#        tile_path = f'{self.root_path}/tiles/positions_{tile_size}.csv'
+#        tile_pos = pd.read_csv(tile_path, index_col = 0).to_numpy()
+#        return tile_pos
+
     def load_tiles(self, tile_size):
-        ''' load tiles positions from disk '''
+        ''' Load tile positions from disk and save cell types to celltype.npy '''
         tile_path = f'{self.root_path}/tiles/positions_{tile_size}.csv'
-        tile_pos = pd.read_csv(tile_path, index_col = 0).to_numpy()
+        df = pd.read_csv(tile_path, header=None, names=["index", "height", "width", "celltype"])
+
+        # Extract the tile positions and cell types
+        tile_pos = df[["height", "width"]].to_numpy()
+        cell_types = df["celltype"].values
+
+        # Save the cell types to a NumPy file
+        np.save('gpfs/scratch/ss14424]/Brain/cells/analysis_output/celltype.npy', cell_types)
+        print("Cell types saved to celltype.npy")
+
         return tile_pos
 
     # Generate tiles from mask
