@@ -138,6 +138,7 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
 
     # Plot each boundary and calculate centroids
     for boundary_info in all_boundaries_coords:
+        print(f'boundary_info is {boundary_info}')
         # Extract the boundary coordinates and cell type
         boundary_coords, cell_type = boundary_info
 
