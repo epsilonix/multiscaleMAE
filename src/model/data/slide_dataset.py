@@ -68,17 +68,66 @@ class SlideDataset(data.Dataset):
 #        tile_pos = pd.read_csv(tile_path, index_col = 0).to_numpy()
 #        return tile_pos
 
+#    def load_tiles(self, tile_size):
+#        ''' Load tile positions from disk and save cell types to celltype.npy '''
+#        tile_path = f'{self.root_path}/tiles/positions_{tile_size}.csv'
+#        df = pd.read_csv(tile_path)
+#
+#        # Extract the tile positions and cell types
+#        tile_pos = df[["h", "w"]].to_numpy()
+#        cell_types = df["celltype"].values
+#        
+#        
+#        image = self.read_region(self.tile_pos[index][0], self.tile_pos[index][1], self.tile_size, self.tile_size)
+#        print("Image dimensions before transformation:", image.size)
+#
+#        # Define the path where the cell types will be saved
+#        save_path = 'gpfs/scratch/ss14424/Brain/cells/analysis_output/celltype.npy'
+#
+#        # Ensure the directory exists
+#        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+#
+#        # Save the cell types to a NumPy file
+#        np.save(save_path, cell_types)
+#        print(f"Cell types saved to {save_path}")
+#
+#        return tile_pos
+
     def load_tiles(self, tile_size):
-        ''' Load tile positions from disk and save cell types to celltype.npy '''
-        tile_path = f'{self.root_path}/tiles/positions_{tile_size}.csv'
+        ''' Load tile positions from disk and filter out any with an image size of 0 '''
+        tile_path = os.path.join(self.root_path, f'tiles/positions_{tile_size}.csv')
         df = pd.read_csv(tile_path)
 
-        # Extract the tile positions and cell types
-        tile_pos = df[["h", "w", "celltype"]].to_numpy()
+        # Initialize lists to store valid tiles and cell types
+        valid_tile_positions = []
+        valid_cell_types = []
 
-        return tile_pos
+        # Iterate through each row and check the image size
+        for index, row in df.iterrows():
+            x, y, cell_type = row['h'], row['w'], row['celltype']
+            image = self.read_region(x, y, tile_size, tile_size)
+            print("Image dimensions before transformation:", image.size)
 
+            # Check if the image size is valid
+            if image.size > 0:
+                valid_tile_positions.append([x, y])
+                valid_cell_types.append(cell_type)
+            else:
+                print(f"Skipping tile at position ({x}, {y}) due to invalid image size.")
 
+        # Convert valid_tile_positions to numpy array
+        valid_tile_positions = np.array(valid_tile_positions)
+
+        # Define the path where the valid cell types will be saved
+        save_path = os.path.join('gpfs/scratch/ss14424/Brain/cells/analysis_output', 'celltype.npy')
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)  # Ensure the directory exists
+
+        # Save the valid cell types to a NumPy file
+        np.save(save_path, np.array(valid_cell_types))
+        print(f"Cell types saved to {save_path}")
+
+        return valid_tile_positions
+    
     # Generate tiles from mask
     def load_tiling_mask(self, mask_path, tile_size):
         ''' Load tissue mask to generate tiles '''
