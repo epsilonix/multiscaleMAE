@@ -10,7 +10,7 @@ from skimage.transform import resize
 class SlideDataset(data.Dataset):
     ''' Dataset for slides '''
 
-    def __init__(self, root_path = None, tile_size = None, transform = None):
+    def __init__(self, root_path=None, tile_size=None, transform=None):
         ''' 
         Initialize the dataset 
         root_path: root path of the dataset (for saving processed file purposes)
@@ -25,21 +25,22 @@ class SlideDataset(data.Dataset):
         if tile_size is not None:
             # Load tiles positions from disk
             self.tile_pos = self.load_tiles(tile_size)
+            self.valid_cell_types = self.filter_invalid_images()
 
     def __getitem__(self, index):
-        print(f"Position X: {self.tile_pos[index][0]}, Position Y: {self.tile_pos[index][1]}")  # Add this line for debugging
+        pos_x, pos_y = self.tile_pos[index]
+        print(f"Position X: {pos_x}, Position Y: {pos_y}")
 
-        image = self.read_region(self.tile_pos[index][0], self.tile_pos[index][1], self.tile_size, self.tile_size)
-        
-        print("Image dimensions before transformation:", image.size)
+        image = self.read_region(pos_x, pos_y, self.tile_size, self.tile_size)
+        print("Image dimensions before transformation:", image.shape)
 
         if self.transform is not None:
             transformed_image = self.transform(image)
         else:
             transformed_image = transforms.ToTensor()(image)
         label = None
-        x = self.tile_pos[index][0]
-        y = self.tile_pos[index][1]
+        x = pos_x
+        y = pos_y
         img_id = index
         return transformed_image, label, x, y, img_id
 
@@ -62,33 +63,38 @@ class SlideDataset(data.Dataset):
         ''' Save a thumbnail of the slide '''
         raise NotImplementedError
 
-#    def load_tiles(self, tile_size):
-#        ''' load tiles positions from disk '''
-#        tile_path = f'{self.root_path}/tiles/positions_{tile_size}.csv'
-#        tile_pos = pd.read_csv(tile_path, index_col = 0).to_numpy()
-#        return tile_pos
-
     def load_tiles(self, tile_size):
-        ''' Load tile positions from disk and save cell types to celltype.npy '''
+        ''' Load tile positions from disk '''
         tile_path = f'{self.root_path}/tiles/positions_{tile_size}.csv'
         df = pd.read_csv(tile_path)
-
-        # Extract the tile positions and cell types
         tile_pos = df[["h", "w"]].to_numpy()
-        cell_types = df["celltype"].values
+        self.cell_types = df["celltype"].values
+        return tile_pos
 
-        # Define the path where the cell types will be saved
+    def filter_invalid_images(self):
+        ''' Filter out invalid images and save valid cell types '''
+        valid_tile_pos = []
+        valid_cell_types = []
+
+        for i, (pos_x, pos_y) in enumerate(self.tile_pos):
+            try:
+                image = self.read_region(pos_x, pos_y, self.tile_size, self.tile_size)
+                if image.shape[0] > 0 and image.shape[1] > 0:
+                    valid_tile_pos.append([pos_x, pos_y])
+                    valid_cell_types.append(self.cell_types[i])
+            except Exception as e:
+                print(f"Skipping invalid image at position ({pos_x}, {pos_y}): {e}")
+
+        # Save valid cell types to a NumPy file
         save_path = 'gpfs/scratch/ss14424/Brain/cells/analysis_output/celltype.npy'
-
-        # Ensure the directory exists
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
-
-        # Save the cell types to a NumPy file
-        np.save(save_path, cell_types)
+        np.save(save_path, valid_cell_types)
         print(f"Cell types saved to {save_path}")
 
-        return tile_pos
-    # Generate tiles from mask
+        # Update the tile positions to only include valid ones
+        self.tile_pos = np.array(valid_tile_pos)
+        return np.array(valid_cell_types)
+
     def load_tiling_mask(self, mask_path, tile_size):
         ''' Load tissue mask to generate tiles '''
         # Get slide dimensions
@@ -105,7 +111,7 @@ class SlideDataset(data.Dataset):
             mask = np.ones(grid_width, grid_height) # Tile all regions
         return mask
 
-    def generate_tiles(self, tile_size, mask_path = None, mask_id = 'default', threshold = 0.99):
+    def generate_tiles(self, tile_size, mask_path=None, mask_id='default', threshold=0.99):
         ''' 
         Generate tiles from a slide
         threshold: minimum percentage of tissue mask in a tile
