@@ -25,6 +25,7 @@ class NPYDataset(SlideDataset):
         return slide
 
     def read_region(self, pos_x, pos_y, width, height):
+        print(f'imc_dataset slide size: {self.slide.shape}')
         print(f"imc dataset pos_x: {pos_x}, pos_y: {pos_y}, width: {width}, height: {height}")
         ''' Read a numpy slide region '''
         
