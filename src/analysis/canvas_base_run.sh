@@ -16,4 +16,4 @@ python src/analysis/canvas_base.py
 
 
 
-#srun --pty --time=0-07:00:00 --partition=gpu4_long,gpu8_long --nodes=1 --mem=150G --ntasks-per-node=1 --cpus-per-task=5 --gres=gpu:1 --job-name=canvas_base_run bash
+#srun --pty --time=0-07:00:00 --partition=gpu4_long,gpu8_long --nodes=1 --mem=150G --ntasks-per-node=1 --cpus-per-task=1 --gres=gpu:1 --job-name=inter_canvas bash
