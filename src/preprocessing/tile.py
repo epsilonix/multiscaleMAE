@@ -72,7 +72,7 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
     #save_img(output_path, 'thumbnail', tile_size // 4, thumbnail)
     # Generate and save mask
 
-        # Extract 'Boundaries' and 'cellTypes' data
+    # Extract 'Boundaries' and 'cellTypes' data
     boundaries_info = mat_data['Boundaries']
     cell_types = mat_data['cellTypes']
 
@@ -123,11 +123,14 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
     plt.figure(figsize=(15, 15))  # Adjust the figure size as needed
     plt.imshow(composite_image)
 
+
+    sample_boundaries_coords = random.sample(all_boundaries_coords, 100)
+
     # Initialize list to keep track of centroids and their types
     positions = []
 
     # Plot each boundary and calculate centroids
-    for boundary_info in all_boundaries_coords:
+    for boundary_info in sample_boundaries_coords:
         # Extract the boundary coordinates and cell type
         boundary_coords, cell_type = boundary_info
 
@@ -139,30 +142,27 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
         centroid_x = round(np.mean(boundary_array[:, 0]), 3)
         centroid_y = round(np.mean(boundary_array[:, 1]), 3)
 
+        # Size of the square centered on each centroid
+        half_side_length = tile_size / 2  # Half the side length of the square, for a total side length of 10 pixels
+
         # Exclude centroids within 5 pixels of the boundary
         if 10 <= centroid_x <= width - 10 and 10 <= centroid_y <= height - 10:
-            positions.append((centroid_x, centroid_y, cell_type))
-
-    # Size of the square centered on each centroid
-    half_side_length = tile_size / 2  # Half the side length of the square, for a total side length of 10 pixels
-
-    # Plot a square centered on each centroid in `positions`
-    for centroid_x, centroid_y, cell_type in positions:
-        # Calculate the bottom-left corner of the square
-        bottom_left_x = centroid_x - half_side_length
-        bottom_left_y = centroid_y - half_side_length
+          top_left_x = centroid_x - half_side_length
+          top_left_y = centroid_y - half_side_length
+          positions.append((top_left_y, top_left_x, cell_type))
 
         # Create and add the square as a rectangle patch
-        centroid_square = Rectangle((bottom_left_x, bottom_left_y), 2 * half_side_length, 2 * half_side_length,
-                                    linewidth=0.5, edgecolor='yellow', facecolor='none')  # Adjust as needed
+        centroid_square = Rectangle((top_left_x, top_left_y), 2 * half_side_length, 2 * half_side_length,
+                                linewidth=0.5, edgecolor='yellow', facecolor='none')  # Adjust as needed
         plt.gca().add_patch(centroid_square)
+        plt.scatter(top_left_x, top_left_y, color='red', s=1) 
 
     full_image_path = os.path.join(output_path, image_filename)
     plt.savefig(full_image_path, dpi=300)
     plt.clf()
 
     
-    sample_positions_100_cells = random.sample(positions, 100)
+    ###
 
     with open(os.path.join(output_path, f'positions_{tile_size}.csv'), 'w') as f:
         f.write(' ,h,w,celltype\n')
