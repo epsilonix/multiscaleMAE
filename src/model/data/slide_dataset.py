@@ -27,7 +27,7 @@ class SlideDataset(data.Dataset):
             self.tile_pos = self.load_tiles(tile_size)
 
     def __getitem__(self, index):
-        print(f"Position X: {self.tile_pos[index][0]}, Position Y: {self.tile_pos[index][1]}, Celltype: {self.tile_pos[index][2]}")  # Add this line for debugging
+        print(f"Position X: {self.tile_pos[index][0]}, Position Y: {self.tile_pos[index][1]}")  # Add this line for debugging
 
         image = self.read_region(self.tile_pos[index][0], self.tile_pos[index][1], self.tile_size, self.tile_size)
         
@@ -86,8 +86,10 @@ class SlideDataset(data.Dataset):
         # Save the cell types to a NumPy file
         np.save(save_path, cell_types)
         print(f"Cell types saved to {save_path}")
-
+        print(f'tile_pos is {tile_pos}')    
         return tile_pos
+    
+    
     # Generate tiles from mask
     def load_tiling_mask(self, mask_path, tile_size):
         ''' Load tissue mask to generate tiles '''
