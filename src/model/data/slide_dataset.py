@@ -18,7 +18,7 @@ class SlideDataset(data.Dataset):
         self.root_path = root_path
         self.tile_size = tile_size
         
-        print(f'slide_dataset thinks tile_size is {tile_size}')
+        #print(f'slide_dataset thinks tile_size is {tile_size}')
         
         self.transform = transform
 
@@ -27,11 +27,11 @@ class SlideDataset(data.Dataset):
             self.tile_pos = self.load_tiles(tile_size)
 
     def __getitem__(self, index):
-        print(f"Position X: {self.tile_pos[index][0]}, Position Y: {self.tile_pos[index][1]}")  # Add this line for debugging
+        #print(f"Position X: {self.tile_pos[index][0]}, Position Y: {self.tile_pos[index][1]}")  # Add this line for debugging
 
         image = self.read_region(self.tile_pos[index][0], self.tile_pos[index][1], self.tile_size, self.tile_size)
         
-        print("Image dimensions before transformation:", image.size)
+        #print("Image dimensions before transformation:", image.size)
 
         if self.transform is not None:
             transformed_image = self.transform(image)
@@ -85,45 +85,10 @@ class SlideDataset(data.Dataset):
 
         # Save the cell types to a NumPy file
         np.save(save_path, cell_types)
-        print(f"Cell types saved to {save_path}")
-        print(f'tile_pos is {tile_pos}')    
+        #print(f"Cell types saved to {save_path}")
+        #print(f'tile_pos is {tile_pos}')    
         return tile_pos
     
-    
-#    def load_tiles(self, tile_size):
-#        ''' Load tile positions from disk, filter out tiles with image size of 0, and save remaining cell types '''
-#        tile_path = os.path.join(self.root_path, f'tiles/positions_{tile_size}.csv')
-#        df = pd.read_csv(tile_path)
-#
-#        valid_tile_positions = []
-#        valid_cell_types = []
-#
-#        # Iterate over each tile position and check image size
-#        for index, row in df.iterrows():
-#            x, y = row['h'], row['w']
-#            cell_type = row['celltype']
-#            image = self.read_region(x, y, tile_size, tile_size)
-#            
-#            # Check if the image has valid size
-#            if image.size > 0:
-#                valid_tile_positions.append([x, y])
-#                valid_cell_types.append(cell_type)
-#            else:
-#                print(f"Skipping tile at position ({x}, {y}) due to invalid image size.")
-#
-#        # Convert list to numpy array for positions
-#        valid_tile_positions = np.array(valid_tile_positions)
-#
-#        # Define the path where the valid cell types will be saved
-#        save_path = os.path.join('gpfs/scratch/ss14424/Brain/cells/analysis_output', 'celltype.npy')
-#        os.makedirs(os.path.dirname(save_path), exist_ok=True)  # Ensure the directory exists
-#
-#        # Save the valid cell types to a NumPy file
-#        np.save(save_path, np.array(valid_cell_types))
-#        print(f"Cell types saved to {save_path}")
-#        print(f'Filtered tile_pos is {valid_tile_positions}')
-#        
-#        return valid_tile_positions
     
     # Generate tiles from mask
     def load_tiling_mask(self, mask_path, tile_size):

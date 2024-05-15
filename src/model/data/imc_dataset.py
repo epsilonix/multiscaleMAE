@@ -25,8 +25,8 @@ class NPYDataset(SlideDataset):
         return slide
 
     def read_region(self, pos_x, pos_y, width, height):
-        print(f'imc_dataset slide size: {self.slide.shape}')
-        print(f"imc dataset pos_x: {pos_x}, pos_y: {pos_y}, width: {width}, height: {height}")
+        #print(f'imc_dataset slide size: {self.slide.shape}')
+        #print(f"imc dataset pos_x: {pos_x}, pos_y: {pos_y}, width: {width}, height: {height}")
         ''' Read a numpy slide region '''
         
         pos_x = int(pos_x)
@@ -82,7 +82,7 @@ class ZarrDataset(NPYDataset):
         ''' Read zarr file on disk '''
         zarr_path = f'{file_path}/data.zarr'
         slide = zarr.open(zarr_path, mode = 'r')
-        print(f"Slide dimensions (from Zarr file): {slide.shape}") 
+        #print(f"Slide dimensions (from Zarr file): {slide.shape}") 
         return slide
 
 class CANVASDataset(ZarrDataset):
@@ -100,7 +100,7 @@ class CANVASDataset(ZarrDataset):
         image, label, x, y, img_id = super().__getitem__(index)
     
 
-        print(f"GPT Image shape before indexing: {image.shape}")  # Add this line to check the shape of the image
+        #print(f"GPT Image shape before indexing: {image.shape}")  # Add this line to check the shape of the image
         #print(f"GPT Channel indices: {self.channel_idx}")  # Add this line to check the indices being accessed
         # Move channel to first dimension
         if not self.channel_idx is None:
@@ -128,11 +128,11 @@ class SlidesDataset(data.Dataset):
     ''' Dataset for a list of slides '''
 
     def __init__(self, slides_root_path = None, tile_size = None, transform = None, dataset_class = None, use_normalization = True):
-        print(f'class SlidesDataset was initialized with root path: {slides_root_path}')
+        #print(f'class SlidesDataset was initialized with root path: {slides_root_path}')
         self.slides_root_path = slides_root_path
         self.tile_size = tile_size
         
-        print(f'imc_dataset thinks tile_size is {tile_size}')
+        #print(f'imc_dataset thinks tile_size is {tile_size}')
         
         self.transform = transform
         # Get id and path for all slides
@@ -201,7 +201,7 @@ class SlidesDataset(data.Dataset):
     #ITS THIS THAT FAILS
     def get_slide_paths(self, slides_root_path):
         ''' Get slides from a directory '''
-        print(f'get_slide_paths thinks that slides_root_path is: {slides_root_path}')
+        #print(f'get_slide_paths thinks that slides_root_path is: {slides_root_path}')
         slide_ids = []
         slide_channels = []
         slide_channel_dicts = []
@@ -211,7 +211,7 @@ class SlidesDataset(data.Dataset):
                 print(f'MAT: {mat.shape}')
                 
                 if mat.shape[0] == 17:
-                    print(f'{slides_root_path}/{slide_id}/data.zarr')
+                    #print(f'{slides_root_path}/{slide_id}/data.zarr')
                     #channel_df = pd.read_csv(f'{slides_root_path}/{slide_id}/channels.csv')
                     
                     parent_directory = os.path.dirname(os.path.dirname(slides_root_path))
