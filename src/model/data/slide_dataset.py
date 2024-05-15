@@ -27,7 +27,7 @@ class SlideDataset(data.Dataset):
             self.tile_pos = self.load_tiles(tile_size)
 
     def __getitem__(self, index):
-        print(f"Position X: {self.tile_pos[index][0]}, Position Y: {self.tile_pos[index][1]}")  # Add this line for debugging
+        print(f"Position X: {self.tile_pos[index][0]}, Position Y: {self.tile_pos[index][1]}, Celltype: {self.tile_pos[index][2]}, Tile size: {self.tile_size}")  # Add this line for debugging
 
         image = self.read_region(self.tile_pos[index][0], self.tile_pos[index][1], self.tile_size, self.tile_size)
         
