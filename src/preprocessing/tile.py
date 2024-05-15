@@ -166,9 +166,9 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
 
     with open(os.path.join(output_path, f'positions_{tile_size}.csv'), 'w') as f:
         f.write(' ,h,w,celltype\n')
-        for i, (h, w, celltype) in enumerate(sample_positions_100_cells):
+        for i, (h, w, celltype) in enumerate(positions):
             f.write(f'{i},{h},{w},{celltype}\n')
-    print(f'Generated {len(sample_positions_100_cells)} tiles for slide with shape {slide.shape}')
+    print(f'Generated {len(positions)} tiles for slide with shape {slide.shape}')
 
 
 def save_img(output_path: str, task: str, tile_size: int, img: np.ndarray):
