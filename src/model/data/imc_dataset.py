@@ -98,7 +98,7 @@ class CANVASDataset(ZarrDataset):
         image, label, x, y, img_id = super().__getitem__(index)
     
 
-        #print(f"GPT Image shape before indexing: {image.shape}")  # Add this line to check the shape of the image
+        print(f"GPT Image shape before indexing: {image.shape}")  # Add this line to check the shape of the image
         #print(f"GPT Channel indices: {self.channel_idx}")  # Add this line to check the indices being accessed
         # Move channel to first dimension
         if not self.channel_idx is None:
