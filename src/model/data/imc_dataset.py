@@ -81,6 +81,7 @@ class ZarrDataset(NPYDataset):
         ''' Read zarr file on disk '''
         zarr_path = f'{file_path}/data.zarr'
         slide = zarr.open(zarr_path, mode = 'r')
+        print(f"Slide dimensions (from Zarr file): {slide.shape}") 
         return slide
 
 class CANVASDataset(ZarrDataset):
