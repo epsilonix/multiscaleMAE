@@ -147,19 +147,20 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
 
         # Exclude centroids within 5 pixels of the boundary
         if 10 <= centroid_x <= width - 10 and 10 <= centroid_y <= height - 10:
-          top_left_x = centroid_x - half_side_length
-          top_left_y = centroid_y - half_side_length
-          positions.append((top_left_y, top_left_x, cell_type))
-
-        # Create and add the square as a rectangle patch
-        centroid_square = Rectangle((top_left_x, top_left_y), 2 * half_side_length, 2 * half_side_length,
-                                linewidth=0.5, edgecolor='yellow', facecolor='none')  # Adjust as needed
-        plt.gca().add_patch(centroid_square)
-        plt.scatter(top_left_x, top_left_y, color='red', s=1) 
-
-    full_image_path = os.path.join(output_path, image_filename)
-    plt.savefig(full_image_path, dpi=300)
-    plt.clf()
+            top_left_x = centroid_x - half_side_length
+            top_left_y = centroid_y - half_side_length
+            positions.append((top_left_y, top_left_x, cell_type))
+            
+#       UNCOMMENT THIS BLOCK IF YOU WANT PLOTS
+#            # Create and add the square as a rectangle patch
+#            centroid_square = Rectangle((top_left_x, top_left_y), 2 * half_side_length, 2 * half_side_length,
+#                                    linewidth=0.5, edgecolor='yellow', facecolor='none')  # Adjust as needed
+#            plt.gca().add_patch(centroid_square)
+#            plt.scatter(top_left_x, top_left_y, color='red', s=1) 
+#
+#    full_image_path = os.path.join(output_path, image_filename)
+#    plt.savefig(full_image_path, dpi=300)
+#    plt.clf()
 
     
     ###
