@@ -73,7 +73,6 @@ class SlideDataset(data.Dataset):
         print(f'loading tiles for image at {self.root_path}')
         tile_path = f'{self.root_path}/tiles/positions_{tile_size}.csv'
         df = pd.read_csv(tile_path)
-        print(f'the dataframe looks like {df.head}')
 
         # Extract the tile positions and cell types
         tile_pos = df[["h", "w"]].to_numpy()
@@ -87,17 +86,16 @@ class SlideDataset(data.Dataset):
         # Ensure the directory exists
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
-        # Check if the file exists and load existing data
+        # Check if the file exists and load existing data with allow_pickle=True
         if os.path.exists(save_path):
-            existing_data = np.load(save_path)
+            existing_data = np.load(save_path, allow_pickle=True)
             cell_types = np.concatenate((existing_data, cell_types))
 
-        # Save the cell types to a NumPy file
-        np.save(save_path, cell_types)
+        # Save the cell types to a NumPy file with allow_pickle=True to allow object arrays
+        np.save(save_path, cell_types, allow_pickle=True)
         print(f"Cell types saved to {save_path}")
-        #print(f'tile_pos is {tile_pos}')    
         return tile_pos
-    
+
     
     # Generate tiles from mask
     def load_tiling_mask(self, mask_path, tile_size):
