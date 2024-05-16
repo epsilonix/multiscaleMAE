@@ -33,7 +33,7 @@ def clustering(emb_path, n_clusters, save_path):
     print('Kmeans inertia saved')
     
     # Range of clusters to try
-    k_range = range(2, 60)
+    k_range = range(2, 30)
 
     inertias = [] # List to collect the within-cluster sum of squares
     silhouette_scores = [] # List to collect the silhouette scores
@@ -46,7 +46,7 @@ def clustering(emb_path, n_clusters, save_path):
         silhouette_scores.append(score)
 
     # Specify the output directory for the plots
-    output_dir = '/gpfs/scratch/ss14424/Brain/plots/'
+    output_dir = '/gpfs/scratch/ss14424/Brain/cells/analysis_output/plots/'
     os.makedirs(output_dir, exist_ok=True) # Create the output directory if it doesn't exist
 
     # Plotting the Elbow Method graph
