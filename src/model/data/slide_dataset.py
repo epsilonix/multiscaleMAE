@@ -3,23 +3,19 @@ import pandas as pd
 import os
 import torch.utils.data as data
 from torchvision import transforms
-
 from skimage.io import imsave, imread
 from skimage.transform import resize
 
 class SlideDataset(data.Dataset):
     ''' Dataset for slides '''
 
-    def __init__(self, root_path = None, tile_size = None, transform = None):
+    def __init__(self, root_path=None, tile_size=None, transform=None):
         ''' 
         Initialize the dataset 
         root_path: root path of the dataset (for saving processed file purposes)
         '''
         self.root_path = root_path
         self.tile_size = tile_size
-        
-        #print(f'slide_dataset thinks tile_size is {tile_size}')
-        
         self.transform = transform
 
         if tile_size is not None:
@@ -27,12 +23,7 @@ class SlideDataset(data.Dataset):
             self.tile_pos = self.load_tiles(tile_size)
 
     def __getitem__(self, index):
-        #print(f"Position X: {self.tile_pos[index][0]}, Position Y: {self.tile_pos[index][1]}")  # Add this line for debugging
-
         image = self.read_region(self.tile_pos[index][0], self.tile_pos[index][1], self.tile_size, self.tile_size)
-        
-        #print("Image dimensions before transformation:", image.size)
-
         if self.transform is not None:
             transformed_image = self.transform(image)
         else:
@@ -62,12 +53,6 @@ class SlideDataset(data.Dataset):
         ''' Save a thumbnail of the slide '''
         raise NotImplementedError
 
-#    def load_tiles(self, tile_size):
-#        ''' load tiles positions from disk '''
-#        tile_path = f'{self.root_path}/tiles/positions_{tile_size}.csv'
-#        tile_pos = pd.read_csv(tile_path, index_col = 0).to_numpy()
-#        return tile_pos
-
     def load_tiles(self, tile_size):
         ''' Load tile positions from disk and append cell types to celltype.npy without overwriting existing data. '''
         print(f'loading tiles for image at {self.root_path}')
@@ -88,13 +73,14 @@ class SlideDataset(data.Dataset):
         if os.path.exists(save_path):
             existing_data = np.load(save_path, allow_pickle=True)
             cell_types = np.concatenate((existing_data, cell_types))
+        else:
+            existing_data = cell_types
 
-        # Save the cell types to a NumPy file with allow_pickle=True to allow object arrays
-        np.save(save_path, cell_types, allow_pickle=True)
+        # Save the cell types to a NumPy file
+        np.save(save_path, cell_types)
         print(f"Cell types saved to {save_path}")
         return tile_pos
 
-    
     # Generate tiles from mask
     def load_tiling_mask(self, mask_path, tile_size):
         ''' Load tissue mask to generate tiles '''
@@ -105,14 +91,14 @@ class SlideDataset(data.Dataset):
         # Create mask
         if mask_path is not None: # Load mask from existing file
             mask_temp = np.array(imread(mask_path)).swapaxes(0, 1)
-            assert abs(mask_temp.shape[0] / mask_temp.shape[1] - slide_width / slide_height) < 0.01 , 'Mask shape does not match slide shape'
+            assert abs(mask_temp.shape[0] / mask_temp.shape[1] - slide_width / slide_height) < 0.01, 'Mask shape does not match slide shape'
             # Convert mask to patch-pixel level grid
             mask = resize(mask_temp, (grid_width, grid_height), anti_aliasing=False)
         else:
-            mask = np.ones(grid_width, grid_height) # Tile all regions
+            mask = np.ones((grid_width, grid_height)) # Tile all regions
         return mask
 
-    def generate_tiles(self, tile_size, mask_path = None, mask_id = 'default', threshold = 0.99):
+    def generate_tiles(self, tile_size, mask_path=None, mask_id='default', threshold=0.99):
         ''' 
         Generate tiles from a slide
         threshold: minimum percentage of tissue mask in a tile
