@@ -19,7 +19,7 @@ torchrun \
     --nnodes=1 \
     --nproc_per_node=8 \
     /gpfs/scratch/ss14424/singlecell/src/model/main_pretrain.py \
-        --epoch 601 \
+        --epoch 1001 \
         --batch_size 32 \
         --tile_size 20 \
         --output_dir "/gpfs/scratch/ss14424/Brain/cells/model_output_20" \
