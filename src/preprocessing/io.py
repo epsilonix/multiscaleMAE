@@ -1,3 +1,4 @@
+# Converting QPTIFF to Zarr with channel metadata
 import os
 import xml.etree.ElementTree as ET
 import tifffile
@@ -23,11 +24,6 @@ def qptiff_to_zarr(input_file, output_root, chunk_size=(None, 256, 256)):
     img_data_slices = []
     print(f'Read the tif file')
     with tifffile.TiffFile(input_file) as tif:
-        # Ensure the image has exactly 21 channels
-        if len(tif.pages) != 21:
-            print(f"Image {input_file} does not have exactly 21 channels. Skipping.")
-            return None
-
         for i, page in enumerate(tif.pages):
             if i not in channels_to_exclude:
                 img_data_slices.append(page.asarray())
@@ -38,12 +34,9 @@ def qptiff_to_zarr(input_file, output_root, chunk_size=(None, 256, 256)):
     # Stack the included image data slices along the first axis
     if img_data_slices:
         img_data = np.stack(img_data_slices, axis=0)
-        print(f'Input file {input_file} has shape {img_data.shape}')
+        print(f'input file {input_file} has shape {img_data.shape}')
         z_arr = zarr.array(img_data, chunks=chunk_size, store=output_zarr)
         return z_arr
     else:
         print("No valid image data found after excluding specified channels.")
         return None
-
-# Example usage
-# qptiff_to_zarr('input_file.tif', 'output_root')
