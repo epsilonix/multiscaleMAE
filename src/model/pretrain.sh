@@ -6,7 +6,7 @@
 #SBATCH --tasks-per-node=1
 #SBATCH --cpus-per-task=10
 #SBATCH --gres=gpu:8
-#SBATCH --job-name=pretrain_MAE
+#SBATCH --job-name=pretrain_MAE_singlecell
 #SBATCH --output=/gpfs/scratch/ss14424/logs/cell_pretrain_%j.log
 
 #unset PYTHONPATH
