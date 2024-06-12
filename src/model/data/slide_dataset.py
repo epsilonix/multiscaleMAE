@@ -54,8 +54,7 @@ class SlideDataset(data.Dataset):
         raise NotImplementedError
 
     def load_tiles(self, tile_size):
-        ''' Load tile positions from disk and append to celltype.npy file. '''
-        print(f'loading tiles for image at {self.root_path}')
+        ''' Load tile positions from disk and save cell types to celltype.npy '''
         tile_path = f'{self.root_path}/tiles/positions_{tile_size}.csv'
         df = pd.read_csv(tile_path)
 
@@ -64,22 +63,15 @@ class SlideDataset(data.Dataset):
         cell_types = df["celltype"].values
 
         # Define the path where the cell types will be saved
-        save_path = '/gpfs/scratch/ss14424/Brain/cells/analysis_output/celltype.npy'
+        save_path = 'gpfs/scratch/ss14424/Brain/cells/analysis_output/celltype.npy'
 
         # Ensure the directory exists
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
-        # Check if the file exists and load existing cell types if it does
-        if os.path.exists(save_path):
-            existing_cell_types = np.load(save_path, allow_pickle=True)
-            cell_types = np.concatenate((existing_cell_types, cell_types))
-            print(f"Appended to existing file {save_path}.")
-        else:
-            print(f"File {save_path} does not exist, creating a new one.")
-
-        # Save the updated cell types to the NumPy file
+        # Save the cell types to a NumPy file
         np.save(save_path, cell_types)
         print(f"Cell types saved to {save_path}")
+
         return tile_pos
 
     # Generate tiles from mask
