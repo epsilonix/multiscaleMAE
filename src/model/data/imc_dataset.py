@@ -210,7 +210,7 @@ class SlidesDataset(data.Dataset):
                 mat = zarr.open(f'{slides_root_path}/{slide_id}/data.zarr', mode = 'r')
                 print(f'MAT: {mat.shape}')
                 
-                if mat.shape[0] == 17:
+                if mat.shape[0] == 14:
                     #print(f'{slides_root_path}/{slide_id}/data.zarr')
                     #channel_df = pd.read_csv(f'{slides_root_path}/{slide_id}/channels.csv')
                     
