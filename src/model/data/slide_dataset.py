@@ -71,7 +71,7 @@ class SlideDataset(data.Dataset):
 
         # Check if the file exists and load existing cell types if it does
         if os.path.exists(save_path):
-            existing_cell_types = np.load(save_path)
+            existing_cell_types = np.load(save_path, allow_pickle=True)
             cell_types = np.concatenate((existing_cell_types, cell_types))
             print(f"Appended to existing file {save_path}.")
         else:
