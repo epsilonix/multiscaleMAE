@@ -54,7 +54,7 @@ class SlideDataset(data.Dataset):
         raise NotImplementedError
 
     def load_tiles(self, tile_size):
-        ''' Load tile positions from disk and append cell types to celltype.npy without overwriting existing data. '''
+        ''' Load tile positions from disk and create a new celltype.npy file. '''
         print(f'loading tiles for image at {self.root_path}')
         tile_path = f'{self.root_path}/tiles/positions_{tile_size}.csv'
         df = pd.read_csv(tile_path)
@@ -69,14 +69,11 @@ class SlideDataset(data.Dataset):
         # Ensure the directory exists
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
 
-        # Check if the file exists and load existing data with allow_pickle=True
+        # Delete the existing file if it exists
         if os.path.exists(save_path):
-            existing_data = np.load(save_path, allow_pickle=True)
-            cell_types = np.concatenate((existing_data, cell_types))
-        else:
-            existing_data = cell_types
+            os.remove(save_path)
 
-        # Save the cell types to a NumPy file
+        # Save the cell types to a new NumPy file
         np.save(save_path, cell_types)
         print(f"Cell types saved to {save_path}")
         return tile_pos
