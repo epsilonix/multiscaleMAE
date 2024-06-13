@@ -65,14 +65,6 @@ class SlideDataset(data.Dataset):
         # Define the path where the cell types will be saved
         save_path = '/gpfs/scratch/ss14424/Brain/cells/celltype_output/celltype.npy'
         
-        directory = os.path.dirname(save_path)
-
-        # Check if the directory exists
-        if not os.path.exists(directory):
-            print(f"Directory does not exist: {directory}")
-            raise FileNotFoundError(f"Directory does not exist: {directory}")
-        else:
-            print(f"Directory exists: {directory}")
         
         # Ensure the directory exists
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
