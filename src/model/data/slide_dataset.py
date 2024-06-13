@@ -64,12 +64,19 @@ class SlideDataset(data.Dataset):
 
         # Define the path where the cell types will be saved
         save_path = '/gpfs/scratch/ss14424/Brain/cells/celltype_output/celltype.npy'
-        
-        
-        # Ensure the directory exists
-        os.makedirs(os.path.dirname(save_path), exist_ok=True)
+        directory = os.path.dirname(save_path)
 
-        # Save the cell types to a NumPy file
+        # Ensure the directory exists
+        os.makedirs(directory, exist_ok=True)
+
+        # Check if the file exists
+        if os.path.exists(save_path):
+            # Load existing data
+            existing_data = np.load(save_path)
+            # Concatenate the new cell types with the existing data
+            cell_types = np.concatenate((existing_data, cell_types))
+
+        # Save the concatenated cell types to a NumPy file
         np.save(save_path, cell_types)
         print(f"Cell types saved to {save_path}")
 
