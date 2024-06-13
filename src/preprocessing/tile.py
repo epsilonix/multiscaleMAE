@@ -33,13 +33,13 @@ colors = [
     (255, 182, 193),  # GFAP
     (176, 226, 219),  # HLA-DR, antigen, light green
     (73, 52, 229),    # MPO, neutrophil, purple
-    (0, 255, 255),    # Olig2
+    #(0, 255, 255),    # Olig2
     (255, 255, 0),    # P2PY12
-    (238, 130, 238),  # Sox2
-    (50, 205, 50),    # Sox9
-    (149, 229, 68),   # MeLanA, melanoma, green
-    (255, 99, 71),    # PMEL, melanoma, orange
-    (255, 127, 80)    # PanCK, carcinoma, orange
+    #(238, 130, 238),  # Sox2
+    #(50, 205, 50),    # Sox9
+    #(149, 229, 68),   # MeLanA, melanoma, green
+    #(255, 99, 71),    # PMEL, melanoma, orange
+    #(255, 127, 80)    # PanCK, carcinoma, orange
 ]
 
 def calculate_polygon_area(coords):
