@@ -63,7 +63,7 @@ class SlideDataset(data.Dataset):
         cell_types = df["celltype"].values
 
         # Define the path where the cell types will be saved
-        save_path = 'gpfs/scratch/ss14424/Brain/cells/analysis_output/celltype.npy'
+        save_path = 'gpfs/scratch/ss14424/Brain/cells/celltype_output/celltype.npy'
 
         # Ensure the directory exists
         os.makedirs(os.path.dirname(save_path), exist_ok=True)
