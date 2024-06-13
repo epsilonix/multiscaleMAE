@@ -16,16 +16,20 @@ import imageio
 import zarr
 
 colors = [
+    (0, 0, 139),      # CD117, mast cell, myeloid, dark blue
     (173, 216, 230),  # CD11c, myeloid, light blue
     (135, 206, 250),  # CD14, myeloid, light blue
     (212, 226, 228),  # CD163, myeloid, light blue
     (70, 130, 180),   # CD16, monocyte, mid blue
+    (149, 229, 68),   # CD20, b cell, green
     (25, 25, 112),    # CD31, stromal, dark blue
     (228, 82, 50),    # CD3, t cell, orange
     (255, 165, 0),    # CD4, t cell, orange
     (176, 226, 219),  # CD68, myeloid, light blue
     (255, 140, 0),    # CD8a, t cell, orange
+    (255, 127, 80),   # CD94, t cell, orange
     (228, 71, 184),   # DNA1, DNA, grey
+    (255, 99, 71),    # FoxP3, t cell, orange
     (255, 182, 193),  # GFAP
     (176, 226, 219),  # HLA-DR, antigen, light green
     (73, 52, 229),    # MPO, neutrophil, purple
