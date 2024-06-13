@@ -61,6 +61,9 @@ class SlideDataset(data.Dataset):
         # Extract the tile positions and cell types
         tile_pos = df[["h", "w"]].to_numpy()
         cell_types = df["celltype"].values
+        
+        
+        print(f'now processing {tile_path} which has {len(cell_types)} cells')
 
         # Define the path where the cell types will be saved
         save_path = '/gpfs/scratch/ss14424/Brain/cells/celltype_output/celltype.npy'
