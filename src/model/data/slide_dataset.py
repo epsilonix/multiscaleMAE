@@ -71,10 +71,14 @@ class SlideDataset(data.Dataset):
 
         # Check if the file exists
         if os.path.exists(save_path):
-            # Load existing data
-            existing_data = np.load(save_path)
-            # Concatenate the new cell types with the existing data
-            cell_types = np.concatenate((existing_data, cell_types))
+            # Load existing data with allow_pickle=True
+            existing_data = np.load(save_path, allow_pickle=True)
+            # Ensure existing_data is of the same type as cell_types
+            if isinstance(existing_data, np.ndarray) and existing_data.dtype == cell_types.dtype:
+                # Concatenate the new cell types with the existing data
+                cell_types = np.concatenate((existing_data, cell_types))
+            else:
+                raise ValueError("Data type mismatch or incompatible data structure in existing file")
 
         # Save the concatenated cell types to a NumPy file
         np.save(save_path, cell_types)
