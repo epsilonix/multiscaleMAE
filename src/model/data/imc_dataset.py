@@ -241,20 +241,18 @@ class SlidesDataset(data.Dataset):
                 mat = zarr.open(f'{slides_root_path}/{slide_id}/data.zarr', mode = 'r')
                 print(f'MAT: {mat.shape}')
                 
-                if mat.shape[0] == 14:
-                    #print(f'{slides_root_path}/{slide_id}/data.zarr')
-                    #channel_df = pd.read_csv(f'{slides_root_path}/{slide_id}/channels.csv')
-                    
-                    parent_directory = os.path.dirname(os.path.dirname(slides_root_path))
-                    channel_path = os.path.join(parent_directory, 'channels.csv')
-                    
-                    channel_df = pd.read_csv(channel_path)
-                    channel_dict = dict(zip(channel_df['channel'], channel_df['marker']))
-                    slide_channels.append(mat.shape[0])
-                    slide_channel_dicts.append(channel_dict)
-                    slide_ids.append(slide_id)
-                else:
-                    print("This image doesn't have the right number of channels")
+                #print(f'{slides_root_path}/{slide_id}/data.zarr')
+                #channel_df = pd.read_csv(f'{slides_root_path}/{slide_id}/channels.csv')
+
+                parent_directory = os.path.dirname(os.path.dirname(slides_root_path))
+                channel_path = os.path.join(parent_directory, 'channels.csv')
+
+                channel_df = pd.read_csv(channel_path)
+                channel_dict = dict(zip(channel_df['channel'], channel_df['marker']))
+                slide_channels.append(mat.shape[0])
+                slide_channel_dicts.append(channel_dict)
+                slide_ids.append(slide_id)
+
         # Check if all slides have the same channels
         print(f'Found {len(slide_ids)} slides with {slide_channels} channels')
 
