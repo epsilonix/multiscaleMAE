@@ -197,13 +197,15 @@ class SlidesDataset(data.Dataset):
 #            np.save(f'{stats_path}/mean.npy', mean)
 #            np.save(f'{stats_path}/std.npy', std)
 #        return mean, std
+
     def get_normalization_stats(self):
         from tqdm import tqdm
         import numpy as np
         import os
 
-        mean = np.zeros(20)
-        std = np.zeros(20)
+        # Initialize arrays to accumulate mean and std values
+        mean_accumulator = np.zeros(20)
+        std_accumulator = np.zeros(20)
         stats_path = f'{self.slides_root_path}/../stats'
 
         if os.path.exists(f'{stats_path}/mean.npy') and os.path.exists(f'{stats_path}/std.npy'):
@@ -228,12 +230,12 @@ class SlidesDataset(data.Dataset):
                 channel_idx = [self.common_channel_names.index(name) for name in self.common_channel_names if name not in exclude_list]
                 included_image = image[channel_idx, :, :]
 
-                mean[channel_idx] += included_image.mean(axis=(1, 2))
-                std[channel_idx] += included_image.std(axis=(1, 2))
+                mean_accumulator[channel_idx] += included_image.mean(axis=(1, 2))
+                std_accumulator[channel_idx] += included_image.std(axis=(1, 2))
                 n_samples += 1
 
-            mean /= n_samples
-            std /= n_samples
+            mean = mean_accumulator / n_samples
+            std = std_accumulator / n_samples
 
             mean = mean[:, np.newaxis, np.newaxis]
             std = std[:, np.newaxis, np.newaxis]
@@ -243,6 +245,7 @@ class SlidesDataset(data.Dataset):
             np.save(f'{stats_path}/std.npy', std)
 
         return mean, std
+
 
 
 
