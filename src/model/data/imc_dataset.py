@@ -110,7 +110,7 @@ class CANVASDataset(ZarrDataset):
 
     def get_channel_idx(self, channel_names):
         ''' Get channel index from channel names '''
-        channel_df = pd.read_csv('/gpfs/scratch/ss14424/Brain/channels.csv')
+        channel_df = pd.read_csv('/gpfs/scratch/ss14424/Brain/channels_20.csv')
 
         channel_dict = dict(zip(channel_df['marker'], channel_df['channel']))
 
@@ -163,7 +163,7 @@ class SlidesDataset(data.Dataset):
 
     def get_common_channel_names(self, root_path):
         print(f'Root path:{root_path}')
-        with open('/gpfs/scratch/ss14424/Brain/common_channels.txt', 'r') as f:
+        with open('/gpfs/scratch/ss14424/Brain/common_channels_20.txt', 'r') as f:
             channel_names = f.read().splitlines()
         return channel_names
 
@@ -245,7 +245,7 @@ class SlidesDataset(data.Dataset):
                 #channel_df = pd.read_csv(f'{slides_root_path}/{slide_id}/channels.csv')
 
                 parent_directory = os.path.dirname(os.path.dirname(slides_root_path))
-                channel_path = os.path.join(parent_directory, 'channels.csv')
+                channel_path = os.path.join(parent_directory, 'channels_20.csv')
 
                 channel_df = pd.read_csv(channel_path)
                 channel_dict = dict(zip(channel_df['channel'], channel_df['marker']))
@@ -256,7 +256,7 @@ class SlidesDataset(data.Dataset):
         # Check if all slides have the same channels
         print(f'Found {len(slide_ids)} slides with {slide_channels} channels')
 
-        common_channels_path = f'/gpfs/scratch/ss14424/Brain/common_channels.txt'
+        common_channels_path = f'/gpfs/scratch/ss14424/Brain/common_channels_20.txt'
         print(f'IDENT common_channels_path is {common_channels_path}')
         if not os.path.exists(common_channels_path):
             common_channels = self.get_common_channels(slide_channel_dicts)
