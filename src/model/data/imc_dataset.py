@@ -203,9 +203,10 @@ class SlidesDataset(data.Dataset):
         import numpy as np
         import os
 
-        # Initialize arrays to accumulate mean and std values
+        # Initialize accumulators for mean and std values
         mean_accumulator = np.zeros(20)
         std_accumulator = np.zeros(20)
+        count_accumulator = np.zeros(20)
         stats_path = f'{self.slides_root_path}/../stats'
 
         if os.path.exists(f'{stats_path}/mean.npy') and os.path.exists(f'{stats_path}/std.npy'):
@@ -232,14 +233,17 @@ class SlidesDataset(data.Dataset):
                 for name in exclude_list:
                     mask[self.common_channel_names.index(name)] = False
 
-                included_image = image[mask, :, :]
+                for idx in range(20):
+                    if mask[idx]:
+                        mean_accumulator[idx] += image[idx, :, :].mean()
+                        std_accumulator[idx] += image[idx, :, :].std()
+                        count_accumulator[idx] += 1
 
-                mean_accumulator[mask] += included_image.mean(axis=(1, 2))
-                std_accumulator[mask] += included_image.std(axis=(1, 2))
                 n_samples += 1
 
-            mean = mean_accumulator / n_samples
-            std = std_accumulator / n_samples
+            # Finalize mean and std calculation
+            mean = np.divide(mean_accumulator, count_accumulator, out=np.zeros_like(mean_accumulator), where=count_accumulator != 0)
+            std = np.divide(std_accumulator, count_accumulator, out=np.zeros_like(std_accumulator), where=count_accumulator != 0)
 
             mean = mean[:, np.newaxis, np.newaxis]
             std = std[:, np.newaxis, np.newaxis]
@@ -249,6 +253,7 @@ class SlidesDataset(data.Dataset):
             np.save(f'{stats_path}/std.npy', std)
 
         return mean, std
+
 
 
 
