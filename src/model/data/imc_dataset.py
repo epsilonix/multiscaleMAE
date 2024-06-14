@@ -218,6 +218,9 @@ class SlidesDataset(data.Dataset):
             for i in tqdm(rand_indices):
                 image, label = self.__getitem__(i)
 
+                if image.shape[0] != 20:
+                    raise ValueError(f"Expected 20 channels, but got {image.shape[0]} channels in image {i}")
+
                 if label.startswith('Glioma_'):
                     exclude_list = ['MeLanA', 'PMEL', 'PanCK']
                 else:  # BrM images
@@ -241,6 +244,7 @@ class SlidesDataset(data.Dataset):
             np.save(f'{stats_path}/std.npy', std)
 
         return mean, std
+
 
     
     #ITS THIS THAT FAILS
