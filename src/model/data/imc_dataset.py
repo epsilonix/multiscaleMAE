@@ -198,11 +198,15 @@ class SlidesDataset(data.Dataset):
 #            np.save(f'{stats_path}/std.npy', std)
 #        return mean, std
     
-    def get_normalization_stats(self):
+     def get_normalization_stats(self):
         from tqdm import tqdm
+        import numpy as np
+        import os
+
         mean = 0
         std = 0
         stats_path = f'{self.slides_root_path}/../stats'
+
         if os.path.exists(f'{stats_path}/mean.npy') and os.path.exists(f'{stats_path}/std.npy'):
             mean = np.load(f'{stats_path}/mean.npy')
             std = np.load(f'{stats_path}/std.npy')
@@ -210,24 +214,34 @@ class SlidesDataset(data.Dataset):
             rand_state = np.random.RandomState(42)
             rand_indices = rand_state.randint(0, len(self), size=1000)
             n_samples = 0
+
             for i in tqdm(rand_indices):
                 image, label = self.__getitem__(i)
+
                 if label.startswith('Glioma_'):
-                    channel_idx = [self.common_channel_names.index(name) for name in self.common_channel_names if name not in ['MeLanA', 'PMEL', 'PanCK']]
+                    exclude_list = ['MeLanA', 'PMEL', 'PanCK']
                 else:  # BrM images
-                    channel_idx = [self.common_channel_names.index(name) for name in self.common_channel_names if name not in ['Olig2', 'Sox2', 'Sox9']]
+                    exclude_list = ['Olig2', 'Sox2', 'Sox9']
+
+                channel_idx = [self.common_channel_names.index(name) for name in self.common_channel_names if name not in exclude_list]
                 image = image[channel_idx, :, :]
+
                 mean += image.mean(axis=(1, 2))
                 std += image.std(axis=(1, 2))
                 n_samples += 1
+
             mean /= n_samples
             std /= n_samples
+
             mean = mean[:, np.newaxis, np.newaxis]
             std = std[:, np.newaxis, np.newaxis]
+
             os.makedirs(stats_path, exist_ok=True)
             np.save(f'{stats_path}/mean.npy', mean)
             np.save(f'{stats_path}/std.npy', std)
+
         return mean, std
+
     
     #ITS THIS THAT FAILS
     def get_slide_paths(self, slides_root_path):
