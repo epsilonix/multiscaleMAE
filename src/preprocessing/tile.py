@@ -18,25 +18,28 @@ import zarr
 colors = [
     (0, 0, 139),  # cd117, mast cell, myeloid, darkblue
     (173, 216, 230),  # cd11c, myeloid, lightblue
-    (135, 206, 250),  # cd14, myeloid,lightblue
-    (212, 226, 228),  # cd163, myeloid,lightblue
+    (135, 206, 250),  # cd14, myeloid, lightblue
+    (212, 226, 228),  # cd163, myeloid, lightblue
     (70, 130, 180),  # cd16, monocyte, mid blue
     (149, 229, 68),  # cd20, b cell, green
-    (25, 25, 112), # cd31, stromal, dark blue
-    (228, 82, 50), # cd3, t cell, orange
-    (255, 165, 0), # cd4, t cell, orange
-    (176, 226, 219), # cd68, myeloid, lightblue
-    (255, 140, 0), # cd8a, t cell, orange
-    (255, 127, 80), # cd94, t cell, orange
-    (228, 71, 184), # dna1, dna, grey
-    (255, 99, 71), # foxp3, t cell, orange
-    (255, 182, 193), # GFAP
-    (176, 226, 219), # hla-dr, antigen, lightgreen
-    (73, 52, 229), # mpo, neutrophil, purple
-    (0, 255, 255), # Olig2
-    (255, 255, 0), # P2PY12
-    (238, 130, 238), # Sox2
-    (50, 205, 50) # Sox9
+    (25, 25, 112),  # cd31, stromal, dark blue
+    (228, 82, 50),  # cd3, t cell, orange
+    (255, 165, 0),  # cd4, t cell, orange
+    (176, 226, 219),  # cd68, myeloid, lightblue
+    (255, 140, 0),  # cd8a, t cell, orange
+    (255, 127, 80),  # cd94, t cell, orange
+    (228, 71, 184),  # dna1, dna, grey
+    (255, 99, 71),  # foxp3, t cell, orange
+    (255, 182, 193),  # GFAP
+    (176, 226, 219),  # hla-dr, antigen, lightgreen
+    (73, 52, 229),  # mpo, neutrophil, purple
+    (0, 255, 255),  # Olig2
+    (255, 255, 0),  # P2PY12
+    (238, 130, 238),  # Sox2
+    (50, 205, 50),  # Sox9
+    (255, 20, 147),  # MeLanA, pink
+    (186, 85, 211),  # PMEL, medium orchid
+    (0, 128, 0)  # PanCK, green
 ]
 
 def calculate_polygon_area(coords):
