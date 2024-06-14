@@ -197,14 +197,13 @@ class SlidesDataset(data.Dataset):
 #            np.save(f'{stats_path}/mean.npy', mean)
 #            np.save(f'{stats_path}/std.npy', std)
 #        return mean, std
-    
     def get_normalization_stats(self):
         from tqdm import tqdm
         import numpy as np
         import os
 
-        mean = 0
-        std = 0
+        mean = np.zeros(20)
+        std = np.zeros(20)
         stats_path = f'{self.slides_root_path}/../stats'
 
         if os.path.exists(f'{stats_path}/mean.npy') and os.path.exists(f'{stats_path}/std.npy'):
@@ -227,10 +226,10 @@ class SlidesDataset(data.Dataset):
                     exclude_list = ['Olig2', 'Sox2', 'Sox9']
 
                 channel_idx = [self.common_channel_names.index(name) for name in self.common_channel_names if name not in exclude_list]
-                image = image[channel_idx, :, :]
+                included_image = image[channel_idx, :, :]
 
-                mean += image.mean(axis=(1, 2))
-                std += image.std(axis=(1, 2))
+                mean[channel_idx] += included_image.mean(axis=(1, 2))
+                std[channel_idx] += included_image.std(axis=(1, 2))
                 n_samples += 1
 
             mean /= n_samples
@@ -244,6 +243,7 @@ class SlidesDataset(data.Dataset):
             np.save(f'{stats_path}/std.npy', std)
 
         return mean, std
+
 
 
     
