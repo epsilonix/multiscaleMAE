@@ -60,32 +60,32 @@ class SlideDataset(data.Dataset):
 
         # Extract the tile positions and cell types
         tile_pos = df[["h", "w"]].to_numpy()
-        cell_types = df["celltype"].values
-        
-        
-        print(f'now processing {tile_path} which has {len(cell_types)} cells')
-
-        # Define the path where the cell types will be saved
-        save_path = '/gpfs/scratch/ss14424/Brain/cells_csd/analysis_output/celltype.npy'
-        directory = os.path.dirname(save_path)
-
-        # Ensure the directory exists
-        os.makedirs(directory, exist_ok=True)
-
-        # Check if the file exists
-        if os.path.exists(save_path):
-            # Load existing data with allow_pickle=True
-            existing_data = np.load(save_path, allow_pickle=True)
-            # Ensure existing_data is of the same type as cell_types
-            if isinstance(existing_data, np.ndarray) and existing_data.dtype == cell_types.dtype:
-                # Concatenate the new cell types with the existing data
-                cell_types = np.concatenate((existing_data, cell_types))
-            else:
-                raise ValueError("Data type mismatch or incompatible data structure in existing file")
-
-        # Save the concatenated cell types to a NumPy file
-        np.save(save_path, cell_types)
-        print(f"Cell types saved to {save_path}")
+#        cell_types = df["celltype"].values
+#        
+#        
+#        print(f'now processing {tile_path} which has {len(cell_types)} cells')
+#
+#        # Define the path where the cell types will be saved
+#        save_path = '/gpfs/scratch/ss14424/Brain/cells_csd/analysis_output/celltype.npy'
+#        directory = os.path.dirname(save_path)
+#
+#        # Ensure the directory exists
+#        os.makedirs(directory, exist_ok=True)
+#
+#        # Check if the file exists
+#        if os.path.exists(save_path):
+#            # Load existing data with allow_pickle=True
+#            existing_data = np.load(save_path, allow_pickle=True)
+#            # Ensure existing_data is of the same type as cell_types
+#            if isinstance(existing_data, np.ndarray) and existing_data.dtype == cell_types.dtype:
+#                # Concatenate the new cell types with the existing data
+#                cell_types = np.concatenate((existing_data, cell_types))
+#            else:
+#                raise ValueError("Data type mismatch or incompatible data structure in existing file")
+#
+#        # Save the concatenated cell types to a NumPy file
+#        np.save(save_path, cell_types)
+#        print(f"Cell types saved to {save_path}")
 
         return tile_pos
 
