@@ -6,8 +6,8 @@
 #SBATCH --tasks-per-node=1
 #SBATCH --cpus-per-task=10
 #SBATCH --gres=gpu:8
-#SBATCH --job-name=pretrain_MAE_singlecell_csd
-#SBATCH --output=/gpfs/scratch/ss14424/logs/cell_pretrain_csd_%j.log
+#SBATCH --job-name=pretrain_MAE_singlecell_glioma
+#SBATCH --output=/gpfs/scratch/ss14424/logs/cell_pretrain_glioma_%j.log
 
 #unset PYTHONPATH
 #module load anaconda3/gpu/5.2.0
@@ -19,9 +19,9 @@ torchrun \
     --nnodes=1 \
     --nproc_per_node=8 \
     /gpfs/scratch/ss14424/singlecell/src/model/main_pretrain.py \
-        --epoch 1001 \
+        --epoch 1201 \
         --batch_size 32 \
         --tile_size 20 \
-        --output_dir "/gpfs/scratch/ss14424/Brain/cells_csd/model_output_20" \
+        --output_dir "/gpfs/scratch/ss14424/Brain/cells_glioma/model_output_20" \
         --log_dir "/gpfs/scratch/ss14424/logs" \
-        --data_path "/gpfs/scratch/ss14424/Brain/cells_csd/img_output_20"
+        --data_path "/gpfs/scratch/ss14424/Brain/cells_glioma/img_output_20"
