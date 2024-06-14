@@ -227,11 +227,15 @@ class SlidesDataset(data.Dataset):
                 else:  # BrM images
                     exclude_list = ['Olig2', 'Sox2', 'Sox9']
 
-                channel_idx = [self.common_channel_names.index(name) for name in self.common_channel_names if name not in exclude_list]
-                included_image = image[channel_idx, :, :]
+                # Create a mask to zero-out the excluded channels
+                mask = np.ones(20, dtype=bool)
+                for name in exclude_list:
+                    mask[self.common_channel_names.index(name)] = False
 
-                mean_accumulator[channel_idx] += included_image.mean(axis=(1, 2))
-                std_accumulator[channel_idx] += included_image.std(axis=(1, 2))
+                included_image = image[mask, :, :]
+
+                mean_accumulator[mask] += included_image.mean(axis=(1, 2))
+                std_accumulator[mask] += included_image.std(axis=(1, 2))
                 n_samples += 1
 
             mean = mean_accumulator / n_samples
@@ -245,6 +249,7 @@ class SlidesDataset(data.Dataset):
             np.save(f'{stats_path}/std.npy', std)
 
         return mean, std
+
 
 
 
