@@ -41,7 +41,7 @@ def get_args_parser():
                         help='Checkpoint path')
 
     # Dataset parameters
-    parser.add_argument('--data_path', default='/gpfs/scratch/ss14424/Brain/cells_csd/model_output_10', type=str,
+    parser.add_argument('--data_path', default='/gpfs/scratch/ss14424/Brain/cells_csd/img_output_10', type=str,
                         help='dataset path')
     parser.add_argument('--tile_size', default=64, type=int,
                         help='Sample tile size.')
