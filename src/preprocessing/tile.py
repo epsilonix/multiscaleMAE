@@ -36,10 +36,10 @@ colors = [
     (0, 255, 255),  # Olig2
     (255, 255, 0),  # P2PY12
     (238, 130, 238),  # Sox2
-    (50, 205, 50)#,  # Sox9
-#    (255, 20, 147),  # MeLanA, pink
-#    (186, 85, 211),  # PMEL, medium orchid
-#    (0, 128, 0)  # PanCK, green
+    (50, 205, 50),  # Sox9
+    (255, 20, 147),  # MeLanA, pink
+    (186, 85, 211),  # PMEL, medium orchid
+    (0, 128, 0)  # PanCK, green
 ]
 
 def calculate_polygon_area(coords):
