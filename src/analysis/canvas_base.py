@@ -12,9 +12,9 @@ from tqdm import tqdm
 
 def main():
     # Initialize CANVAS
-    data_path = '/gpfs/scratch/ss14424/Brain/cells_csd/img_output_10'
+    data_path = '/gpfs/scratch/ss14424/Brain/cells_csd_2/img_output_10'
     model_path = '/gpfs/scratch/ss14424/Brain/cells_csd/model_output_20/checkpoint-300.pth'
-    save_path = '/gpfs/scratch/ss14424/Brain/cells_csd/analysis_output/'
+    save_path = '/gpfs/scratch/ss14424/Brain/cells_csd_2/analysis_output/'
     canvas = Canvas(model_path, data_path, save_path)
 
 #    #Generate embeddings
