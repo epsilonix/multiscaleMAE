@@ -183,7 +183,7 @@ class SlidesDataset(data.Dataset):
                     raise ValueError(f"Expected 20 channels, but got {image.shape[0]} channels in image {i}")
                 print(f'get_normalization_stats label is {label}')
                 
-                img_name = label if isinstance(label, str) else self.label[0]
+                img_name = label if isinstance(label, str) else label[0]
                 if img_name.startswith('Glioma_'):
                     exclude_list = ['MeLanA', 'PMEL', 'PanCK']
                 else:  # BrM images
