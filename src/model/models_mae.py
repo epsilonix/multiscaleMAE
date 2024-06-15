@@ -8,7 +8,7 @@
 # timm: https://github.com/rwightman/pytorch-image-models/tree/master/timm
 # DeiT: https://github.com/facebookresearch/deit
 # --------------------------------------------------------
-sys.path.append('/gpfs/scratch/ss14424/singlecell/src')
+
 from functools import partial
 
 import torch
@@ -17,8 +17,8 @@ import torch.nn as nn
 from timm.models.vision_transformer import PatchEmbed, Block
 
 from model.util.pos_embed import get_2d_sincos_pos_embed
-
-
+import sys
+sys.path.append('/gpfs/scratch/ss14424/singlecell/src')
 class MaskedAutoencoderViT(nn.Module):
     """ Masked Autoencoder with VisionTransformer backbone
     """
