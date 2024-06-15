@@ -6,7 +6,7 @@
 # MAE: https://github.com/facebookresearch/mae
 # --------------------------------------------------------
 import sys
-sys.path.append('/gpfs/scratch/ss14424/CANVAS-ss/src')
+sys.path.append('/gpfs/scratch/ss14424/CANVAS-ss/singlecell')
 
 import argparse
 import matplotlib.pyplot as plt
@@ -37,20 +37,20 @@ import models_mae
 def get_args_parser():
     parser = argparse.ArgumentParser('MAE inference', add_help=False)
     # Model parameters
-    parser.add_argument('--chkpt_dir', default='/gpfs/scratch/ss14424/Lung/model_output_128/checkpoint-999.pth', type=str, metavar='CHKPT',
+    parser.add_argument('--chkpt_dir', default='/gpfs/scratch/ss14424/Brain/cells_csd/model_output_20/checkpoint-300.pth', type=str, metavar='CHKPT',
                         help='Checkpoint path')
 
     # Dataset parameters
-    parser.add_argument('--data_path', default='/gpfs/scratch/ss14424/Lung/img_output_64', type=str,
+    parser.add_argument('--data_path', default='/gpfs/scratch/ss14424/Brain/cells_csd/model_output_10', type=str,
                         help='dataset path')
     parser.add_argument('--tile_size', default=64, type=int,
                         help='Sample tile size.')
     parser.add_argument('--input_size', default=224, type=int,
                         help='images input size')
 
-    parser.add_argument('--output_dir', default='/gpfs/scratch/ss14424/Lung/img_output_64_reconstructed',
+    parser.add_argument('--output_dir', default='/gpfs/scratch/ss14424/Brain/cells_csd/reconstruction',
                         help='path where to save, empty for no saving')
-    parser.add_argument('--log_dir', default='/gpfs/scratch/ss14424/Lung/logs',
+    parser.add_argument('--log_dir', default='/gpfs/scratch/ss14424/logs',
                         help='path where to tensorboard log')
     parser.add_argument('--seed', default=0, type=int)
     parser.add_argument('--num_workers', default=10, type=int)
