@@ -32,10 +32,21 @@ brm_channels = {
 for file_name in os.listdir(input_directory):
     if file_name.endswith('.tif'):
         file_path = os.path.join(input_directory, file_name)
+        output_path = os.path.join(output_directory, file_name)
         
+        # Check if the image already exists in the target folder
+        if os.path.exists(output_path):
+            print(f"Skipping image {file_name}: already exists")
+            continue
+
         # Load the image
         image = tiff.imread(file_path)
         
+        # Check if the image has 21 channels
+        if image.shape[0] != 21:
+            print(f"Error: {file_name} does not have 21 channels. Skipping this image.")
+            continue
+
         # Create an empty array to hold the consolidated image
         consolidated_image = np.zeros((len(target_channels), *image.shape[1:]), dtype=image.dtype)
 
@@ -45,7 +56,8 @@ for file_name in os.listdir(input_directory):
         elif file_name.startswith('BrM'):
             source_channels = brm_channels
         else:
-            raise ValueError("Unknown image type")
+            print(f"Error: {file_name} has an unknown image type. Skipping this image.")
+            continue
 
         # Reorganize the channels according to the target structure
         for i, channel_name in enumerate(target_channels):
@@ -56,7 +68,5 @@ for file_name in os.listdir(input_directory):
                 consolidated_image[i] = np.zeros_like(image[0])  # Empty channel
 
         # Save the consolidated image
-        output_path = os.path.join(output_directory, file_name)
         tiff.imwrite(output_path, consolidated_image)
-
         print(f"Consolidated image saved to {output_path}")
