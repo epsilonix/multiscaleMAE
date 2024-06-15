@@ -66,6 +66,14 @@ class SlideDataset(data.Dataset):
         print(f'now processing {tile_path} which has {len(cell_types)} cells')
 
         # Define the path where the cell types will be saved
+        
+        three_levels_up = os.path.abspath(os.path.join(self.root_path, "../../.."))
+
+        # Set the new save_path
+        save_path = os.path.join(three_levels_up, 'celltype.npy')
+
+        print(f"New save path: {save_path}")
+        
         save_path = '/gpfs/scratch/ss14424/Brain/cells_csd/analysis_output/celltype.npy'
         directory = os.path.dirname(save_path)
 
