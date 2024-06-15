@@ -8,7 +8,7 @@
 # timm: https://github.com/rwightman/pytorch-image-models/tree/master/timm
 # DeiT: https://github.com/facebookresearch/deit
 # --------------------------------------------------------
-
+sys.path.append('/gpfs/scratch/ss14424/singlecell/src')
 from functools import partial
 
 import torch
