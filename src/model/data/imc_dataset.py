@@ -6,8 +6,8 @@ import torch.utils.data as data
 from model.data.slide_dataset import SlideDataset
 
 # Declare the paths to the channel txt and csv files as variables near the top
-CHANNEL_TXT_PATH = '/gpfs/scratch/ss14424/Brain/common_channels_20.txt'
-CHANNEL_CSV_PATH = '/gpfs/scratch/ss14424/Brain/channels_20.csv'
+CHANNEL_TXT_PATH = '/gpfs/scratch/ss14424/Brain/24_channels_csd/channels_24.txt'
+CHANNEL_CSV_PATH = '/gpfs/scratch/ss14424/Brain/24_channels_csd/channels_24.csv'
 
 class NPYDataset(SlideDataset):
 
