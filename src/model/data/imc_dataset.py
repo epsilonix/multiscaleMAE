@@ -122,10 +122,11 @@ class CANVASDatasetWithLocation(CANVASDataset):
 class SlidesDataset(data.Dataset):
     ''' Dataset for a list of slides '''
 
-    def __init__(self, slides_root_path = None, tile_size = None, transform = None, dataset_class = None, use_normalization = True):
+    def __init__(self, slides_root_path=None, tile_size=None, transform=None, dataset_class=None, use_normalization=True, inference_mode=False):
         self.slides_root_path = slides_root_path
         self.tile_size = tile_size
         self.transform = transform
+        self.inference_mode = inference_mode  # Add this line
         # Get id and path for all slides
         slide_ids = self.get_slide_paths(slides_root_path)
         self.common_channel_names = self.get_common_channel_names(self.slides_root_path)
@@ -252,7 +253,7 @@ class SlidesDataset(data.Dataset):
         lengths = []
         for slide_id in tqdm(slide_ids):
             slide_path = os.path.join(self.slides_root_path, slide_id)
-            slide = dataset_class(slide_path, self.tile_size, common_channel_names, self.transform)
+            slide = dataset_class(slide_path, self.tile_size, common_channel_names, self.transform, inference_mode=self.inference_mode)
             slides_dict[slide_id] = slide
             lengths.append(len(slide))
         return slides_dict, lengths
