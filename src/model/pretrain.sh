@@ -22,6 +22,6 @@ torchrun \
         --epoch 801 \
         --batch_size 32 \
         --tile_size 20 \
-        --output_dir "/gpfs/scratch/ss14424/Brain/channels_24/cells/model_output_20" \
+        --output_dir "/gpfs/scratch/ss14424/Brain/channels_20/cells/model_output_20" \
         --log_dir "/gpfs/scratch/ss14424/logs" \
-        --data_path "/gpfs/scratch/ss14424/Brain/channels_24/cells/img_output_20"
+        --data_path "/gpfs/scratch/ss14424/Brain/channels_20/cells/img_output_20"
