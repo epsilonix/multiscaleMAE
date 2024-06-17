@@ -85,12 +85,13 @@ class ZarrDataset(NPYDataset):
 
 class CANVASDataset(ZarrDataset):
 
-    def __init__(self, root_path, tile_size, common_channel_names : [str], transform = None, lazy = True):
+    def __init__(self, root_path, tile_size, common_channel_names, transform = None, lazy = True, inference_mode = False):
         super().__init__(root_path, tile_size, transform)
         self.root_path = root_path
         self.slide = self.read_slide(root_path, lazy)
         self.read_counter = 0
         self.common_channel_names = common_channel_names
+        self.inference_mode = inference_mode  # Add this line
 
         self.channel_idx = self.get_channel_idx(common_channel_names)
 
