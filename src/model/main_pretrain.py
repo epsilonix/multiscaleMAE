@@ -146,7 +146,7 @@ def main(args):
 
     from data.imc_dataset import CANVASDataset, SlidesDataset
     tile_size = 20
-    dataset_train = SlidesDataset(args.data_path, tile_size = tile_size, transform = transform_codex, dataset_class = CANVASDataset)
+    dataset_train = SlidesDataset(args.data_path, tile_size = tile_size, transform = transform_codex, dataset_class = CANVASDataset, inference_mode=False)
 
     if True:  # args.distributed:
         num_tasks = misc.get_world_size()

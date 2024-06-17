@@ -9,7 +9,7 @@ from skimage.transform import resize
 class SlideDataset(data.Dataset):
     ''' Dataset for slides '''
 
-    def __init__(self, root_path=None, tile_size=None, transform=None):
+    def __init__(self, root_path=None, tile_size=None, transform=None, inference_mode=False):
         ''' 
         Initialize the dataset 
         root_path: root path of the dataset (for saving processed file purposes)
@@ -17,7 +17,8 @@ class SlideDataset(data.Dataset):
         self.root_path = root_path
         self.tile_size = tile_size
         self.transform = transform
-
+        self.inference_mode = inference_mode
+        
         if tile_size is not None:
             # Load tiles positions from disk
             self.tile_pos = self.load_tiles(tile_size)
@@ -62,36 +63,36 @@ class SlideDataset(data.Dataset):
         tile_pos = df[["h", "w"]].to_numpy()
         cell_types = df["celltype"].values
         
-        
-        print(f'now processing {tile_path} which has {len(cell_types)} cells')
+        if self.inference_mode:
+            print(f'now processing {tile_path} which has {len(cell_types)} cells')
 
-        # Define the path where the cell types will be saved
-        two_levels_up = os.path.abspath(os.path.join(self.root_path, "../.."))
+            # Define the path where the cell types will be saved
+            two_levels_up = os.path.abspath(os.path.join(self.root_path, "../.."))
 
-        # Set the new save_path
-        save_path = os.path.join(two_levels_up, 'celltype.npy')
+            # Set the new save_path
+            save_path = os.path.join(two_levels_up, 'celltype.npy')
 
-        print(f"New save path: {save_path}")
-        
-        directory = os.path.dirname(save_path)
+            print(f"New save path: {save_path}")
 
-        # Ensure the directory exists
-        os.makedirs(directory, exist_ok=True)
+            directory = os.path.dirname(save_path)
 
-        # Check if the file exists
-        if os.path.exists(save_path):
-            # Load existing data with allow_pickle=True
-            existing_data = np.load(save_path, allow_pickle=True)
-            # Ensure existing_data is of the same type as cell_types
-            if isinstance(existing_data, np.ndarray) and existing_data.dtype == cell_types.dtype:
-                # Concatenate the new cell types with the existing data
-                cell_types = np.concatenate((existing_data, cell_types))
-            else:
-                raise ValueError("Data type mismatch or incompatible data structure in existing file")
+            # Ensure the directory exists
+            os.makedirs(directory, exist_ok=True)
 
-        # Save the concatenated cell types to a NumPy file
-        np.save(save_path, cell_types)
-        print(f"Cell types saved to {save_path}")
+            # Check if the file exists
+            if os.path.exists(save_path):
+                # Load existing data with allow_pickle=True
+                existing_data = np.load(save_path, allow_pickle=True)
+                # Ensure existing_data is of the same type as cell_types
+                if isinstance(existing_data, np.ndarray) and existing_data.dtype == cell_types.dtype:
+                    # Concatenate the new cell types with the existing data
+                    cell_types = np.concatenate((existing_data, cell_types))
+                else:
+                    raise ValueError("Data type mismatch or incompatible data structure in existing file")
+
+            # Save the concatenated cell types to a NumPy file
+            np.save(save_path, cell_types)
+            print(f"Cell types saved to {save_path}")
 
         return tile_pos
 
