@@ -235,15 +235,7 @@ class SlidesDataset(data.Dataset):
 
         # Check if all slides have the same channels
         if not os.path.exists(CHANNEL_TXT_PATH):
-            common_channels = self.get_common_channels(slide_channel_dicts)
-            # Save common channels as txt file
-            with open(CHANNEL_TXT_PATH, 'w') as f:
-                for channel in common_channels:
-                    f.write(f'{channel}\n')
-            if len(set(slide_channels)) > 1 or len(set([tuple(channel_dict.values()) for channel_dict in slide_channel_dicts])) > 1:
-                raise Exception(f'All slides must have the same channels, common channel file is written to {CHANNEL_TXT_PATH}, PLEASE REVIEW')
-            else:
-                raise Exception(f'All slides DO have the same channels, common channel file is written to {CHANNEL_TXT_PATH}, PLEASE REVIEW and remove unnecessary channels')
+            raise Exception(f'CHANNEL_TXT_PATH is missing!')
         return slide_ids
 
     def get_common_channels(self, slide_channel_dicts):
