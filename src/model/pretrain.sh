@@ -1,13 +1,13 @@
 #!/bin/bash
-#SBATCH -t 5-00:00:00
+#SBATCH -t 3-00:00:00
 #SBATCH -p gpu4_long,gpu8_long
 #SBATCH -N 1
-#SBATCH --mem=300G
+#SBATCH --mem=200G
 #SBATCH --tasks-per-node=1
-#SBATCH --cpus-per-task=10
-#SBATCH --gres=gpu:8
-#SBATCH --job-name=pretrain_MAE_singlecell_24
-#SBATCH --output=/gpfs/scratch/ss14424/logs/cell_pretrain_24_%j.log
+#SBATCH --cpus-per-task=4
+#SBATCH --gres=gpu:4
+#SBATCH --job-name=train_20chan_20px
+#SBATCH --output=/gpfs/scratch/ss14424/logs/train_20chan_20px_%j.log
 
 #unset PYTHONPATH
 #module load anaconda3/gpu/5.2.0
@@ -17,7 +17,7 @@ source activate /gpfs/home/ss14424/.conda/envs/canvas-env
 torchrun \
     --standalone \
     --nnodes=1 \
-    --nproc_per_node=8 \
+    --nproc_per_node=4 \
     /gpfs/scratch/ss14424/singlecell/src/model/main_pretrain.py \
         --epoch 801 \
         --batch_size 32 \
