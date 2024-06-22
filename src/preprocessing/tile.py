@@ -148,11 +148,10 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
         # Size of the square centered on each centroid
         half_side_length = tile_size / 2  # Half the side length of the square, for a total side length of 10 pixels
 
-        # Exclude centroids within 5 pixels of the boundary
-        if 10 <= centroid_x <= width - 10 and 10 <= centroid_y <= height - 10:
-            top_left_x = centroid_x - half_side_length
-            top_left_y = centroid_y - half_side_length
-            positions.append((top_left_y, top_left_x, cell_type))
+        top_left_x = centroid_x - half_side_length
+        top_left_y = centroid_y - half_side_length
+        # Store positions with boundary coordinates in x, y format
+        positions.append((top_left_y, top_left_x, cell_type, list(zip(boundary_array[:, 1], boundary_array[:, 0]))))
             
 #       UNCOMMENT THIS BLOCK IF YOU WANT PLOTS
 #            # Create and add the square as a rectangle patch
