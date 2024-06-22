@@ -136,16 +136,24 @@ def main(args):
 
     transform_codex = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Resize(args.input_size, interpolation = 2),
-            transforms.RandomRotation(degrees = 180, interpolation = 2, expand = True),
-            transforms.CenterCrop(args.input_size * 0.7), 
-            transforms.RandomResizedCrop(args.input_size, scale=(0.5, 1.0), ratio=(1, 1), interpolation=2), # 2 is bilinear
+            transforms.RandomRotation(degrees=180, interpolation = 2, expand = True),
             transforms.RandomHorizontalFlip()#,
             #channel_augment,
             ])
 
+    # Commented out resizing operations
+    # transform_codex = transforms.Compose([
+    #         transforms.ToTensor(),
+    #         transforms.Resize(args.input_size, interpolation = 2),
+    #         transforms.RandomRotation(degrees = 180, interpolation = 2, expand = True),
+    #         transforms.CenterCrop(args.input_size * 0.7), 
+    #         transforms.RandomResizedCrop(args.input_size, scale=(0.5, 1.0), ratio=(1, 1), interpolation=2), # 2 is bilinear
+    #         transforms.RandomHorizontalFlip()#,
+    #         #channel_augment,
+    #         ])
+
     from data.imc_dataset import CANVASDataset, SlidesDataset
-    tile_size = 20
+    tile_size = 16
     dataset_train = SlidesDataset(args.data_path, tile_size = tile_size, transform = transform_codex, dataset_class = CANVASDataset, inference_mode=False)
 
     if True:  # args.distributed:
