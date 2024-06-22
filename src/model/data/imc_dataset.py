@@ -36,15 +36,6 @@ class NPYDataset(SlideDataset):
         region_np = self.slide[:, pos_x:pos_x+width, pos_y:pos_y+height].copy()
         # Swap channel to last dimension
         region_np = region_np.swapaxes(0, 1).swapaxes(1, 2)
-
-        # Create a mask based on the boundary
-        mask = np.zeros((height, width), dtype=bool)
-        rr, cc = polygon([y - pos_y for x, y in boundary], [x - pos_x for x, y in boundary], mask.shape)
-        mask[rr, cc] = True
-        # Apply mask to each channel
-        for i in range(region_np.shape[-1]):
-            region_np[:, :, i] *= mask
-    
         region = region_np.swapaxes(0, 1) # Change to numpy format
         self.read_counter += 1
         return region
@@ -105,27 +96,11 @@ class CANVASDataset(ZarrDataset):
         self.channel_idx = self.get_channel_idx(common_channel_names)
 
     def __getitem__(self, index):
-        # Call the base class method to get the basic data
         image, label, x, y, img_id = super().__getitem__(index)
-        
-        # Apply the boundary mask
-        boundary = self.boundaries[index]
-        if boundary is not None:
-            height, width = image.shape[1], image.shape[2]
-            mask = np.zeros((height, width), dtype=bool)
-            rr, cc = polygon([y - y for x, y in boundary], [x - x for x, y in boundary], mask.shape)
-            mask[rr, cc] = True
-            for i in range(image.shape[0]):
-                image[i, :, :] *= mask
-
-        # Apply channel indexing if specified
-        if self.channel_idx is not None:
+    
+        # Move channel to first dimension
+        if not self.channel_idx is None:
             image = image[self.channel_idx, :, :]
-        
-        # Apply transformations if specified
-        if self.transform is not None:
-            image = self.transform(image)
-        
         dummy_label = self.root_path.split('/')[-1]
         return image, dummy_label
 
@@ -138,12 +113,12 @@ class CANVASDataset(ZarrDataset):
         channel_idx = [channel_dict[channel_name] for channel_name in channel_names]
         return channel_idx
 
-#class CANVASDatasetWithLocation(CANVASDataset):
-#
-#    def __getitem__(self, index):
-#        image, sample_label = super().__getitem__(index)
-#        location = self.tile_pos[index]
-#        return image, (sample_label, location)
+class CANVASDatasetWithLocation(CANVASDataset):
+
+    def __getitem__(self, index):
+        image, sample_label = super().__getitem__(index)
+        location = self.tile_pos[index]
+        return image, (sample_label, location)
 
 class SlidesDataset(data.Dataset):
     ''' Dataset for a list of slides '''
