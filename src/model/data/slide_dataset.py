@@ -21,7 +21,7 @@ class SlideDataset(data.Dataset):
         
         if tile_size is not None:
             # Load tiles positions from disk
-            self.tile_pos, self.boundaries = self.load_tiles(tile_size)
+            self.tile_pos = self.load_tiles(tile_size)
 
     def __getitem__(self, index):
         image = self.read_region(self.tile_pos[index][0], self.tile_pos[index][1], self.tile_size, self.tile_size)
@@ -62,8 +62,6 @@ class SlideDataset(data.Dataset):
         # Extract the tile positions and cell types
         tile_pos = df[["h", "w"]].to_numpy()
         cell_types = df["celltype"].values
-        boundaries = df["boundary"].apply(eval).values  # Assuming boundary is stored as a string representation of a list
-
         
         if self.inference_mode:
             print(f'now processing {tile_path} which has {len(cell_types)} cells')
@@ -96,7 +94,7 @@ class SlideDataset(data.Dataset):
             np.save(save_path, cell_types)
             print(f"Cell types saved to {save_path}")
 
-        return tile_pos, boundaries
+        return tile_pos
 
     # Generate tiles from mask
     def load_tiling_mask(self, mask_path, tile_size):
