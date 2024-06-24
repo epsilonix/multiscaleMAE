@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 import tifffile
 import zarr
 import numpy as np
+from skimage.draw import polygon
 
 def qptiff_to_zarr(input_file, output_root, mat_path, chunk_size=(None, 256, 256)):
     channels_to_exclude = [0, 5, 11, 13]  # Define the channels to exclude
