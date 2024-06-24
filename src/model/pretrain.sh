@@ -21,7 +21,7 @@ torchrun \
     /gpfs/scratch/ss14424/singlecell/src/model/main_pretrain.py \
         --epoch 801 \
         --batch_size 32 \
-        --tile_size 16 \
-        --output_dir "/gpfs/scratch/ss14424/Brain/channels_20/cells_new/model_output_16" \
+        --tile_size 20 \
+        --output_dir "/gpfs/scratch/ss14424/Brain/channels_20/cells_new/model_output_20" \
         --log_dir "/gpfs/scratch/ss14424/logs" \
-        --data_path "/gpfs/scratch/ss14424/Brain/channels_20/cells_new/img_output_16"
+        --data_path "/gpfs/scratch/ss14424/Brain/channels_20/cells_new/img_output_20"

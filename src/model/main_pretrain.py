@@ -136,16 +136,16 @@ def main(args):
 
     transform_codex = transforms.Compose([
             transforms.ToTensor(),
-            #transforms.Resize(args.input_size, interpolation = 2),
+            transforms.Resize(args.input_size, interpolation = 2),
             transforms.RandomRotation(degrees = 180, interpolation = 2, expand = True),
-            transforms.CenterCrop((20, 16)), 
+            transforms.CenterCrop(args.input_size), 
             #transforms.RandomResizedCrop(args.input_size, scale=(0.5, 1.0), ratio=(1, 1), interpolation=2), # 2 is bilinear
             transforms.RandomHorizontalFlip()#,
             #channel_augment,
             ])
 
     from data.imc_dataset import CANVASDataset, SlidesDataset
-    tile_size = 16
+    tile_size = 20
     dataset_train = SlidesDataset(args.data_path, tile_size = tile_size, transform = transform_codex, dataset_class = CANVASDataset, inference_mode=False)
     
     sample_tile, _ = dataset_train[0]
