@@ -138,7 +138,7 @@ def main(args):
             transforms.ToTensor(),
             #transforms.Resize(args.input_size, interpolation = 2),
             transforms.RandomRotation(degrees = 180, interpolation = 2, expand = True),
-            #transforms.CenterCrop(args.input_size * 0.7), 
+            transforms.CenterCrop((20, 16)), 
             #transforms.RandomResizedCrop(args.input_size, scale=(0.5, 1.0), ratio=(1, 1), interpolation=2), # 2 is bilinear
             transforms.RandomHorizontalFlip()#,
             #channel_augment,
