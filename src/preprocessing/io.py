@@ -5,7 +5,7 @@ import tifffile
 import zarr
 import numpy as np
 
-def qptiff_to_zarr(input_file, output_root, boundaries_file, chunk_size=(None, 256, 256)):
+def qptiff_to_zarr(input_file, output_root, mat_path, chunk_size=(None, 256, 256)):
     channels_to_exclude = [0, 5, 11, 13]  # Define the channels to exclude
 
     # Check if output file already exists
@@ -40,7 +40,7 @@ def qptiff_to_zarr(input_file, output_root, boundaries_file, chunk_size=(None, 2
         return None
 
     # Read the boundaries file and create a mask
-    boundaries = read_boundaries(boundaries_file)
+    boundaries = mat_path['Boundaries']
     mask = create_mask(boundaries, img_data.shape[1:])
 
     # Apply the mask to the image data

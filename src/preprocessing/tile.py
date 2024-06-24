@@ -56,7 +56,7 @@ def calculate_polygon_area(coords):
 
     return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
 
-def gen_tiles(image, slide: str, mat_data, tile_size: int = 20, 
+def gen_tiles(image, slide: str, mat_path, tile_size: int = 20, 
               output_path: str = None, image_filename: str = None) -> np.ndarray:
     ''' Generate tiles for a given slide '''
     print(f'Slide type is {type(slide)}')
@@ -76,8 +76,8 @@ def gen_tiles(image, slide: str, mat_data, tile_size: int = 20,
     # Generate and save mask
 
     # Extract 'Boundaries' and 'cellTypes' data
-    boundaries_info = mat_data['Boundaries']
-    cell_types = mat_data['cellTypes']
+    boundaries_info = mat_path['Boundaries']
+    cell_types = mat_path['cellTypes']
 
     # Correct dimensions of the image
     correct_dimensions = image.shape[1:3][::-1]  # Assuming 'image' is defined elsewhere

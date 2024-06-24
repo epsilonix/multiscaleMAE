@@ -9,16 +9,15 @@ import tifffile as tf
 def main():
     root_path = sys.argv[1]
     mat_path = sys.argv[2]
-    boundary_path = sys.argv[3]
-    output_path = sys.argv[4]
-    tile_size = int(sys.argv[5])
+    output_path = sys.argv[3]
+    tile_size = int(sys.argv[4])
 
     # List all files end with .qptiff
     for file in os.listdir(root_path):
         if file.endswith(".tif"):
             input_file = os.path.join(root_path, file)
             print(f"Processing {file}")
-            zarr_array = io.qptiff_to_zarr(input_file, output_path, boundary_path)
+            zarr_array = io.qptiff_to_zarr(input_file, output_path, mat_path)
             output_file_base = file.replace('.tif', '')
             output_file_path = os.path.join(output_path, output_file_base)
             print(f'Obtaining mat for {file}')
@@ -29,7 +28,7 @@ def main():
             
             image_filename = file.replace('.tif', '.png')
             
-            tile.gen_tiles(image, zarr_array, mat_data, tile_size, output_file_path, image_filename)
+            tile.gen_tiles(image, zarr_array, mat_path, tile_size, output_file_path, image_filename)
             print(f"Finished processing {file}")
 
 if __name__ == '__main__':
