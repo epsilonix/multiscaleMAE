@@ -170,8 +170,8 @@ def gen_tiles(image, slide: str, mat_path, tile_size: int = 20,
 
     with open(os.path.join(output_path, f'positions_{tile_size}.csv'), 'w') as f:
         f.write(' ,h,w,celltype\n')
-        for i, (h, w, celltype, boundary) in enumerate(positions):
-            f.write(f'{i},{h},{w},{celltype},{boundary}\n')
+        for i, (h, w, celltype) in enumerate(positions):
+            f.write(f'{i},{h},{w},{celltype}\n')
     print(f'Generated {len(positions)} tiles for slide with shape {slide.shape}')
 
 
