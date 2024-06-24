@@ -13,7 +13,7 @@ source activate /gpfs/home/ss14424/.conda/envs/canvas-env
 
 python \
 /gpfs/scratch/ss14424/singlecell/src/preprocessing/preprocess.py \
-/gpfs/scratch/ss14424/Brain/BrainData/BRAIN_IMC_MaskTif_csd_2 \
-/gpfs/scratch/ss14424/Brain/BrainData/BRAIN_IMC_CellType \
-/gpfs/scratch/ss14424/Brain/cells_csd_2/img_output_10 \
-10
+/gpfs/scratch/ss14424/Brain/data/tif_24_channels \
+/gpfs/scratch/ss14424/Brain/data/celltype \
+/gpfs/scratch/ss14424/Brain/channels_20/cells_new/img_output_16 \
+16
