@@ -16,19 +16,21 @@ def main():
     for file in os.listdir(root_path):
         if file.endswith(".tif"):
             input_file = os.path.join(root_path, file)
-            print(f"Processing {file}")
-            zarr_array = io.qptiff_to_zarr(input_file, output_path, mat_path)
-            output_file_base = file.replace('.tif', '')
-            output_file_path = os.path.join(output_path, output_file_base)
             print(f'Obtaining mat for {file}')
             mat_dir = os.path.join(mat_path, output_file_base + ".mat")
             mat_data = loadmat(mat_dir)
+            
+            # io
+            zarr_array = io.qptiff_to_zarr(input_file, output_path, mat_data)
+            output_file_base = file.replace('.tif', '')
+            output_file_path = os.path.join(output_path, output_file_base)
+            
             
             image = tf.imread(input_file)
             
             image_filename = file.replace('.tif', '.png')
             
-            tile.gen_tiles(image, zarr_array, mat_path, tile_size, output_file_path, image_filename)
+            tile.gen_tiles(image, zarr_array, mat_data, tile_size, output_file_path, image_filename)
             print(f"Finished processing {file}")
 
 if __name__ == '__main__':
