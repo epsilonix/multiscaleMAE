@@ -75,7 +75,7 @@ def get_args_parser():
     # Dataset parameters
     parser.add_argument('--data_path', default='', type=str,
                         help='dataset path')
-    parser.add_argument('--tile_size', default=20, type=int,
+    parser.add_argument('--tile_size', default=16, type=int,
                         help='Sample tile size.')
 
     parser.add_argument('--output_dir', default='',
@@ -147,6 +147,9 @@ def main(args):
     from data.imc_dataset import CANVASDataset, SlidesDataset
     tile_size = 16
     dataset_train = SlidesDataset(args.data_path, tile_size = tile_size, transform = transform_codex, dataset_class = CANVASDataset, inference_mode=False)
+    
+    sample_tile, _ = dataset_train[0]
+    print(f"Sample tile size: {sample_tile.shape}")
 
     if True:  # args.distributed:
         num_tasks = misc.get_world_size()
