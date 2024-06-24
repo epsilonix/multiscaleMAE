@@ -1,12 +1,10 @@
-# Converting QPTIFF to Zarr with channel metadata
 import os
-import xml.etree.ElementTree as ET
 import tifffile
 import zarr
 import numpy as np
 from skimage.draw import polygon
 
-def qptiff_to_zarr(input_file, output_root, mat_path, chunk_size=(None, 256, 256)):
+def qptiff_to_zarr(input_file, output_root, mat_data, chunk_size=(None, 256, 256)):
     channels_to_exclude = [0, 5, 11, 13]  # Define the channels to exclude
 
     # Check if output file already exists
@@ -40,9 +38,10 @@ def qptiff_to_zarr(input_file, output_root, mat_path, chunk_size=(None, 256, 256
         print("No valid image data found after excluding specified channels.")
         return None
 
-    # Read the boundaries file and create a mask
-    boundaries = mat_path['Boundaries']
-    mask = create_mask(boundaries, img_data.shape[1:])
+    # Use the provided boundaries from mat_data
+    boundaries = mat_data['Boundaries']
+    correct_dimensions = img_data.shape[1:]  # Get the dimensions of the image
+    mask = create_mask(boundaries, correct_dimensions)
 
     # Apply the mask to the image data
     img_data = apply_mask(img_data, mask)
@@ -51,29 +50,15 @@ def qptiff_to_zarr(input_file, output_root, mat_path, chunk_size=(None, 256, 256
     z_arr = zarr.array(img_data, chunks=chunk_size, store=output_zarr)
     return z_arr
 
-def read_boundaries(boundaries_file):
-    # Implement the function to read the boundaries from the boundaries_file
-    # This function should return a list of boundary coordinates
-    boundaries = []
-    tree = ET.parse(boundaries_file)
-    root = tree.getroot()
-    
-    for boundary in root.findall('.//Boundary'):
-        coords = []
-        for point in boundary.findall('.//Point'):
-            x = int(point.get('X'))
-            y = int(point.get('Y'))
-            coords.append((x, y))
-        boundaries.append(coords)
-    
-    return boundaries
-
 def create_mask(boundaries, shape):
     mask = np.zeros(shape, dtype=bool)
     for boundary in boundaries:
-        boundary_array = np.array(boundary)
-        rr, cc = polygon(boundary_array[:, 1], boundary_array[:, 0], mask.shape)
-        mask[rr, cc] = True
+        for linear_indices in boundary:
+            linear_indices = linear_indices.flatten()
+            x_coords, y_coords = np.unravel_index(linear_indices, shape)
+            boundary_array = np.column_stack((x_coords, y_coords))
+            rr, cc = polygon(boundary_array[:, 0], boundary_array[:, 1], mask.shape)
+            mask[rr, cc] = True
     return mask
 
 def apply_mask(img_data, mask):
