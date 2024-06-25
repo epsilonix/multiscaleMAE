@@ -9,7 +9,7 @@ from skimage.transform import resize
 class SlideDataset(data.Dataset):
     ''' Dataset for slides '''
 
-    def __init__(self, root_path=None, tile_size=None, transform=None, inference_mode=False):
+    def __init__(self, root_path=None, tile_size=None, transform=None, inference_mode=True):
         ''' 
         Initialize the dataset 
         root_path: root path of the dataset (for saving processed file purposes)
