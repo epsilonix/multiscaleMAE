@@ -128,6 +128,9 @@ class SlidesDataset(data.Dataset):
         self.tile_size = tile_size
         self.transform = transform
         self.inference_mode = inference_mode  # Add this line
+        
+        print(f"In imc_dataset.py, inference mode is {'enabled' if self.inference_mode else 'disabled'}")
+        
         # Get id and path for all slides
         slide_ids = self.get_slide_paths(slides_root_path)
         self.common_channel_names = self.get_common_channel_names(self.slides_root_path)

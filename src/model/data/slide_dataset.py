@@ -19,6 +19,8 @@ class SlideDataset(data.Dataset):
         self.transform = transform
         self.inference_mode = inference_mode
         
+        print(f"In slide_dataset.py, inference mode is {'enabled' if self.inference_mode else 'disabled'}")
+        
         if tile_size is not None:
             # Load tiles positions from disk
             self.tile_pos = self.load_tiles(tile_size)
