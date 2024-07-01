@@ -56,47 +56,26 @@ class SlideDataset(data.Dataset):
         ''' Save a thumbnail of the slide '''
         raise NotImplementedError
 
-    def load_tiles(self, tile_size):
-        ''' Load tile positions from disk and save cell types to celltype.npy '''
-        tile_path = f'{self.root_path}/tiles/positions_{tile_size}.csv'
+    def load_tile_data(self):
+        ''' Load the tile data from disk and save it as a DataFrame '''
+        tile_path = f'{self.root_path}/tiles/positions_{self.tile_size}.csv'
         df = pd.read_csv(tile_path)
+        return df
 
-        # Extract the tile positions and cell types
-        tile_pos = df[["h", "w"]].to_numpy()
-        cell_types = df["celltype"].values
-        
-        if self.inference_mode:
-            print(f'now processing {tile_path} which has {len(cell_types)} cells')
-
-            # Define the path where the cell types will be saved
-            two_levels_up = os.path.abspath(os.path.join(self.root_path, "../.."))
-
-            # Set the new save_path
-            save_path = os.path.join(two_levels_up, 'celltype.npy')
-
-            print(f"New save path: {save_path}")
-
-            directory = os.path.dirname(save_path)
-
-            # Ensure the directory exists
-            os.makedirs(directory, exist_ok=True)
-
-            # Check if the file exists
-            if os.path.exists(save_path):
-                # Load existing data with allow_pickle=True
-                existing_data = np.load(save_path, allow_pickle=True)
-                # Ensure existing_data is of the same type as cell_types
-                if isinstance(existing_data, np.ndarray) and existing_data.dtype == cell_types.dtype:
-                    # Concatenate the new cell types with the existing data
-                    cell_types = np.concatenate((existing_data, cell_types))
-                else:
-                    raise ValueError("Data type mismatch or incompatible data structure in existing file")
-
-            # Save the concatenated cell types to a NumPy file
-            np.save(save_path, cell_types)
-            print(f"Cell types saved to {save_path}")
-
+    def load_tiles(self):
+        ''' Extract tile positions from the loaded DataFrame '''
+        tile_pos = self.df[["h", "w"]].to_numpy()
         return tile_pos
+
+    def load_celltypes(self):
+        ''' Extract cell types from the loaded DataFrame '''
+        celltypes = self.df["celltype"].values
+        return celltypes
+
+    def load_boundary(self):
+        ''' Extract boundary information from the loaded DataFrame '''
+        boundary = self.df["boundary"].values
+        return boundary
 
     # Generate tiles from mask
     def load_tiling_mask(self, mask_path, tile_size):

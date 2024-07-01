@@ -142,17 +142,17 @@ def gen_tiles(image, slide: str, mat_path, tile_size: int = 20,
         plt.plot(boundary_array[:, 0], boundary_array[:, 1], color='cyan', linewidth=0.5)  # Adjust color and linewidth as desired
 
         # Calculate centroid
-        centroid_x = round(np.mean(boundary_array[:, 0]), 3)
-        centroid_y = round(np.mean(boundary_array[:, 1]), 3)
+        centroid_x = np.round(np.mean(boundary_array[:, 0]), 2)
+        centroid_y = np.round(np.mean(boundary_array[:, 1]), 2)
 
         # Size of the square centered on each centroid
         half_side_length = tile_size / 2  # Half the side length of the square, for a total side length of 10 pixels
 
-        # Exclude centroids within 5 pixels of the boundary
+        # Exclude centroids within 10 pixels of the boundary
         if 10 <= centroid_x <= width - 10 and 10 <= centroid_y <= height - 10:
             top_left_x = centroid_x - half_side_length
             top_left_y = centroid_y - half_side_length
-            positions.append((top_left_y, top_left_x, cell_type))
+            positions.append((top_left_y, top_left_x, cell_type, boundary_coords))
             
 #       UNCOMMENT THIS BLOCK IF YOU WANT PLOTS
 #            # Create and add the square as a rectangle patch
@@ -169,9 +169,9 @@ def gen_tiles(image, slide: str, mat_path, tile_size: int = 20,
     ###
 
     with open(os.path.join(output_path, f'positions_{tile_size}.csv'), 'w') as f:
-        f.write(' ,h,w,celltype\n')
-        for i, (h, w, celltype) in enumerate(positions):
-            f.write(f'{i},{h},{w},{celltype}\n')
+        f.write(' ,h,w,celltype,boundary\n')
+        for i, (h, w, celltype, boundary) in enumerate(positions):
+            f.write(f'{i},{h},{w},{celltype},{boundary}\n')
     print(f'Generated {len(positions)} tiles for slide with shape {slide.shape}')
 
 

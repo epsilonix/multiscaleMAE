@@ -139,14 +139,13 @@ def main(args):
             transforms.Resize(args.input_size, interpolation = 2),
             transforms.RandomRotation(degrees = 180, interpolation = 2, expand = True),
             transforms.CenterCrop(args.input_size), 
-            #transforms.RandomResizedCrop(args.input_size, scale=(0.5, 1.0), ratio=(1, 1), interpolation=2), # 2 is bilinear
-            transforms.RandomHorizontalFlip()#,
-            #channel_augment,
+            transforms.RandomResizedCrop(args.input_size, scale=(0.8, 1.0), ratio=(1, 1), interpolation=2), # 2 is bilinear
+            transforms.RandomHorizontalFlip(),
+            channel_augment
             ])
 
     from data.imc_dataset import CANVASDataset, SlidesDataset
-    tile_size = 20
-    dataset_train = SlidesDataset(args.data_path, tile_size = tile_size, transform = transform_codex, dataset_class = CANVASDataset, inference_mode=False)
+    dataset_train = SlidesDataset(args.data_path, tile_size = args.tile_size, transform = transform_codex, dataset_class = CANVASDataset, inference_mode=False)
     
     sample_tile, _ = dataset_train[0]
     print(f"Sample tile size: {sample_tile.shape}")

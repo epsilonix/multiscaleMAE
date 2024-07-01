@@ -146,7 +146,7 @@ class Canvas:
         )
         return dataloader
 
-    def get_tile_embedding(self, dataloader, model,
+def get_tile_embedding(self, dataloader, model,
                            output_suffix = 'tile_embedding',
                            save_image = False, save_full_emb = True):
         output_path = f'{self.save_path}/{output_suffix}'
@@ -168,6 +168,8 @@ class Canvas:
         embedding_mean_tensor = np.zeros((data_size, 1024))
         sample_name_list = []
         tile_location_list = []
+        celltype_list = []
+        boundary_list = []
         batch_size = dataloader.batch_size
         with torch.no_grad():
             for batch_idx, sample in enumerate(tqdm(dataloader)):
@@ -177,6 +179,8 @@ class Canvas:
                 embedding = self.proc_embedding(img_tensor, model)
                 sample_name_list.extend(labels)
                 tile_location_list.extend(locations)
+                celltype_list.extend(dataloader.dataset.load_celltypes()[data_idx:data_idx + temp_size])
+                boundary_list.extend(dataloader.dataset.load_boundary()[data_idx:data_idx + temp_size])
                 image_mean_tensor[data_idx:data_idx + temp_size] = img_tensor.mean(axis = (2, 3))
                 embedding_mean_tensor[data_idx:data_idx + temp_size] = embedding.mean(axis = 1)
                 if  save_image == 'True':
@@ -188,6 +192,8 @@ class Canvas:
         np.save(os.path.join(output_path, 'embedding_mean.npy'), embedding_mean_tensor)
         np.save(os.path.join(output_path, 'tile_location.npy'), np.array(tile_location_list))
         np.save(os.path.join(output_path, 'sample_name.npy'), np.array(sample_name_list))
+        np.save(os.path.join(output_path, 'celltype.npy'), np.array(celltype_list))
+        np.save(os.path.join(output_path, 'boundary.npy'), np.array(boundary_list))
         if save_image == 'True':
             np.save(os.path.join(output_path, 'image.npy'), image_tensor)
         if  save_full_emb == 'True':
@@ -196,9 +202,13 @@ class Canvas:
         tile_dict = {'image_mean' : os.path.join(output_path, 'image_mean.npy'),
                      'embedding_mean' : os.path.join(output_path, 'embedding_mean.npy'),
                      'tile_location' : os.path.join(output_path, 'tile_location.npy'),
-                     'sample_name' : os.path.join(output_path, 'sample_name.npy')}
+                     'sample_name' : os.path.join(output_path, 'sample_name.npy'),
+                     'celltype' : os.path.join(output_path, 'celltype.npy'),
+                     'boundary' : os.path.join(output_path, 'boundary.npy')}
         self.step_dict[output_suffix] = tile_dict
         self.flush_step_dict()
+        
+        
     def proc_embedding(self, img_tensor, model):
         imgs = img_tensor.to(self.device).float()
         mask_ratio = 0
