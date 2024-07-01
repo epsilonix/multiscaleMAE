@@ -152,7 +152,9 @@ def gen_tiles(image, slide: str, mat_path, tile_size: int = 20,
         if 10 <= centroid_x <= width - 10 and 10 <= centroid_y <= height - 10:
             top_left_x = centroid_x - half_side_length
             top_left_y = centroid_y - half_side_length
-            positions.append((top_left_y, top_left_x, cell_type, boundary_coords))
+            positions.append((top_left_y, top_left_x, cell_type, [(y, x) for x, y in boundary_coords]))
+
+
             
 #       UNCOMMENT THIS BLOCK IF YOU WANT PLOTS
 #            # Create and add the square as a rectangle patch
