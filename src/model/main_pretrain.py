@@ -145,7 +145,7 @@ def main(args):
             ])
 
     from data.imc_dataset import CANVASDataset, SlidesDataset
-    dataset_train = SlidesDataset(args.data_path, tile_size = args.tile_size, transform = transform_codex, dataset_class = CANVASDataset, inference_mode=False)
+    dataset_train = SlidesDataset(args.data_path, tile_size = args.tile_size, transform = transform_codex, dataset_class = CANVASDataset)
     
     sample_tile, _ = dataset_train[0]
     print(f"Sample tile size: {sample_tile.shape}")

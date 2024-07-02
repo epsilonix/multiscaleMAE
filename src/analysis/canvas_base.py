@@ -135,7 +135,7 @@ class Canvas:
                 ])
 
         from model.data.imc_dataset import CANVASDatasetWithLocation, SlidesDataset
-        dataset = SlidesDataset(self.data_path, tile_size = self.tile_size, transform = transform_codex, dataset_class = CANVASDatasetWithLocation, inference_mode=True)
+        dataset = SlidesDataset(self.data_path, tile_size = self.tile_size, transform = transform_codex, dataset_class = CANVASDatasetWithLocation)
 
         dataloader= torch.utils.data.DataLoader(
             dataset, 

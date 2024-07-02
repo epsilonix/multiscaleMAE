@@ -9,7 +9,7 @@ from skimage.transform import resize
 class SlideDataset(data.Dataset):
     ''' Dataset for slides '''
 
-    def __init__(self, root_path=None, tile_size=None, transform=None, inference_mode=True):
+    def __init__(self, root_path=None, tile_size=None, transform=None):
         ''' 
         Initialize the dataset 
         root_path: root path of the dataset (for saving processed file purposes)
@@ -17,9 +17,7 @@ class SlideDataset(data.Dataset):
         self.root_path = root_path
         self.tile_size = tile_size
         self.transform = transform
-        self.inference_mode = inference_mode
-        
-        print(f"In slide_dataset.py, inference mode is {'enabled' if self.inference_mode else 'disabled'}")
+    
         
         if tile_size is not None:
             self.df = self.load_tile_data(tile_size)
