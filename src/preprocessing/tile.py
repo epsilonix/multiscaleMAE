@@ -14,6 +14,7 @@ import random
 from matplotlib.patches import Rectangle
 import imageio
 import zarr
+import json
 
 colors = [
     (0, 0, 139),  # cd117, mast cell, myeloid, darkblue
@@ -142,8 +143,8 @@ def gen_tiles(image, slide: str, mat_path, tile_size: int = 20,
         plt.plot(boundary_array[:, 0], boundary_array[:, 1], color='cyan', linewidth=0.5)  # Adjust color and linewidth as desired
 
         # Calculate centroid
-        centroid_x = np.round(np.mean(boundary_array[:, 0]), 2)
-        centroid_y = np.round(np.mean(boundary_array[:, 1]), 2)
+        centroid_x = int(np.round(np.mean(boundary_array[:, 0])))
+        centroid_y = int(np.round(np.mean(boundary_array[:, 1])))
 
         # Size of the square centered on each centroid
         half_side_length = tile_size / 2  # Half the side length of the square, for a total side length of 10 pixels
@@ -173,7 +174,8 @@ def gen_tiles(image, slide: str, mat_path, tile_size: int = 20,
     with open(os.path.join(output_path, f'positions_{tile_size}.csv'), 'w') as f:
         f.write(' ,h,w,celltype,boundary\n')
         for i, (h, w, celltype, boundary) in enumerate(positions):
-            f.write(f'{i},{h},{w},{celltype},{boundary}\n')
+            boundary_str = json.dumps(boundary)
+            f.write(f'{i},{h},{w},{celltype},"{boundary_str}"\n')
     print(f'Generated {len(positions)} tiles for slide with shape {slide.shape}')
 
 

@@ -6,8 +6,6 @@ from torchvision import transforms
 from skimage.io import imsave, imread
 from skimage.transform import resize
 
-import re
-
 class SlideDataset(data.Dataset):
     ''' Dataset for slides '''
 
@@ -62,28 +60,7 @@ class SlideDataset(data.Dataset):
     def load_tile_data(self, tile_size):
         ''' Load the tile data from disk and save it as a DataFrame '''
         tile_path = f'{self.root_path}/tiles/positions_{tile_size}.csv'
-        print(f'now reading positions csv at: {tile_path}')
-        df = self.preprocess_and_load_csv(tile_path)
-        self.df = df
-        return df
-
-    def preprocess_and_load_csv(self, file_path):
-        temp_path = f'{file_path}.tmp'
-        self.preprocess_csv(file_path, temp_path)
-        df = pd.read_csv(temp_path)
-        df = self.postprocess_df(df)
-        return df
-
-    def preprocess_csv(self, file_path, temp_path):
-        with open(file_path, 'r') as infile, open(temp_path, 'w') as outfile:
-            for line in infile:
-                # Replace commas within lists with semicolons
-                modified_line = re.sub(r'\[(.*?)\]', lambda x: x.group(0).replace(',', ';'), line)
-                outfile.write(modified_line)
-
-    def postprocess_df(self, df):
-        # Replace semicolons back with commas within list fields
-        df = df.applymap(lambda x: re.sub(r'\[(.*?)\]', lambda y: y.group(0).replace(';', ','), str(x)))
+        df = pd.read_csv(tile_path)
         return df
 
     def load_tiles(self):
