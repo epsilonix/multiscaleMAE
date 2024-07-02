@@ -6,6 +6,8 @@ from torchvision import transforms
 from skimage.io import imsave, imread
 from skimage.transform import resize
 
+import re
+
 class SlideDataset(data.Dataset):
     ''' Dataset for slides '''
 
