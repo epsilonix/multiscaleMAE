@@ -22,8 +22,9 @@ class SlideDataset(data.Dataset):
         print(f"In slide_dataset.py, inference mode is {'enabled' if self.inference_mode else 'disabled'}")
         
         if tile_size is not None:
+            self.df = self.load_tile_data(tile_size)
             # Load tiles positions from disk
-            self.tile_pos = self.load_tiles(tile_size)
+            self.tile_pos = self.load_tiles()
 
     def __getitem__(self, index):
         image = self.read_region(self.tile_pos[index][0], self.tile_pos[index][1], self.tile_size, self.tile_size)
@@ -56,9 +57,9 @@ class SlideDataset(data.Dataset):
         ''' Save a thumbnail of the slide '''
         raise NotImplementedError
 
-    def load_tile_data(self):
+    def load_tile_data(self, tile_size):
         ''' Load the tile data from disk and save it as a DataFrame '''
-        tile_path = f'{self.root_path}/tiles/positions_{self.tile_size}.csv'
+        tile_path = f'{self.root_path}/tiles/positions_{tile_size}.csv'
         df = pd.read_csv(tile_path)
         return df
 
