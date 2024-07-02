@@ -60,6 +60,7 @@ class SlideDataset(data.Dataset):
     def load_tile_data(self, tile_size):
         ''' Load the tile data from disk and save it as a DataFrame '''
         tile_path = f'{self.root_path}/tiles/positions_{tile_size}.csv'
+        print(f'now reading positions csv at: {tile_path}')
         df = pd.read_csv(tile_path)
         return df
 
