@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -t 0-01:00:00
+#SBATCH -t 5-00:00:00
 #SBATCH -p gpu4_long,gpu8_long,gpu4_medium,gpu8_medium,gpu8_short,gpu4_short
 #SBATCH -N 1
 #SBATCH --mem=200G
