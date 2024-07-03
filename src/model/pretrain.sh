@@ -7,7 +7,7 @@
 #SBATCH --cpus-per-task=20
 #SBATCH --gres=gpu:8
 #SBATCH --job-name=train_20chan_20px_small
-#SBATCH --output=/gpfs/scratch/ss14424/logs/train_20chan_20px_%x_%A_%a_%j_$(date +%m-%d).log
+#SBATCH --output=/gpfs/scratch/ss14424/logs/train_20chan_20px_%j.log
 
 #unset PYTHONPATH
 #module load anaconda3/gpu/5.2.0
