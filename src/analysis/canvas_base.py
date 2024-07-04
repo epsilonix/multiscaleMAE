@@ -20,6 +20,9 @@ def main():
 #    #Generate embeddings
     dataloader = canvas.load_dataset()
     
+    first_batch = next(iter(dataloader))
+    print("First Batch:", first_batch)
+    
     model = canvas.load_model(dataloader)
     canvas.get_tile_embedding(dataloader, model, save_full_emb = True)
 #
