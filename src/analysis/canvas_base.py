@@ -146,7 +146,7 @@ class Canvas:
         )
         return dataloader
 
-def get_tile_embedding(self, dataloader, model,
+    def get_tile_embedding(self, dataloader, model,
                            output_suffix = 'tile_embedding',
                            save_image = False, save_full_emb = True):
         output_path = f'{self.save_path}/{output_suffix}'
