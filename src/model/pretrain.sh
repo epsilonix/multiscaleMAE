@@ -6,8 +6,8 @@
 #SBATCH --tasks-per-node=1
 #SBATCH --cpus-per-task=20
 #SBATCH --gres=gpu:8
-#SBATCH --job-name=train_20chan_20px_small
-#SBATCH --output=/gpfs/scratch/ss14424/logs/train_20chan_20px_%j.log
+#SBATCH --job-name=train_20chan_20px_notransform
+#SBATCH --output=/gpfs/scratch/ss14424/logs/train_20chan_20px_notransform_%j.log
 
 #unset PYTHONPATH
 #module load anaconda3/gpu/5.2.0
@@ -22,6 +22,6 @@ torchrun \
         --epoch 801 \
         --batch_size 32 \
         --tile_size 20 \
-        --output_dir "/gpfs/scratch/ss14424/Brain/channels_20/cells_new/model_output_20" \
+        --output_dir "/gpfs/scratch/ss14424/Brain/channels_20/cells_new/model_output_20_no_transform" \
         --log_dir "/gpfs/scratch/ss14424/logs" \
         --data_path "/gpfs/scratch/ss14424/Brain/channels_20/cells_new/img_output_20"
