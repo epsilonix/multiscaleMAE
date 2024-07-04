@@ -118,7 +118,7 @@ class CANVASDatasetWithLocation(CANVASDataset):
         image, sample_label = super().__getitem__(index)
         location = self.tile_pos[index]
         celltype = self.celltypes[index]
-        boundary = self.boundaries[index]
+        boundary = self.boundary[index]
         return image, (sample_label, location, celltype, boundary)
 
 class SlidesDataset(data.Dataset):

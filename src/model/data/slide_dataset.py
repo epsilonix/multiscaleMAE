@@ -24,7 +24,7 @@ class SlideDataset(data.Dataset):
         # Load tiles positions from disk
         self.tile_pos = self.load_tiles()
         self.celltypes = self.load_celltypes()
-        self.boundaries = self.load_boundaries()
+        self.boundary = self.load_boundary()
 
     def __getitem__(self, index):
         image = self.read_region(self.tile_pos[index][0], self.tile_pos[index][1], self.tile_size, self.tile_size)
