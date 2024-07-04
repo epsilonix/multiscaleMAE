@@ -85,13 +85,12 @@ class ZarrDataset(NPYDataset):
 
 class CANVASDataset(ZarrDataset):
 
-    def __init__(self, root_path, tile_size, common_channel_names, transform = None, lazy = True, inference_mode = False):
+    def __init__(self, root_path, tile_size, common_channel_names, transform = None, lazy = True):
         super().__init__(root_path, tile_size, transform)
         self.root_path = root_path
         self.slide = self.read_slide(root_path, lazy)
         self.read_counter = 0
         self.common_channel_names = common_channel_names
-        self.inference_mode = inference_mode  # Add this line
 
         self.channel_idx = self.get_channel_idx(common_channel_names)
 
@@ -123,13 +122,11 @@ class CANVASDatasetWithLocation(CANVASDataset):
 class SlidesDataset(data.Dataset):
     ''' Dataset for a list of slides '''
 
-    def __init__(self, slides_root_path=None, tile_size=None, transform=None, dataset_class=None, use_normalization=True, inference_mode=False):
+    def __init__(self, slides_root_path=None, tile_size=None, transform=None, dataset_class=None, use_normalization=True):
         self.slides_root_path = slides_root_path
         self.tile_size = tile_size
         self.transform = transform
-        self.inference_mode = inference_mode  # Add this line
         
-        print(f"In imc_dataset.py, inference mode is {'enabled' if self.inference_mode else 'disabled'}")
         
         # Get id and path for all slides
         slide_ids = self.get_slide_paths(slides_root_path)
@@ -257,7 +254,7 @@ class SlidesDataset(data.Dataset):
         lengths = []
         for slide_id in tqdm(slide_ids):
             slide_path = os.path.join(self.slides_root_path, slide_id)
-            slide = dataset_class(slide_path, self.tile_size, common_channel_names, self.transform, inference_mode=self.inference_mode)
+            slide = dataset_class(slide_path, self.tile_size, common_channel_names, self.transform)
             slides_dict[slide_id] = slide
             lengths.append(len(slide))
         return slides_dict, lengths
