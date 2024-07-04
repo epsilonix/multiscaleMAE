@@ -19,10 +19,12 @@ class SlideDataset(data.Dataset):
         self.transform = transform
     
         
-        if tile_size is not None:
-            self.df = self.load_tile_data(tile_size)
-            # Load tiles positions from disk
-            self.tile_pos = self.load_tiles()
+
+        self.df = self.load_tile_data(tile_size)
+        # Load tiles positions from disk
+        self.tile_pos = self.load_tiles()
+        self.celltypes = self.load_celltypes()
+        self.boundaries = self.load_boundaries()
 
     def __getitem__(self, index):
         image = self.read_region(self.tile_pos[index][0], self.tile_pos[index][1], self.tile_size, self.tile_size)

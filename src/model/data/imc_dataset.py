@@ -117,12 +117,15 @@ class CANVASDatasetWithLocation(CANVASDataset):
     def __getitem__(self, index):
         image, sample_label = super().__getitem__(index)
         location = self.tile_pos[index]
-        return image, (sample_label, location)
+        celltype = self.celltypes[index]
+        boundary = self.boundaries[index]
+        return image, (sample_label, location, celltype, boundary)
 
 class SlidesDataset(data.Dataset):
     ''' Dataset for a list of slides '''
 
     def __init__(self, slides_root_path=None, tile_size=None, transform=None, dataset_class=None, use_normalization=True):
+        super().__init__(root_path, tile_size, transform)
         self.slides_root_path = slides_root_path
         self.tile_size = tile_size
         self.transform = transform
