@@ -139,15 +139,7 @@ class SlidesDataset(data.Dataset):
         self.std = None
         self.use_normalization = use_normalization
         self.mean, self.std = self.get_normalization_stats()
-        self.datasets = self.initialize_datasets()
 
-    def initialize_datasets(self):
-        datasets = []
-        for slide_path in os.listdir(self.slides_root_path):
-            full_path = os.path.join(self.slides_root_path, slide_path)
-            if os.path.isdir(full_path):
-                datasets.append(self.dataset_class(full_path, self.tile_size, self.transform))
-        return datasets
 
     def __getitem__(self, index):
         for slide_idx, (slide_id, slide) in enumerate(self.slides_dict.items()):
