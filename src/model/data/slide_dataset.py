@@ -76,7 +76,7 @@ class SlideDataset(data.Dataset):
 
     def load_boundary(self):
         ''' Extract boundary information from the loaded DataFrame '''
-        boundary = self.df["boundary"].apply(json.loads).values
+        boundary = self.df["boundary"].values
         return boundary
 
     # Generate tiles from mask
