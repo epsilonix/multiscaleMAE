@@ -39,29 +39,29 @@ def qptiff_to_zarr(input_file, output_root, mat_data, chunk_size=(None, 256, 256
         return None
 
     # Use the provided boundaries from mat_data
-    boundaries = mat_data['Boundaries']
-    correct_dimensions = img_data.shape[1:]  # Get the dimensions of the image
-    mask = create_mask(boundaries, correct_dimensions)
+#    boundaries = mat_data['Boundaries']
+#    correct_dimensions = img_data.shape[1:]  # Get the dimensions of the image
+#    mask = create_mask(boundaries, correct_dimensions)
 
     # Apply the mask to the image data
-    img_data = apply_mask(img_data, mask)
+#    img_data = apply_mask(img_data, mask)
 
     # Create the Zarr array
     z_arr = zarr.array(img_data, chunks=chunk_size, store=output_zarr)
     return z_arr
 
-def create_mask(boundaries, shape):
-    mask = np.zeros(shape, dtype=bool)
-    for boundary in boundaries:
-        for linear_indices in boundary:
-            linear_indices = linear_indices.flatten()
-            x_coords, y_coords = np.unravel_index(linear_indices, shape)
-            boundary_array = np.column_stack((x_coords, y_coords))
-            rr, cc = polygon(boundary_array[:, 0], boundary_array[:, 1], mask.shape)
-            mask[rr, cc] = True
-    return mask
-
-def apply_mask(img_data, mask):
-    for c in range(img_data.shape[0]):
-        img_data[c] *= mask
-    return img_data
+#def create_mask(boundaries, shape):
+#    mask = np.zeros(shape, dtype=bool)
+#    for boundary in boundaries:
+#        for linear_indices in boundary:
+#            linear_indices = linear_indices.flatten()
+#            x_coords, y_coords = np.unravel_index(linear_indices, shape)
+#            boundary_array = np.column_stack((x_coords, y_coords))
+#            rr, cc = polygon(boundary_array[:, 0], boundary_array[:, 1], mask.shape)
+#            mask[rr, cc] = True
+#    return mask
+#
+#def apply_mask(img_data, mask):
+#    for c in range(img_data.shape[0]):
+#        img_data[c] *= mask
+#    return img_data

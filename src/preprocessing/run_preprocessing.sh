@@ -15,5 +15,5 @@ python \
 /gpfs/scratch/ss14424/singlecell/src/preprocessing/preprocess.py \
 /gpfs/scratch/ss14424/Brain/data/tif_24_channels \
 /gpfs/scratch/ss14424/Brain/data/celltype \
-/gpfs/scratch/ss14424/Brain/channels_20/cells_new/img_output_16 \
-16
+/gpfs/scratch/ss14424/Brain/channels_20/cells/img_output_20 \
+20
