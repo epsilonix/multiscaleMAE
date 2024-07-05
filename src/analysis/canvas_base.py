@@ -64,7 +64,7 @@ def main():
 class Canvas:
 
     def __init__(self, model_path : str, data_path : str, save_path : str,
-                 tile_size : int = 16, 
+                 tile_size : int = 20, 
                  device : str = 'cuda:0') -> None:
         self.model_path = model_path
         self.data_path = data_path
