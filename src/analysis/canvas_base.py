@@ -12,9 +12,9 @@ from tqdm import tqdm
 
 def main():
     # Initialize CANVAS
-    data_path = '/gpfs/scratch/ss14424/Brain/channels_20/cells_new/img_output_16'
-    model_path = '/gpfs/scratch/ss14424/Brain/channels_20/cells_new/model_output_20/checkpoint-800.pth'
-    save_path = '/gpfs/scratch/ss14424/Brain/channels_20/cells_new/analysis_output/'
+    data_path = '/gpfs/scratch/ss14424/Brain/channels_20/cells_new/img_output_20'
+    model_path = '/gpfs/scratch/ss14424/Brain/channels_20/cells_new/model_output_20_no_transform/checkpoint-500.pth'
+    save_path = '/gpfs/scratch/ss14424/Brain/channels_20/cells_new/analysis_output_no_transform/'
     canvas = Canvas(model_path, data_path, save_path)
 
 #    #Generate embeddings
@@ -149,7 +149,7 @@ class Canvas:
         )
         return dataloader
 
-    def get_tile_embedding(self, dataloader, model, output_suffix='tile_embedding', save_image=False, save_full_emb=True):
+    def get_tile_embedding(self, dataloader, model, output_suffix='tile_embedding', save_image=False, save_full_emb=False):
         output_path = f'{self.save_path}/{output_suffix}'
         os.makedirs(output_path, exist_ok=True)
 
