@@ -136,7 +136,7 @@ def main(args):
 
     transform_codex = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Resize(args.input_size, interpolation = 2)#,
+            transforms.Resize(args.input_size, interpolation = 2),
             transforms.RandomRotation(degrees = 180, interpolation = 2, expand = True),
             transforms.CenterCrop(args.input_size), 
             transforms.RandomResizedCrop(args.input_size, scale=(0.8, 1.0), ratio=(1, 1), interpolation=2), # 2 is bilinear
