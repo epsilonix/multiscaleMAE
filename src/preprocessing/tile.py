@@ -128,7 +128,7 @@ def gen_tiles(image, slide: str, mat_path, tile_size: int = 20,
     plt.imshow(composite_image)
 
 
-    sample_boundaries_coords = random.sample(all_boundaries_coords, 100)
+    sample_boundaries_coords = random.sample(all_boundaries_coords, 300)
 
     # Initialize list to keep track of centroids and their types
     positions = []
