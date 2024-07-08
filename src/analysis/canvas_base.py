@@ -149,6 +149,72 @@ class Canvas:
         )
         return dataloader
 
+#    def get_tile_embedding(self, dataloader, model, output_suffix='tile_embedding', save_image=False, save_full_emb=False):
+#        output_path = f'{self.save_path}/{output_suffix}'
+#        os.makedirs(output_path, exist_ok=True)
+#
+#        if output_suffix in self.step_dict and 'embedding_mean' in self.step_dict[output_suffix]:
+#            if os.path.exists(self.step_dict[output_suffix]['embedding_mean']):
+#                print('Embedding already exists, skipping')
+#                return
+#
+#        # Setup tensors and lists for storage
+#        data_size = len(dataloader.dataset)
+#        num_channels = len(dataloader.dataset.common_channel_names)
+#        embedding_tensor, image_tensor = None, None
+#        if save_image:
+#            image_tensor = np.zeros((data_size, num_channels, 224, 224))
+#        if save_full_emb:
+#            embedding_tensor = np.zeros((data_size, 196, 1024)).astype(np.float16)
+#
+#        image_mean_tensor = np.zeros((data_size, num_channels))
+#        embedding_mean_tensor = np.zeros((data_size, 1024))
+#        sample_name_list, tile_location_list, celltype_list, boundary_list = [], [], [], []
+#
+#        # Data processing and extraction
+#        with torch.no_grad():
+#            for batch_idx, (img_tensor, (labels, locations, celltypes, boundaries)) in enumerate(tqdm(dataloader)):
+#                data_idx = batch_idx * dataloader.batch_size
+#                temp_size = img_tensor.shape[0]
+#                embedding = self.proc_embedding(img_tensor, model)
+#
+#                sample_name_list.extend(labels)
+#                tile_location_list.extend(locations)
+#                celltype_list.extend(celltypes)
+#                boundary_list.extend(boundaries)
+#
+#                image_mean_tensor[data_idx:data_idx + temp_size] = img_tensor.mean(axis=(2, 3))
+#                embedding_mean_tensor[data_idx:data_idx + temp_size] = embedding.mean(axis=1)
+#                if save_image:
+#                    image_tensor[data_idx:data_idx + temp_size] = img_tensor.numpy()
+#                if save_full_emb:
+#                    embedding_tensor[data_idx:data_idx + temp_size] = embedding
+#
+#        # Save tensors to disk
+#        np.save(os.path.join(output_path, 'image_mean.npy'), image_mean_tensor)
+#        np.save(os.path.join(output_path, 'embedding_mean.npy'), embedding_mean_tensor)
+#        np.save(os.path.join(output_path, 'tile_location.npy'), np.array(tile_location_list))
+#        np.save(os.path.join(output_path, 'sample_name.npy'), np.array(sample_name_list))
+#        np.save(os.path.join(output_path, 'celltypes.npy'), np.array(celltype_list))
+#        np.save(os.path.join(output_path, 'boundaries.npy'), np.array(boundary_list))
+#
+#        if save_image:
+#            np.save(os.path.join(output_path, 'image.npy'), image_tensor)
+#        if save_full_emb:
+#            np.save(os.path.join(output_path, 'embedding.npy'), embedding_tensor)
+#
+#        # Update the step dictionary
+#        tile_dict = {
+#            'image_mean': os.path.join(output_path, 'image_mean.npy'),
+#            'embedding_mean': os.path.join(output_path, 'embedding_mean.npy'),
+#            'tile_location': os.path.join(output_path, 'tile_location.npy'),
+#            'sample_name': os.path.join(output_path, 'sample_name.npy'),
+#            'celltypes': os.path.join(output_path, 'celltypes.npy'),
+#            'boundaries': os.path.join(output_path, 'boundaries.npy')
+#        }
+#        self.step_dict[output_suffix] = tile_dict
+#        self.flush_step_dict()
+
     def get_tile_embedding(self, dataloader, model, output_suffix='tile_embedding', save_image=False, save_full_emb=False):
         output_path = f'{self.save_path}/{output_suffix}'
         os.makedirs(output_path, exist_ok=True)
@@ -163,12 +229,12 @@ class Canvas:
         num_channels = len(dataloader.dataset.common_channel_names)
         embedding_tensor, image_tensor = None, None
         if save_image:
-            image_tensor = np.zeros((data_size, num_channels, 224, 224))
+            image_tensor = np.zeros((data_size, num_channels, 224, 224), dtype=np.float16)
         if save_full_emb:
-            embedding_tensor = np.zeros((data_size, 196, 1024)).astype(np.float16)
+            embedding_tensor = np.zeros((data_size, 196, 1024), dtype=np.float16)
 
-        image_mean_tensor = np.zeros((data_size, num_channels))
-        embedding_mean_tensor = np.zeros((data_size, 1024))
+        image_mean_tensor = np.zeros((data_size, num_channels), dtype=np.float16)
+        embedding_mean_tensor = np.zeros((data_size, 1024), dtype=np.float16)
         sample_name_list, tile_location_list, celltype_list, boundary_list = [], [], [], []
 
         # Data processing and extraction
@@ -183,10 +249,10 @@ class Canvas:
                 celltype_list.extend(celltypes)
                 boundary_list.extend(boundaries)
 
-                image_mean_tensor[data_idx:data_idx + temp_size] = img_tensor.mean(axis=(2, 3))
-                embedding_mean_tensor[data_idx:data_idx + temp_size] = embedding.mean(axis=1)
+                image_mean_tensor[data_idx:data_idx + temp_size] = img_tensor.mean(axis=(2, 3)).astype(np.float16)
+                embedding_mean_tensor[data_idx:data_idx + temp_size] = embedding.mean(axis=1).astype(np.float16)
                 if save_image:
-                    image_tensor[data_idx:data_idx + temp_size] = img_tensor.numpy()
+                    image_tensor[data_idx:data_idx + temp_size] = img_tensor.numpy().astype(np.float16)
                 if save_full_emb:
                     embedding_tensor[data_idx:data_idx + temp_size] = embedding
 
@@ -214,15 +280,25 @@ class Canvas:
         }
         self.step_dict[output_suffix] = tile_dict
         self.flush_step_dict()
+
         
         
+#    def proc_embedding(self, img_tensor, model):
+#        imgs = img_tensor.to(self.device).float()
+#        mask_ratio = 0
+#        with torch.no_grad():
+#            latent, mask, ids_restore = model.forward_encoder(imgs, mask_ratio)
+#            latent_no_cls = latent[:, 1:, :]
+#            restored_latent = torch.gather(latent_no_cls, dim = 1, index = ids_restore.unsqueeze(-1).repeat(1, 1, latent.shape[2])).detach().cpu().numpy()
+#        return restored_latent
+#    
     def proc_embedding(self, img_tensor, model):
         imgs = img_tensor.to(self.device).float()
         mask_ratio = 0
         with torch.no_grad():
             latent, mask, ids_restore = model.forward_encoder(imgs, mask_ratio)
             latent_no_cls = latent[:, 1:, :]
-            restored_latent = torch.gather(latent_no_cls, dim = 1, index = ids_restore.unsqueeze(-1).repeat(1, 1, latent.shape[2])).detach().cpu().numpy()
+            restored_latent = torch.gather(latent_no_cls, dim=1, index=ids_restore.unsqueeze(-1).repeat(1, 1, latent.shape[2])).detach().cpu().numpy().astype(np.float16)
         return restored_latent
 
     def get_umap(self, output_suffix = 'umap'):
