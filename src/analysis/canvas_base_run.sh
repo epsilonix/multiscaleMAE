@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH -t 0-01:00:00
-#SBATCH -p gpu4_long,gpu8_long
+#SBATCH -t 0-05:00:00
+#SBATCH -p gpu4_long,gpu8_long,gpu4_medium,gpu8_medium,gpu4_short,gpu8_short
 #SBATCH -N 1
 #SBATCH --mem=250G
 #SBATCH --tasks-per-node=1
