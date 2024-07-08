@@ -216,6 +216,7 @@ class Canvas:
 #        self.flush_step_dict()
 
 
+
     def get_tile_embedding(self, dataloader, model, output_suffix='tile_embedding', save_image=False, save_full_emb=False):
         output_path = f'{self.save_path}/{output_suffix}'
         os.makedirs(output_path, exist_ok=True)
@@ -228,7 +229,7 @@ class Canvas:
         # Setup tensors and lists for storage
         data_size = len(dataloader.dataset)
         num_channels = len(dataloader.dataset.common_channel_names)
-        embedding_shape = (196, 1024)
+        embedding_shape = (196, 1024)  # Explicitly defining embedding shape
 
         # Use memory mapping for large arrays
         if save_image:
@@ -252,7 +253,7 @@ class Canvas:
                 celltype_list.extend(celltypes)
                 boundary_list.extend(boundaries)
 
-                image_mean_tensor[data_idx:data_idx + temp_size] = img_tensor.mean(axis=(2, 3)).astype(np.float16)
+                image_mean_tensor[data_idx:data_idx + temp_size] = img_tensor.mean(axis=(2, 3)).to(torch.float16).cpu().numpy()
                 embedding_mean_tensor[data_idx:data_idx + temp_size] = embedding.mean(axis=1).astype(np.float16)
                 if save_image:
                     image_tensor[data_idx:data_idx + temp_size] = img_tensor.numpy().astype(np.float16)
@@ -283,6 +284,7 @@ class Canvas:
         }
         self.step_dict[output_suffix] = tile_dict
         self.flush_step_dict()
+
         
         
 #    def proc_embedding(self, img_tensor, model):
