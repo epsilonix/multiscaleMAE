@@ -215,6 +215,7 @@ class Canvas:
 #        self.step_dict[output_suffix] = tile_dict
 #        self.flush_step_dict()
 
+
     def get_tile_embedding(self, dataloader, model, output_suffix='tile_embedding', save_image=False, save_full_emb=False):
         output_path = f'{self.save_path}/{output_suffix}'
         os.makedirs(output_path, exist_ok=True)
@@ -227,11 +228,13 @@ class Canvas:
         # Setup tensors and lists for storage
         data_size = len(dataloader.dataset)
         num_channels = len(dataloader.dataset.common_channel_names)
-        embedding_tensor, image_tensor = None, None
+        embedding_shape = (196, 1024)
+
+        # Use memory mapping for large arrays
         if save_image:
-            image_tensor = np.zeros((data_size, num_channels, 224, 224), dtype=np.float16)
+            image_tensor = np.memmap(f'{output_path}/image_tensor.dat', dtype=np.float16, mode='w+', shape=(data_size, num_channels, 224, 224))
         if save_full_emb:
-            embedding_tensor = np.zeros((data_size, 196, 1024), dtype=np.float16)
+            embedding_tensor = np.memmap(f'{output_path}/embedding_tensor.dat', dtype=np.float16, mode='w+', shape=(data_size, *embedding_shape))
 
         image_mean_tensor = np.zeros((data_size, num_channels), dtype=np.float16)
         embedding_mean_tensor = np.zeros((data_size, 1024), dtype=np.float16)
@@ -265,9 +268,9 @@ class Canvas:
         np.save(os.path.join(output_path, 'boundaries.npy'), np.array(boundary_list))
 
         if save_image:
-            np.save(os.path.join(output_path, 'image.npy'), image_tensor)
+            image_tensor.flush()  # Ensure data is written to disk
         if save_full_emb:
-            np.save(os.path.join(output_path, 'embedding.npy'), embedding_tensor)
+            embedding_tensor.flush()  # Ensure data is written to disk
 
         # Update the step dictionary
         tile_dict = {
@@ -280,7 +283,6 @@ class Canvas:
         }
         self.step_dict[output_suffix] = tile_dict
         self.flush_step_dict()
-
         
         
 #    def proc_embedding(self, img_tensor, model):
