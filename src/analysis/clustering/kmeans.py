@@ -31,19 +31,19 @@ def clustering(emb_path, umap_path, n_clusters, save_path):
         f.write(str(kmeans_inertia))
     print('Kmeans inertia saved')
 
-    print('Plotting clusters on UMAP')
-    umap_embedding = np.load(umap_path)
-    fig, ax = plt.subplots(figsize=(10, 10))
-    if n_clusters <= 20:
-        palette = 'tab20'
-    else:
-        palette = 'gist_ncar'
-        
-    sns.scatterplot(x=umap_embedding[:, 0], y=umap_embedding[:, 1], size=1, hue=kmeans_labels, palette=palette, legend='full')
-    plt.title(f'K-means {n_clusters} clusters')
-    plt.legend(bbox_to_anchor=(1.1, 1.05))
-    plt.savefig(save_path.replace('.npy', '.png'))
-    plt.clf()
+#    print('Plotting clusters on UMAP')
+#    umap_embedding = np.load(umap_path)
+#    fig, ax = plt.subplots(figsize=(10, 10))
+#    if n_clusters <= 20:
+#        palette = 'tab20'
+#    else:
+#        palette = 'gist_ncar'
+#        
+#    sns.scatterplot(x=umap_embedding[:, 0], y=umap_embedding[:, 1], size=1, hue=kmeans_labels, palette=palette, legend='full')
+#    plt.title(f'K-means {n_clusters} clusters')
+#    plt.legend(bbox_to_anchor=(1.1, 1.05))
+#    plt.savefig(save_path.replace('.npy', '.png'))
+#    plt.clf()
     
     # Range of clusters to try
     k_range = range(2, 50)
