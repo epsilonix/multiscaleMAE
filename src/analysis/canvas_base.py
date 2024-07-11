@@ -24,7 +24,7 @@ def main():
     print("First Batch:", first_batch)
     
     model = canvas.load_model(dataloader)
-    canvas.get_tile_embedding(dataloader, model, save_full_emb = True)
+    canvas.get_tile_embedding(dataloader, model, save_full_emb = False)
 #
 ##    # Generate UMAP
 #    canvas.get_umap()
