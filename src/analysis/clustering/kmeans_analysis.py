@@ -9,11 +9,15 @@ def load_embeddings(file_path):
     return np.load(file_path)
 
 def calculate_kmeans_and_scores(n_clusters, embeddings):
-    print(f"Calculating for {n_clusters} clusters...")
-    kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init='auto').fit(embeddings)
-    distortion = kmeans.inertia_
-    silhouette_avg = silhouette_score(embeddings, kmeans.labels_)
-    return n_clusters, distortion, silhouette_avg
+    try:
+        print(f"Calculating for {n_clusters} clusters...")
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10).fit(embeddings)
+        distortion = kmeans.inertia_
+        silhouette_avg = silhouette_score(embeddings, kmeans.labels_)
+        return n_clusters, distortion, silhouette_avg
+    except Exception as e:
+        print(f"Error calculating for {n_clusters} clusters: {e}")
+        return n_clusters, None, None
 
 def plot_elbow_method(k_values, distortions, output_path):
     plt.figure(figsize=(10, 6))
@@ -44,8 +48,8 @@ def main():
     # Parallel processing for KMeans and silhouette score computation
     results = Parallel(n_jobs=-1)(delayed(calculate_kmeans_and_scores)(k, embeddings) for k in k_values)
 
-    # Unpack the results
-    k_values, distortions, silhouette_scores = zip(*results)
+    # Filter out results with errors
+    k_values, distortions, silhouette_scores = zip(*[(k, d, s) for k, d, s in results if d is not None and s is not None])
 
     plot_elbow_method(k_values, distortions, output_path)
     plot_silhouette_scores(k_values, silhouette_scores, output_path)
