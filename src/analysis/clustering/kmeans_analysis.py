@@ -1,13 +1,18 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.metrics import silhouette_score
 import os
 import time
-from joblib import Parallel, delayed
 
 def load_embeddings(file_path):
-    return np.load(file_path)
+    return np.load(file_path).astype(np.float16)
+
+def reduce_dimensions(embeddings, n_components=50):
+    pca = PCA(n_components=n_components)
+    reduced_embeddings = pca.fit_transform(embeddings)
+    return reduced_embeddings
 
 def calculate_kmeans_and_scores(n_clusters, embeddings):
     try:
@@ -48,6 +53,9 @@ def main():
 
     embeddings = load_embeddings(input_path)
 
+    # Reduce dimensions to avoid memory overflow
+    reduced_embeddings = reduce_dimensions(embeddings, n_components=50)
+
     k_values = range(5, 31)
     distortions = []
     silhouette_scores = []
@@ -55,11 +63,8 @@ def main():
 
     total_start_time = time.time()
 
-    # Parallel processing with controlled memory usage
-    results = Parallel(n_jobs=4)(delayed(calculate_kmeans_and_scores)(k, embeddings) for k in k_values)
-
-    for result in results:
-        n_clusters, distortion, silhouette_avg, elapsed_time = result
+    for k in k_values:
+        n_clusters, distortion, silhouette_avg, elapsed_time = calculate_kmeans_and_scores(k, reduced_embeddings)
         if distortion is not None and silhouette_avg is not None:
             distortions.append(distortion)
             silhouette_scores.append(silhouette_avg)
