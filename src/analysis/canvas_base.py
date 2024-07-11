@@ -405,7 +405,7 @@ class Canvas:
 #                print('Embedding already exist, skipping')
 #                return 
         from analysis.clustering import kmeans_no_umap
-        kmeans_no_umap.clustering(self.step_dict['tile_embedding']['embedding_mean'], n_clusters, save_path)
+        kmeans.clustering(self.step_dict['tile_embedding']['embedding_mean'], n_clusters, save_path)
         data_dict = {'labels' : save_path}
         self.step_dict[output_suffix] = data_dict
         self.flush_step_dict()
