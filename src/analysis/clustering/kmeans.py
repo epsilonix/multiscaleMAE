@@ -9,13 +9,13 @@ import sklearn.cluster as cluster
 
 def main():
     emb_path = sys.argv[1]
-    umap_path = sys.argv[2]
-    n_clusters = int(sys.argv[3])
-    save_path = sys.argv[4]
+    # umap_path = sys.argv[2]
+    n_clusters = int(sys.argv[2])
+    save_path = sys.argv[3]
 
-    clustering(emb_path, umap_path, n_clusters, save_path)
+    clustering(emb_path, n_clusters, save_path)
 
-def clustering(emb_path, umap_path, n_clusters, save_path):
+def clustering(emb_path, n_clusters, save_path):
 
     embedding = np.load(emb_path)
     print(f'Embedding loaded from path {emb_path}')
