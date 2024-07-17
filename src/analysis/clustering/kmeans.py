@@ -46,7 +46,7 @@ def clustering(emb_path, umap_path, n_clusters, save_path):
 #    plt.clf()
     
     # Range of clusters to try
-    k_range = range(2, 50)
+    k_range = range(2, 60)
 
     inertias = []  # List to collect the within-cluster sum of squares
     silhouette_scores = []  # List to collect the silhouette scores
