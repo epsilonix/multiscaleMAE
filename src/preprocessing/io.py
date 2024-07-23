@@ -5,7 +5,7 @@ import numpy as np
 from skimage.draw import polygon
 
 def qptiff_to_zarr(input_file, output_root, mat_data, chunk_size=(None, 256, 256)):
-    channels_to_exclude = [0, 5, 11, 13]  # Define the channels to exclude
+    channels_to_exclude = []  # Define the channels to exclude
 
     # Check if output file already exists
     output_path = os.path.join(output_root, os.path.basename(input_file).replace('.tif', ''))
