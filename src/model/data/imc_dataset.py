@@ -168,9 +168,9 @@ class SlidesDataset(data.Dataset):
         import os
 
         # Initialize accumulators for mean and std values
-        mean_accumulator = np.zeros(20)
-        std_accumulator = np.zeros(20)
-        count_accumulator = np.zeros(20)
+        mean_accumulator = np.zeros(38)
+        std_accumulator = np.zeros(38)
+        count_accumulator = np.zeros(38)
         stats_path = f'{self.slides_root_path}/../stats'
 
         if os.path.exists(f'{stats_path}/mean.npy') and os.path.exists(f'{stats_path}/std.npy'):
@@ -184,8 +184,8 @@ class SlidesDataset(data.Dataset):
             for i in tqdm(rand_indices):
                 image, label = self.__getitem__(i)
 
-                if image.shape[0] != 20:
-                    raise ValueError(f"Expected 20 channels, but got {image.shape[0]} channels in image {i}")
+                if image.shape[0] != 38:
+                    raise ValueError(f"Expected 38 channels, but got {image.shape[0]} channels in image {i}")
                 print(f'get_normalization_stats label is {label}')
                 
                 img_name = label if isinstance(label, str) else label[0]
@@ -195,11 +195,11 @@ class SlidesDataset(data.Dataset):
                     exclude_list = ['Olig2', 'Sox2', 'Sox9']
 
                 # Create a mask to zero-out the excluded channels
-                mask = np.ones(20, dtype=bool)
+                mask = np.ones(38, dtype=bool)
                 for name in exclude_list:
                     mask[self.common_channel_names.index(name)] = False
 
-                for idx in range(20):
+                for idx in range(38):
                     if mask[idx]:
                         mean_accumulator[idx] += image[idx, :, :].mean()
                         std_accumulator[idx] += image[idx, :, :].std()
