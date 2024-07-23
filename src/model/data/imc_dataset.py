@@ -190,9 +190,9 @@ class SlidesDataset(data.Dataset):
                 
                 img_name = label if isinstance(label, str) else label[0]
                 if img_name.startswith('Glioma_'):
-                    exclude_list = ['MeLanA', 'PMEL', 'PanCK']
+                    exclude_list = ['MeLanA', 'PMEL', 'PanCK','CIRP', 'pERK']
                 else:  # BrM images
-                    exclude_list = ['Olig2', 'Sox2', 'Sox9']
+                    exclude_list = ['Olig2', 'Sox2', 'Sox9','CD206', 'CD40']
 
                 # Create a mask to zero-out the excluded channels
                 mask = np.ones(38, dtype=bool)
