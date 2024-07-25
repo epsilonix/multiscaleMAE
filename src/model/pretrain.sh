@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH -t 9-00:00:00
+#SBATCH -t 10-00:00:00
 #SBATCH -p gpu4_long,gpu8_long
 #SBATCH -N 1
 #SBATCH --mem=300G
@@ -19,7 +19,7 @@ torchrun \
     --nnodes=1 \
     --nproc_per_node=8 \
     /gpfs/scratch/ss14424/singlecell/src/model/main_pretrain.py \
-        --epoch 201 \
+        --epoch 1001 \
         --batch_size 32 \
         --tile_size 20 \
         --output_dir "/gpfs/scratch/ss14424/Brain/channels_38/cells/model_output_20" \
