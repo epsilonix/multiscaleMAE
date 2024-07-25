@@ -1,19 +1,11 @@
-# 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
-# Generating tiles for a given zarr image
 import os
 import zarr
 import numpy as np
 from skimage.measure import block_reduce
-from skimage.transform import resize
 from skimage.io import imsave
 from scipy.io import loadmat
-import tifffile as tf
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import random
-from matplotlib.patches import Rectangle
-import imageio
-import zarr
 import json
 
 colors = [
@@ -40,8 +32,7 @@ colors = [
     (50, 205, 50),  # Sox9
     (255, 20, 147),  # MeLanA, pink
     (186, 85, 211),  # PMEL, medium orchid
-    (0, 128, 0), # PanCK, green 
-    (0, 0, 0),
+    (0, 128, 0),    # PanCK, green 
     (0, 0, 0),
     (0, 0, 0),
     (0, 0, 0),
@@ -61,6 +52,8 @@ colors = [
     (0, 0, 0)
 ]
 
+very_common_cell_types = {'Cancer', 'Astrocytes', 'Cl BMDM', 'Alt BMDM', 'Endothelial cell', 'Cl MG', 'Alt MG'}
+
 def calculate_polygon_area(coords):
     """Calculate the area of a polygon using the shoelace formula.
 
@@ -76,24 +69,21 @@ def calculate_polygon_area(coords):
     return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
 
 def gen_tiles(image, slide: str, mat_path, tile_size: int = 20, 
-              output_path: str = None, image_filename: str = None) -> np.ndarray:
+              output_path: str = None, image_filename: str = None,
+              mode: str = 'inference') -> np.ndarray:
     ''' Generate tiles for a given slide '''
     print(f'Slide type is {type(slide)}')
     if output_path is None: output_path = f'{os.path.dirname(slide)}'
     output_path += '/tiles/'
     os.makedirs(output_path, exist_ok=True)
+    
     # Read slide
     print('Reading slide...')
     print(f'IMG has a dimension of {slide.shape}')
     if isinstance(slide, str):
         slide = zarr.load(slide)
     print(f'ZARR IMG has a dimension of {slide.shape}')
-    # Generate and save thumbnail
-    print('Generating thumbnail...')
-    #thumbnail = gen_thumbnail(slide, scaling_factor=tile_size // 4)
-    #save_img(output_path, 'thumbnail', tile_size // 4, thumbnail)
-    # Generate and save mask
-
+    
     # Extract 'Boundaries' and 'cellTypes' data
     boundaries_info = mat_path['Boundaries']
     cell_types = mat_path['cellTypes']
@@ -116,8 +106,6 @@ def gen_tiles(image, slide: str, mat_path, tile_size: int = 20,
 
         # Calculate the area of the boundary
         area = calculate_polygon_area(boundary_coords)
-
-
 
         # Get the corresponding cell type, handle empty or undefined types
         cell_type = cell_types[i][0][0] if cell_types[i][0].size > 0 else 'Unknown'
@@ -145,15 +133,35 @@ def gen_tiles(image, slide: str, mat_path, tile_size: int = 20,
     plt.figure(figsize=(15, 15))  # Adjust the figure size as needed
     plt.imshow(composite_image)
 
-    #num_coords = len(all_boundaries_coords)
-    #sample_size = min(num_coords, 300)  # Get the minimum of 300 and actual number of coordinates
-    #sample_boundaries_coords = random.sample(all_boundaries_coords, sample_size)
-    
-    #Use all coords
-    sample_boundaries_coords = all_boundaries_coords.copy()
-    
     # Initialize list to keep track of centroids and their types
     positions = []
+
+    # Dictionary to keep track of sampled cell counts in training mode
+    sampled_cell_counts = {cell_type: 0 for cell_type in very_common_cell_types}
+
+    # Sample boundaries based on the mode
+    sample_boundaries_coords = []
+    if mode == 'training':
+        # Sample up to 100 cells for very common cell types
+        cell_type_groups = {cell_type: [] for cell_type in very_common_cell_types}
+        other_cell_types = []
+
+        for boundary_info in all_boundaries_coords:
+            boundary_coords, cell_type = boundary_info
+            if cell_type in very_common_cell_types:
+                cell_type_groups[cell_type].append(boundary_info)
+            else:
+                other_cell_types.append(boundary_info)
+
+        for cell_type, boundaries in cell_type_groups.items():
+            sample_count = min(len(boundaries), 100)
+            sampled_boundaries = random.sample(boundaries, sample_count)
+            sample_boundaries_coords.extend(sampled_boundaries)
+            sampled_cell_counts[cell_type] += sample_count
+
+        sample_boundaries_coords.extend(other_cell_types)
+    else:
+        sample_boundaries_coords = all_boundaries_coords.copy()
 
     # Plot each boundary and calculate centroids
     for boundary_info in sample_boundaries_coords:
@@ -177,30 +185,12 @@ def gen_tiles(image, slide: str, mat_path, tile_size: int = 20,
             top_left_y = centroid_y - half_side_length
             positions.append((top_left_y, top_left_x, cell_type, [(int(y), int(x)) for x, y in boundary_coords]))
 
-
-
-            
-#       UNCOMMENT THIS BLOCK IF YOU WANT PLOTS
-#            # Create and add the square as a rectangle patch
-#            centroid_square = Rectangle((top_left_x, top_left_y), 2 * half_side_length, 2 * half_side_length,
-#                                    linewidth=0.5, edgecolor='yellow', facecolor='none')  # Adjust as needed
-#            plt.gca().add_patch(centroid_square)
-#            plt.scatter(top_left_x, top_left_y, color='red', s=1) 
-#
-#    full_image_path = os.path.join(output_path, image_filename)
-#    plt.savefig(full_image_path, dpi=300)
-#    plt.clf()
-
-    
-    ###
-
     with open(os.path.join(output_path, f'positions_{tile_size}.csv'), 'w') as f:
         f.write(' ,h,w,celltype,boundary\n')
         for i, (h, w, celltype, boundary) in enumerate(positions):
             boundary_str = json.dumps(boundary)
             f.write(f'{i},{h},{w},{celltype},"{boundary_str}"\n')
     print(f'Generated {len(positions)} tiles for slide with shape {slide.shape}')
-
 
 def save_img(output_path: str, task: str, tile_size: int, img: np.ndarray):
     ''' Save image to output path '''
@@ -220,4 +210,3 @@ def gen_thumbnail(slide: zarr, scaling_factor: int) -> np.ndarray:
     cache /= cache.max()
     thumbnail = np.clip(cache, 0, 1).squeeze()
     return thumbnail
-
