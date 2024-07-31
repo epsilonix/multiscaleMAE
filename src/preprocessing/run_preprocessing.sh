@@ -13,8 +13,8 @@ source activate /gpfs/home/ss14424/.conda/envs/canvas-env
 
 python \
 /gpfs/scratch/ss14424/singlecell/src/preprocessing/preprocess.py \
-/gpfs/scratch/ss14424/Brain/channels_38/tif \
+/gpfs/scratch/ss14424/Brain/channels_37/tif \
 /gpfs/scratch/ss14424/Brain/data/celltype \
-/gpfs/scratch/ss14424/Brain/channels_38/cells/img_output_20_train \
+/gpfs/scratch/ss14424/Brain/channels_37/cells/img_output_20_train \
 20 \
 training

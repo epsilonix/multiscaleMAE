@@ -5,9 +5,8 @@ import pandas as pd
 import torch.utils.data as data
 from model.data.slide_dataset import SlideDataset
 
-# Declare the paths to the channel txt and csv files as variables near the top
-CHANNEL_TXT_PATH = '/gpfs/scratch/ss14424/Brain/channels_38/common_channels_38.txt'
-CHANNEL_CSV_PATH = '/gpfs/scratch/ss14424/Brain/channels_38/channels_38.csv'
+CHANNEL_TXT_PATH = '/gpfs/scratch/ss14424/Brain/channels_37/channels_37.txt'
+CHANNEL_CSV_PATH = '/gpfs/scratch/ss14424/Brain/channels_37/channels_37.csv'
 
 class NPYDataset(SlideDataset):
 
@@ -168,11 +167,11 @@ class SlidesDataset(data.Dataset):
         import os
 
         # Initialize accumulators for mean and std values
-        mean_accumulator = np.zeros(38)
-        std_accumulator = np.zeros(38)
-        count_accumulator = np.zeros(38)
+        mean_accumulator = np.zeros(37)
+        std_accumulator = np.zeros(37)
+        count_accumulator = np.zeros(37)
         stats_path = f'{self.slides_root_path}/../stats'
-
+        print(f'stats_path is {stats_path}')
         if os.path.exists(f'{stats_path}/mean.npy') and os.path.exists(f'{stats_path}/std.npy'):
             mean = np.load(f'{stats_path}/mean.npy')
             std = np.load(f'{stats_path}/std.npy')
@@ -184,8 +183,8 @@ class SlidesDataset(data.Dataset):
             for i in tqdm(rand_indices):
                 image, label = self.__getitem__(i)
 
-                if image.shape[0] != 38:
-                    raise ValueError(f"Expected 38 channels, but got {image.shape[0]} channels in image {i}")
+                if image.shape[0] != 37:
+                    raise ValueError(f"Expected 37 channels, but got {image.shape[0]} channels in image {i}")
                 print(f'get_normalization_stats label is {label}')
                 
                 img_name = label if isinstance(label, str) else label[0]
@@ -195,11 +194,11 @@ class SlidesDataset(data.Dataset):
                     exclude_list = ['Olig2', 'Sox2', 'Sox9','CD206', 'CD40']
 
                 # Create a mask to zero-out the excluded channels
-                mask = np.ones(38, dtype=bool)
+                mask = np.ones(37, dtype=bool)
                 for name in exclude_list:
                     mask[self.common_channel_names.index(name)] = False
 
-                for idx in range(38):
+                for idx in range(37):
                     if mask[idx]:
                         mean_accumulator[idx] += image[idx, :, :].mean()
                         std_accumulator[idx] += image[idx, :, :].std()
