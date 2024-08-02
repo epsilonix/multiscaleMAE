@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 def main():
     # Initialize CANVAS
-    data_path = '/gpfs/scratch/ss14424/Brain/channels_20/cells/img_output_16_all'
+    data_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells/img_output_16_all'
     model_path = '/gpfs/scratch/ss14424/Brain/channels_20/cells/model_output_20_all/checkpoint-200.pth'
     save_path = '/gpfs/scratch/ss14424/Brain/channels_20/cells/analysis_output_all_200/'
     canvas = Canvas(model_path, data_path, save_path)
@@ -25,46 +25,15 @@ def main():
     
     model = canvas.load_model(dataloader)
     canvas.get_tile_embedding(dataloader, model, save_full_emb = False)
-#
-##    # Generate UMAP
-#    canvas.get_umap()
-#    color_map = {
-#        'red': 'CD117',
-#        'green': 'CD11c',
-#        'blue': 'CD14',
-#        'cyan': 'CD163',
-#        'magenta': 'CD16',
-#        'yellow': 'CD20',
-#        'orange': 'CD31',
-#        'lime': 'CD3',
-#        'pink': 'CD4',
-#        'grey': 'CD68',
-#        'olive': 'CD8',
-#        'brown': 'CD94',
-#        'navy': 'DNA1',
-#        'teal': 'FoxP3',
-#        'maroon': 'HLA-DR',
-#        'purple': 'MPO',
-#        'gold': 'Olig2',
-#        'lavender': 'P2PY12',
-#        'skyblue': 'Sox2', 
-#        'violet': 'Sox9' 
-#    }
-##    # Plot umap
-#    canvas.get_umap_mosaic(dataloader, color_map)
-#    canvas.color_umap(dataloader)
-#    
-    # Clustering
+
+
     canvas.clustering(n_clusters = 60)
-    
-    # heatmap
-    #canvas.heatmap()
     
     
 class Canvas:
 
     def __init__(self, model_path : str, data_path : str, save_path : str,
-                 tile_size : int = 16, 
+                 tile_size, 
                  device : str = 'cuda:0') -> None:
         self.model_path = model_path
         self.data_path = data_path
@@ -100,32 +69,6 @@ class Canvas:
         print('State dicts loaded')
         model.eval()
         return model 
-    
-#    def custom_collate_fn(self, batch):
-#        data_list = []
-#        sample_names = []
-#        coordinates_list = []
-#
-#        for idx, (data, (sample_name, coordinates)) in enumerate(batch):
-#            if data.shape != torch.Size([17, 224, 224]):
-#                print(f"Skipping batch index: {idx}, shape: {data.shape}")
-#                continue
-#
-#            data_list.append(data)
-#            sample_names.append(sample_name)
-#            coordinates_list.append(torch.tensor(coordinates))
-#
-#        if not data_list:
-#            raise ValueError("All data in this batch have incorrect shapes.")
-#
-#        data_stacked = torch.stack(data_list, 0)
-#        coordinates_stacked = torch.stack(coordinates_list, 0)
-#
-#        assert len(sample_names) == data_stacked.size(0), "Sample names and data batch size mismatch."
-#
-#        return data_stacked, (sample_names, coordinates_stacked)  # Return data in the expected format
-
-
 
 
     def load_dataset(self, batch_size = 64, num_workers = 20):
@@ -143,78 +86,10 @@ class Canvas:
         dataloader= torch.utils.data.DataLoader(
             dataset, 
             batch_size=batch_size,
-#            collate_fn=self.custom_collate_fn,
             num_workers=num_workers,
             drop_last=False,
         )
         return dataloader
-
-#    def get_tile_embedding(self, dataloader, model, output_suffix='tile_embedding', save_image=False, save_full_emb=False):
-#        output_path = f'{self.save_path}/{output_suffix}'
-#        os.makedirs(output_path, exist_ok=True)
-#
-#        if output_suffix in self.step_dict and 'embedding_mean' in self.step_dict[output_suffix]:
-#            if os.path.exists(self.step_dict[output_suffix]['embedding_mean']):
-#                print('Embedding already exists, skipping')
-#                return
-#
-#        # Setup tensors and lists for storage
-#        data_size = len(dataloader.dataset)
-#        num_channels = len(dataloader.dataset.common_channel_names)
-#        embedding_tensor, image_tensor = None, None
-#        if save_image:
-#            image_tensor = np.zeros((data_size, num_channels, 224, 224))
-#        if save_full_emb:
-#            embedding_tensor = np.zeros((data_size, 196, 1024)).astype(np.float16)
-#
-#        image_mean_tensor = np.zeros((data_size, num_channels))
-#        embedding_mean_tensor = np.zeros((data_size, 1024))
-#        sample_name_list, tile_location_list, celltype_list, boundary_list = [], [], [], []
-#
-#        # Data processing and extraction
-#        with torch.no_grad():
-#            for batch_idx, (img_tensor, (labels, locations, celltypes, boundaries)) in enumerate(tqdm(dataloader)):
-#                data_idx = batch_idx * dataloader.batch_size
-#                temp_size = img_tensor.shape[0]
-#                embedding = self.proc_embedding(img_tensor, model)
-#
-#                sample_name_list.extend(labels)
-#                tile_location_list.extend(locations)
-#                celltype_list.extend(celltypes)
-#                boundary_list.extend(boundaries)
-#
-#                image_mean_tensor[data_idx:data_idx + temp_size] = img_tensor.mean(axis=(2, 3))
-#                embedding_mean_tensor[data_idx:data_idx + temp_size] = embedding.mean(axis=1)
-#                if save_image:
-#                    image_tensor[data_idx:data_idx + temp_size] = img_tensor.numpy()
-#                if save_full_emb:
-#                    embedding_tensor[data_idx:data_idx + temp_size] = embedding
-#
-#        # Save tensors to disk
-#        np.save(os.path.join(output_path, 'image_mean.npy'), image_mean_tensor)
-#        np.save(os.path.join(output_path, 'embedding_mean.npy'), embedding_mean_tensor)
-#        np.save(os.path.join(output_path, 'tile_location.npy'), np.array(tile_location_list))
-#        np.save(os.path.join(output_path, 'sample_name.npy'), np.array(sample_name_list))
-#        np.save(os.path.join(output_path, 'celltypes.npy'), np.array(celltype_list))
-#        np.save(os.path.join(output_path, 'boundaries.npy'), np.array(boundary_list))
-#
-#        if save_image:
-#            np.save(os.path.join(output_path, 'image.npy'), image_tensor)
-#        if save_full_emb:
-#            np.save(os.path.join(output_path, 'embedding.npy'), embedding_tensor)
-#
-#        # Update the step dictionary
-#        tile_dict = {
-#            'image_mean': os.path.join(output_path, 'image_mean.npy'),
-#            'embedding_mean': os.path.join(output_path, 'embedding_mean.npy'),
-#            'tile_location': os.path.join(output_path, 'tile_location.npy'),
-#            'sample_name': os.path.join(output_path, 'sample_name.npy'),
-#            'celltypes': os.path.join(output_path, 'celltypes.npy'),
-#            'boundaries': os.path.join(output_path, 'boundaries.npy')
-#        }
-#        self.step_dict[output_suffix] = tile_dict
-#        self.flush_step_dict()
-
 
 
     def get_tile_embedding(self, dataloader, model, output_suffix='tile_embedding', save_image=False, save_full_emb=False):
@@ -285,17 +160,7 @@ class Canvas:
         self.step_dict[output_suffix] = tile_dict
         self.flush_step_dict()
 
-        
-        
-#    def proc_embedding(self, img_tensor, model):
-#        imgs = img_tensor.to(self.device).float()
-#        mask_ratio = 0
-#        with torch.no_grad():
-#            latent, mask, ids_restore = model.forward_encoder(imgs, mask_ratio)
-#            latent_no_cls = latent[:, 1:, :]
-#            restored_latent = torch.gather(latent_no_cls, dim = 1, index = ids_restore.unsqueeze(-1).repeat(1, 1, latent.shape[2])).detach().cpu().numpy()
-#        return restored_latent
-#    
+      
     def proc_embedding(self, img_tensor, model):
         imgs = img_tensor.to(self.device).float()
         mask_ratio = 0

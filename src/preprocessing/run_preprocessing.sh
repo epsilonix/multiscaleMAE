@@ -9,12 +9,14 @@
 #SBATCH --job-name=preprocessing_MAE
 #SBATCH --output=/gpfs/scratch/ss14424/logs/preprocess_%j.log
 
+
+#modes are training and inference
 source activate /gpfs/home/ss14424/.conda/envs/canvas-env
 
 python \
 /gpfs/scratch/ss14424/singlecell/src/preprocessing/preprocess.py \
 /gpfs/scratch/ss14424/Brain/channels_37/tif \
 /gpfs/scratch/ss14424/Brain/data/celltype \
-/gpfs/scratch/ss14424/Brain/channels_37/cells/img_output_20_train \
-20 \
-training
+/gpfs/scratch/ss14424/Brain/channels_37/cells/img_output_16 \
+16 \
+inference
