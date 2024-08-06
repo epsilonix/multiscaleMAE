@@ -13,7 +13,7 @@ from tqdm import tqdm
 def main():
     # Initialize CANVAS
     data_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells/img_output_16'
-    model_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells/model_output_20/checkpoint-300.pth'
+    model_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells/model_output_20/checkpoint-340.pth'
     save_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells/analysis_output/'
     tile_size = 16
     canvas = Canvas(model_path, data_path, save_path, tile_size)
