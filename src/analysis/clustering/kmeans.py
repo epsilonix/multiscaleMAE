@@ -6,6 +6,7 @@ import os
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from joblib import Parallel, delayed
+import argparse
 
 def clustering(emb_path, n_clusters, save_path):
 
@@ -18,7 +19,7 @@ def clustering(emb_path, n_clusters, save_path):
     
     np.save(save_path, kmeans_labels)
     print(f'Saved K-means labels to {save_path}')
-    with open(os.path.join(save_path, 'kmeans_inertia.txt'), 'w') as f:
+    with open(os.path.join(os.path.dirname(save_path), 'kmeans_inertia.txt'), 'w') as f:
         f.write(str(kmeans_inertia))
     print('K-means inertia saved')
     
@@ -41,7 +42,7 @@ def clustering(emb_path, n_clusters, save_path):
     )
 
     # Specify the output directory for the plots
-    output_dir = os.path.join(save_path, 'plots')
+    output_dir = os.path.join(os.path.dirname(save_path), 'plots')
     os.makedirs(output_dir, exist_ok=True)  # Create the output directory if it doesn't exist
 
     # Plotting the Elbow Method graph
@@ -67,7 +68,11 @@ def clustering(emb_path, n_clusters, save_path):
     plt.close()  # Close the plot to free memory
 
 if __name__ == '__main__':
-    save_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells/analysis_output/'  # Replace with your actual save path
-    emb_path = os.path.join(save_path, 'tile_embedding', 'embedding_mean.npy')
-    n_clusters = 60  # Specify the number of clusters for the initial KMeans clustering
-    clustering(emb_path, n_clusters, save_path)
+    parser = argparse.ArgumentParser(description="KMeans clustering")
+    parser.add_argument('emb_path', type=str, help='Path to the embedding file (npy format)')
+    parser.add_argument('n_clusters', type=int, help='Number of clusters for KMeans')
+    parser.add_argument('save_path', type=str, help='Path to save the KMeans labels (npy format)')
+    
+    args = parser.parse_args()
+    
+    clustering(args.emb_path, args.n_clusters, args.save_path)
