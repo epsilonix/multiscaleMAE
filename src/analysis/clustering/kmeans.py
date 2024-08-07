@@ -16,8 +16,8 @@ def clustering(emb_path, n_clusters, save_path):
     print(f'kmeans_labels: {kmeans_labels}')
     kmeans_inertia = kmeans.inertia_
     
-    np.save(os.path.join(save_path, 'kmeans_labels.npy'), kmeans_labels)
-    print(f'Saved K-means labels to {os.path.join(save_path, "kmeans_labels.npy")}')
+    np.save(save_path, kmeans_labels)
+    print(f'Saved K-means labels to {save_path}')
     with open(os.path.join(save_path, 'kmeans_inertia.txt'), 'w') as f:
         f.write(str(kmeans_inertia))
     print('K-means inertia saved')
@@ -67,7 +67,7 @@ def clustering(emb_path, n_clusters, save_path):
     plt.close()  # Close the plot to free memory
 
 if __name__ == '__main__':
-    save_path = '/gpfs/scratch/ss14424/Brain/channels_37/tiles/analysis_output_64/'  # Replace with your actual save path
+    save_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells/analysis_output/'  # Replace with your actual save path
     emb_path = os.path.join(save_path, 'tile_embedding', 'embedding_mean.npy')
-    n_clusters = 40  # Specify the number of clusters for the initial KMeans clustering
+    n_clusters = 60  # Specify the number of clusters for the initial KMeans clustering
     clustering(emb_path, n_clusters, save_path)
