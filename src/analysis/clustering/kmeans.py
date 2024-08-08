@@ -38,13 +38,10 @@ def clustering(emb_path, n_clusters, save_path):
         for k in k_range
     )
 
-    # Specify the output directory for the plots
-    output_dir = os.path.join(os.path.dirname(save_path), 'plots')
-    os.makedirs(output_dir, exist_ok=True)  # Create the output directory if it doesn't exist
-
-    # Paths for the plot files
-    elbow_plot_path = os.path.join(output_dir, 'elbow_method_plot.png')
-    silhouette_plot_path = os.path.join(output_dir, 'silhouette_score_plot.png')
+    # Paths for the plot files in the main directory
+    main_dir = os.path.dirname(save_path)
+    elbow_plot_path = os.path.join(main_dir, 'elbow_method_plot.png')
+    silhouette_plot_path = os.path.join(main_dir, 'silhouette_score_plot.png')
 
     # Check if Elbow Method plot exists
     if not os.path.exists(elbow_plot_path):
@@ -54,7 +51,7 @@ def clustering(emb_path, n_clusters, save_path):
         plt.xlabel('Number of clusters, k')
         plt.ylabel('Inertia')
         plt.xticks(k_range)
-        plt.savefig(elbow_plot_path)  # Save the figure
+        plt.savefig(elbow_plot_path)  # Save the figure in the main directory
         plt.close()  # Close the plot to free memory
         print(f'Elbow Method plot saved at {elbow_plot_path}')
     else:
@@ -68,7 +65,7 @@ def clustering(emb_path, n_clusters, save_path):
         plt.xlabel('Number of clusters, k')
         plt.ylabel('Silhouette Score')
         plt.xticks(k_range)
-        plt.savefig(silhouette_plot_path)  # Save the figure
+        plt.savefig(silhouette_plot_path)  # Save the figure in the main directory
         plt.close()  # Close the plot to free memory
         print(f'Silhouette Score plot saved at {silhouette_plot_path}')
     else:
