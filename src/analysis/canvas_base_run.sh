@@ -10,7 +10,7 @@
 #SBATCH --output=/gpfs/scratch/ss14424/logs/infer_singlecell%j.log
 
 
-source activate /gpfs/home/ss14424/.conda/envs/canvas-env
+source activate /gpfs/data/tsirigoslab/home/ss14424/.conda/envs/canvas_env
 
 python src/analysis/canvas_base.py
 
