@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH -t 10-00:00:00
-#SBATCH -p gpu4_long,gpu8_long
+#SBATCH -t 3-00:00:00
+#SBATCH -p gpu4_long,gpu8_long,gpu4_medium,gpu8_medium
 #SBATCH -N 1
 #SBATCH --mem=300G
 #SBATCH --tasks-per-node=1
-#SBATCH --cpus-per-task=20
+#SBATCH --cpus-per-task=35
 #SBATCH --gres=gpu:8
 #SBATCH --job-name=train_37chan_20px_all_filtered
 #SBATCH --output=/gpfs/scratch/ss14424/logs/train_37chan_20px_all_filtered_%j.log
