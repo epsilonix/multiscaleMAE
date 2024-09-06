@@ -25,3 +25,4 @@ torchrun \
         --output_dir "/gpfs/scratch/ss14424/Brain/channels_37/cells_filtered/model_output_20_new" \
         --log_dir "/gpfs/scratch/ss14424/logs" \
         --data_path "/gpfs/scratch/ss14424/Brain/channels_37/cells_filtered/img_output_20"
+        --blankoutbg

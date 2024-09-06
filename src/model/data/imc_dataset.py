@@ -127,13 +127,13 @@ class SlidesDataset(data.Dataset):
         self.slides_root_path = slides_root_path
         self.tile_size = tile_size
         self.transform = transform
-        
+        self.blankoutbg = blankoutbg
         
         # Get id and path for all slides
         slide_ids = self.get_slide_paths(slides_root_path)
         self.common_channel_names = self.get_common_channel_names(self.slides_root_path)
 
-        self.slides_dict, self.lengths = self.get_slides(slide_ids, dataset_class, self.common_channel_names)
+        self.slides_dict, self.lengths = self.get_slides(slide_ids, dataset_class, self.common_channel_names,self.blankoutbg)
         self.mean = None
         self.std = None
         self.use_normalization = use_normalization
@@ -250,13 +250,15 @@ class SlidesDataset(data.Dataset):
         common_markers = set.intersection(*common_markers)
         return common_markers
 
-    def get_slides(self, slide_ids, dataset_class, common_channel_names):
+    def get_slides(self, slide_ids, dataset_class, common_channel_names, blankoutbg):
+        ''' Initialize SlideDataset instances for each slide '''
         from tqdm import tqdm
         slides_dict = {}
         lengths = []
         for slide_id in tqdm(slide_ids):
             slide_path = os.path.join(self.slides_root_path, slide_id)
-            slide = dataset_class(slide_path, self.tile_size, common_channel_names, self.transform)
+            # Pass the blankoutbg flag when creating each SlideDataset instance
+            slide = dataset_class(slide_path, self.tile_size, transform=self.transform, blankoutbg=blankoutbg)
             slides_dict[slide_id] = slide
             lengths.append(len(slide))
         return slides_dict, lengths

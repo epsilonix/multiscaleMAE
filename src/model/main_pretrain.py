@@ -103,6 +103,10 @@ def get_args_parser():
     parser.add_argument('--dist_on_itp', action='store_true')
     parser.add_argument('--dist_url', default='env://',
                         help='url used to set up distributed training')
+    
+    parser.add_argument('--blankoutbg', action='store_true',
+                        help='Blank out the background around cells based on boundary information')
+    parser.set_defaults(blankoutbg=False)
 
     return parser
 
@@ -124,7 +128,6 @@ def main(args):
     seed = args.seed + misc.get_rank()
     torch.manual_seed(seed)
     np.random.seed(seed)
-
     cudnn.benchmark = True
 
     '''
@@ -145,7 +148,7 @@ def main(args):
             ])
 
     from data.imc_dataset import CANVASDataset, SlidesDataset
-    dataset_train = SlidesDataset(args.data_path, tile_size = args.tile_size, transform = transform_codex, dataset_class = CANVASDataset)
+    dataset_train = SlidesDataset(args.data_path, tile_size = args.tile_size, transform = transform_codex, dataset_class = CANVASDataset, blankoutbg=args.blankoutbg)
     
     sample_tile, _ = dataset_train[0]
     print(f"Sample tile size: {sample_tile.shape}")

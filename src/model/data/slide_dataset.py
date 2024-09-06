@@ -18,7 +18,8 @@ class SlideDataset(data.Dataset):
         self.root_path = root_path
         self.tile_size = tile_size
         self.transform = transform
-    
+        self.blankoutbg = blankoutbg  
+
         
 
         self.df = self.load_tile_data(tile_size)
@@ -28,16 +29,40 @@ class SlideDataset(data.Dataset):
         self.boundary = self.load_boundary()
 
     def __getitem__(self, index):
+        # Load the original image tile based on the position
         image = self.read_region(self.tile_pos[index][0], self.tile_pos[index][1], self.tile_size, self.tile_size)
+        
+        # Apply boundary mask if blankoutbg is set to True
+        if self.blankoutbg:
+            boundary = self.boundary[index]  # Assuming boundary is in the format of a mask or coordinates
+            image = self.apply_boundary_mask(image, boundary)
+
+        # Apply transformations if any
         if self.transform is not None:
             transformed_image = self.transform(image)
         else:
             transformed_image = transforms.ToTensor()(image)
+
+        # Additional labels or information
         label = None
         x = self.tile_pos[index][0]
         y = self.tile_pos[index][1]
         img_id = index
+        
         return transformed_image, label, x, y, img_id
+    
+    def apply_boundary_mask(self, image, boundary):
+        # Convert the boundary information into a mask or crop coordinates
+        # For example, if boundary is a binary mask of the same size as the tile:
+        if isinstance(boundary, np.ndarray) and boundary.shape == image.shape[:2]:
+            # Apply the mask directly to the image
+            masked_image = image * boundary[..., np.newaxis]
+        else:
+            # If boundary is given as coordinates, adjust extraction
+            min_x, min_y, max_x, max_y = boundary  # Assuming boundary is (min_x, min_y, max_x, max_y)
+            masked_image = image[min_y:max_y, min_x:max_x]
+
+        return masked_image
 
     def __len__(self):
         return len(self.tile_pos)
