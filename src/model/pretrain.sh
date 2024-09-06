@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH -t 3-00:00:00
-#SBATCH -p gpu4_long,gpu8_long,gpu4_medium,gpu8_medium
+#SBATCH -t 10-00:00:00
+#SBATCH -p gpu4_long,gpu8_long
 #SBATCH -N 1
-#SBATCH --mem=300G
+#SBATCH --mem=200G
 #SBATCH --tasks-per-node=1
-#SBATCH --cpus-per-task=35
-#SBATCH --gres=gpu:8
+#SBATCH --cpus-per-task=20
+#SBATCH --gres=gpu:4
 #SBATCH --job-name=train_37chan_20px_all_filtered
 #SBATCH --output=/gpfs/scratch/ss14424/logs/train_37chan_20px_all_filtered_%j.log
 
@@ -17,7 +17,7 @@ source activate /gpfs/data/tsirigoslab/home/ss14424/.conda/envs/canvas_env
 torchrun \
     --standalone \
     --nnodes=1 \
-    --nproc_per_node=8 \
+    --nproc_per_node=4 \
     /gpfs/scratch/ss14424/singlecell/src/model/main_pretrain.py \
         --epoch 1001 \
         --batch_size 32 \
