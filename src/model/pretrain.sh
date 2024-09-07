@@ -11,7 +11,7 @@
 
 #unset PYTHONPATH
 #module load anaconda3/gpu/5.2.0
-source activate /gpfs/data/tsirigoslab/home/ss14424/.conda/envs/canvas_env
+source activate /gpfs/data/tsirigoslab/home/leh06/.conda/envs/canvas_env
 #module unload anaconda3/gpu/5.2.0
 
 torchrun \
