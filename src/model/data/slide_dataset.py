@@ -5,6 +5,7 @@ import torch.utils.data as data
 from torchvision import transforms
 from skimage.io import imsave, imread
 from skimage.transform import resize
+from skimage.draw import polygon
 import json
 
 class SlideDataset(data.Dataset):
