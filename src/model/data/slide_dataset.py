@@ -30,11 +30,13 @@ class SlideDataset(data.Dataset):
 
     def __getitem__(self, index):
         # Load the original image tile based on the position
+        x, y = self.tile_pos[index][0], self.tile_pos[index][1]
         image = self.read_region(self.tile_pos[index][0], self.tile_pos[index][1], self.tile_size, self.tile_size)
         
         # Apply boundary mask if blankoutbg is set to True
         if self.blankoutbg:
             boundary = self.boundary[index]  # Assuming boundary is in the format of a mask or coordinates
+            tile_pos = (x, y)
             image = self.apply_boundary_mask(image, boundary, tile_pos)
 
         # Apply transformations if any
