@@ -51,16 +51,20 @@ class SlideDataset(data.Dataset):
         
         return transformed_image, label, x, y, img_id
     
-    def apply_boundary_mask(self, image, boundary):
-        # Convert the boundary information into a mask or crop coordinates
-        # For example, if boundary is a binary mask of the same size as the tile:
-        if isinstance(boundary, np.ndarray) and boundary.shape == image.shape[:2]:
-            # Apply the mask directly to the image
-            masked_image = image * boundary[..., np.newaxis]
-        else:
-            # If boundary is given as coordinates, adjust extraction
-            min_x, min_y, max_x, max_y = boundary  # Assuming boundary is (min_x, min_y, max_x, max_y)
-            masked_image = image[min_y:max_y, min_x:max_x]
+     def apply_boundary_mask(self, image, boundary, tile_pos):
+        # Adjust boundary coordinates relative to the tile's position
+        tile_x, tile_y = tile_pos
+        adjusted_boundary = [(x - tile_x, y - tile_y) for x, y in boundary]
+
+        # Create a mask for the tile
+        mask = np.zeros(image.shape[:2], dtype=np.uint8)
+        adjusted_boundary = np.array([adjusted_boundary], dtype=np.int32)
+
+        # Fill the mask with the boundary
+        cv2.fillPoly(mask, adjusted_boundary, 1)
+
+        # Apply the mask to the image
+        masked_image = image * mask[..., np.newaxis]
 
         return masked_image
 
