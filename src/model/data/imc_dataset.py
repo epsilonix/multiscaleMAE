@@ -123,7 +123,7 @@ class CANVASDatasetWithLocation(CANVASDataset):
 class SlidesDataset(data.Dataset):
     ''' Dataset for a list of slides '''
 
-    def __init__(self, slides_root_path=None, tile_size=None, transform=None, dataset_class=None, use_normalization=True):
+    def __init__(self, slides_root_path=None, tile_size=None, transform=None, dataset_class=None, use_normalization=True, blankoutbg=False):
         self.slides_root_path = slides_root_path
         self.tile_size = tile_size
         self.transform = transform
