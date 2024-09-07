@@ -258,7 +258,7 @@ class SlidesDataset(data.Dataset):
         for slide_id in tqdm(slide_ids):
             slide_path = os.path.join(self.slides_root_path, slide_id)
             # Pass the blankoutbg flag when creating each SlideDataset instance
-            slide = dataset_class(slide_path, self.tile_size, transform=self.transform, blankoutbg=blankoutbg)
+            slide = dataset_class(slide_path, self.tile_size, common_channel_names, self.transform, blankoutbg=blankoutbg)
             slides_dict[slide_id] = slide
             lengths.append(len(slide))
         return slides_dict, lengths
