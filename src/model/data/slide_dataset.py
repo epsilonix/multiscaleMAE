@@ -51,7 +51,7 @@ class SlideDataset(data.Dataset):
         
         return transformed_image, label, x, y, img_id
     
-     def apply_boundary_mask(self, image, boundary, tile_pos):
+    def apply_boundary_mask(self, image, boundary, tile_pos):
         # Adjust boundary coordinates relative to the tile's position
         tile_x, tile_y = tile_pos
         adjusted_boundary = [(x - tile_x, y - tile_y) for x, y in boundary]
