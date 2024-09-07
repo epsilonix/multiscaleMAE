@@ -85,7 +85,7 @@ class ZarrDataset(NPYDataset):
 class CANVASDataset(ZarrDataset):
 
     def __init__(self, root_path, tile_size, common_channel_names, transform = None, lazy = True, blankoutbg=False):
-        super().__init__(root_path, tile_size, transform)
+        super().__init__(root_path, tile_size, transform, blankoutbg=blankoutbg)
         self.root_path = root_path
         self.slide = self.read_slide(root_path, lazy)
         self.read_counter = 0
