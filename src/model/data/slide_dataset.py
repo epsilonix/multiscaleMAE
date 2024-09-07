@@ -35,7 +35,7 @@ class SlideDataset(data.Dataset):
         # Apply boundary mask if blankoutbg is set to True
         if self.blankoutbg:
             boundary = self.boundary[index]  # Assuming boundary is in the format of a mask or coordinates
-            image = self.apply_boundary_mask(image, boundary)
+            image = self.apply_boundary_mask(image, boundary, tile_pos)
 
         # Apply transformations if any
         if self.transform is not None:
