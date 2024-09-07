@@ -10,7 +10,7 @@ import json
 class SlideDataset(data.Dataset):
     ''' Dataset for slides '''
 
-    def __init__(self, root_path=None, tile_size=None, transform=None, blackoutbg=False):
+    def __init__(self, root_path=None, tile_size=None, transform=None, blankoutbg=False):
         ''' 
         Initialize the dataset 
         root_path: root path of the dataset (for saving processed file purposes)
