@@ -150,10 +150,6 @@ def main(args):
     from data.imc_dataset import CANVASDataset, SlidesDataset
     dataset_train = SlidesDataset(args.data_path, tile_size = args.tile_size, transform = transform_codex, dataset_class = CANVASDataset, blankoutbg=args.blankoutbg)
     
-    print("Listing all images and their number of tiles:")
-    for i in range(len(dataset_train)):
-        tile, _, x, y, img_id = dataset_train[i]
-        print(f"Image ID: {img_id}, Tile position: ({x}, {y}), Tile size: {tile.shape}")
     
     sample_tile, _ = dataset_train[0]
     print(f"Sample tile size: {sample_tile.shape}")
