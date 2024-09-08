@@ -14,6 +14,8 @@
 source activate /gpfs/data/tsirigoslab/home/ss14424/.conda/envs/canvasenv
 #module unload anaconda3/gpu/5.2.0
 
+export TORCHELASTIC_ERROR_FILE=/gpfs/scratch/ss14424/logs/torch_elastic_error.log
+
 torchrun \
     --standalone \
     --nnodes=1 \
