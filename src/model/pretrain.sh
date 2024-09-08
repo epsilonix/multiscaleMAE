@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH -t 12-00:00:00
-#SBATCH -p gpu4_long,gpu8_long
+#SBATCH -t 3-00:00:00
+#SBATCH -p gpu4_long,gpu8_long,gpu4_medium,gpu8_medium
 #SBATCH -N 1
-#SBATCH --mem=300G
+#SBATCH --mem=150G
 #SBATCH --tasks-per-node=1
 #SBATCH --cpus-per-task=30
 #SBATCH --gres=gpu:8
@@ -26,3 +26,4 @@ torchrun \
         --log_dir "/gpfs/scratch/ss14424/logs" \
         --data_path "/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/img_output_20_train" \
         --blankoutbg
+        --resume "/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/model_output_20/checkpoint-40.pth"
