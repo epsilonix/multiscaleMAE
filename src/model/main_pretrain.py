@@ -5,6 +5,7 @@
 # BEiT: https://github.com/microsoft/unilm/tree/master/beit
 # MAE: https://github.com/facebookresearch/mae
 # --------------------------------------------------------
+import traceback
 import sys
 sys.path.append('/gpfs/scratch/ss14424/singlecell/src')
 # hihi
@@ -130,117 +131,116 @@ def main(args):
     np.random.seed(seed)
     cudnn.benchmark = True
 
-    '''
-    with open(f'{args.data_path}/common_channels.txt', 'r') as f:
-        channel_names = f.read().splitlines()
-    num_channels = len(channel_names)
-    '''
-    # CODEX augmentation
-
-    transform_codex = transforms.Compose([
+    try:
+        # Dataset and DataLoader initialization
+        transform_codex = transforms.Compose([
             transforms.ToTensor(),
-            transforms.Resize(args.input_size, interpolation = 2),
-            transforms.RandomRotation(degrees = 180, interpolation = 2, expand = True),
-            transforms.CenterCrop(args.input_size), 
-            transforms.RandomResizedCrop(args.input_size, scale=(0.8, 1.0), ratio=(1, 1), interpolation=2), # 2 is bilinear
+            transforms.Resize(args.input_size, interpolation=2),
+            transforms.RandomRotation(degrees=180, interpolation=2, expand=True),
+            transforms.CenterCrop(args.input_size),
+            transforms.RandomResizedCrop(args.input_size, scale=(0.8, 1.0), ratio=(1, 1), interpolation=2),  # 2 is bilinear
             transforms.RandomHorizontalFlip(),
             channel_augment
-            ])
+        ])
 
-    from data.imc_dataset import CANVASDataset, SlidesDataset
-    dataset_train = SlidesDataset(args.data_path, tile_size = args.tile_size, transform = transform_codex, dataset_class = CANVASDataset, blankoutbg=args.blankoutbg)
-    
-    
-    sample_tile, _ = dataset_train[0]
-    print(f"Sample tile size: {sample_tile.shape}")
+        from data.imc_dataset import CANVASDataset, SlidesDataset
+        dataset_train = SlidesDataset(
+            args.data_path, tile_size=args.tile_size, transform=transform_codex, dataset_class=CANVASDataset, blankoutbg=args.blankoutbg)
 
-    if True:  # args.distributed:
-        num_tasks = misc.get_world_size()
-        global_rank = misc.get_rank()
-        sampler_train = torch.utils.data.DistributedSampler(
-            dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
-        )
-        print("Sampler_train = %s" % str(sampler_train))
-    else:
-        sampler_train = torch.utils.data.RandomSampler(dataset_train)
+        sample_tile, _ = dataset_train[0]
+        print(f"Sample tile size: {sample_tile.shape}")
 
-#    if global_rank == 0 and args.log_dir is not None:
-#        os.makedirs(args.log_dir, exist_ok=True)
-#        log_writer = SummaryWriter(log_dir=args.log_dir)
-#    else:
-    log_writer = None
-
-    data_loader_train = torch.utils.data.DataLoader(
-        dataset_train, sampler=sampler_train,
-        batch_size=args.batch_size,
-        num_workers=args.num_workers,
-        pin_memory=args.pin_mem,
-        drop_last=True,
-    )
-
-    
-    
-    # define the model
-    num_channels = len(dataset_train.common_channel_names)
-    print(f'Number of channels: {num_channels}')
-    model = models_mae.__dict__[args.model](norm_pix_loss=args.norm_pix_loss, in_chans = num_channels)
-
-    model.to(device)
-
-    model_without_ddp = model
-    print("Model = %s" % str(model_without_ddp))
-
-    eff_batch_size = args.batch_size * args.accum_iter * misc.get_world_size()
-    
-    if args.lr is None:  # only base_lr is specified
-        args.lr = args.blr * eff_batch_size / 256
-
-    print("base lr: %.2e" % (args.lr * 256 / eff_batch_size))
-    print("actual lr: %.2e" % args.lr)
-
-    print("accumulate grad iterations: %d" % args.accum_iter)
-    print("effective batch size: %d" % eff_batch_size)
-
-    if args.distributed:
-        model = torch.nn.parallel.DistributedDataParallel(model, device_ids=[args.gpu], find_unused_parameters=True)
-        model_without_ddp = model.module
-    
-    # following timm: set wd as 0 for bias and norm layers
-    param_groups = optim_factory.add_weight_decay(model_without_ddp, args.weight_decay)
-    optimizer = torch.optim.AdamW(param_groups, lr=args.lr, betas=(0.9, 0.95))
-    print(optimizer)
-    loss_scaler = NativeScaler()
-
-    misc.load_model(args=args, model_without_ddp=model_without_ddp, optimizer=optimizer, loss_scaler=loss_scaler)
-
-    print(f"Start training for {args.epochs} epochs")
-    start_time = time.time()
-    for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
-            data_loader_train.sampler.set_epoch(epoch)
-        train_stats = train_one_epoch(
-            model, data_loader_train,
-            optimizer, device, epoch, loss_scaler,
-            log_writer=log_writer,
-            args=args
+            num_tasks = misc.get_world_size()
+            global_rank = misc.get_rank()
+            sampler_train = torch.utils.data.DistributedSampler(
+                dataset_train, num_replicas=num_tasks, rank=global_rank, shuffle=True
+            )
+            print("Sampler_train = %s" % str(sampler_train))
+        else:
+            sampler_train = torch.utils.data.RandomSampler(dataset_train)
+
+        log_writer = None
+
+        data_loader_train = torch.utils.data.DataLoader(
+            dataset_train, sampler=sampler_train,
+            batch_size=args.batch_size,
+            num_workers=args.num_workers,
+            pin_memory=args.pin_mem,
+            drop_last=True,
         )
-        if args.output_dir and (epoch % 10 == 0 or epoch + 1 == args.epochs):
-            misc.save_model(
-                args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
-                loss_scaler=loss_scaler, epoch=epoch)
 
-        log_stats = {**{f'train_{k}': v for k, v in train_stats.items()},
-                        'epoch': epoch,}
+        # define the model
+        num_channels = len(dataset_train.common_channel_names)
+        print(f'Number of channels: {num_channels}')
+        model = models_mae.__dict__[args.model](norm_pix_loss=args.norm_pix_loss, in_chans=num_channels)
 
-        if args.output_dir and misc.is_main_process():
-#            if log_writer is not None:
-#                log_writer.flush()
-            with open(os.path.join(args.output_dir, "log.txt"), mode="a", encoding="utf-8") as f:
-                f.write(json.dumps(log_stats) + "\n")
+        model.to(device)
 
-    total_time = time.time() - start_time
-    total_time_str = str(datetime.timedelta(seconds=int(total_time)))
-    print('Training time {}'.format(total_time_str))
+        model_without_ddp = model
+        print("Model = %s" % str(model_without_ddp))
+
+        eff_batch_size = args.batch_size * args.accum_iter * misc.get_world_size()
+
+        if args.lr is None:  # only base_lr is specified
+            args.lr = args.blr * eff_batch_size / 256
+
+        print("base lr: %.2e" % (args.lr * 256 / eff_batch_size))
+        print("actual lr: %.2e" % args.lr)
+
+        print("accumulate grad iterations: %d" % args.accum_iter)
+        print("effective batch size: %d" % eff_batch_size)
+
+        if args.distributed:
+            model = torch.nn.parallel.DistributedDataParallel(
+                model, device_ids=[args.gpu], find_unused_parameters=True)
+            model_without_ddp = model.module
+
+        param_groups = optim_factory.add_weight_decay(model_without_ddp, args.weight_decay)
+        optimizer = torch.optim.AdamW(param_groups, lr=args.lr, betas=(0.9, 0.95))
+        print(optimizer)
+        loss_scaler = NativeScaler()
+
+        misc.load_model(args=args, model_without_ddp=model_without_ddp, optimizer=optimizer, loss_scaler=loss_scaler)
+
+        print(f"Start training for {args.epochs} epochs")
+        start_time = time.time()
+
+        # Wrapping training loop in try-except to capture any errors
+        try:
+            for epoch in range(args.start_epoch, args.epochs):
+                if args.distributed:
+                    data_loader_train.sampler.set_epoch(epoch)
+                train_stats = train_one_epoch(
+                    model, data_loader_train,
+                    optimizer, device, epoch, loss_scaler,
+                    log_writer=log_writer,
+                    args=args
+                )
+                if args.output_dir and (epoch % 10 == 0 or epoch + 1 == args.epochs):
+                    misc.save_model(
+                        args=args, model=model, model_without_ddp=model_without_ddp, optimizer=optimizer,
+                        loss_scaler=loss_scaler, epoch=epoch)
+
+                log_stats = {**{f'train_{k}': v for k, v in train_stats.items()},
+                             'epoch': epoch,}
+
+                if args.output_dir and misc.is_main_process():
+                    with open(os.path.join(args.output_dir, "log.txt"), mode="a", encoding="utf-8") as f:
+                        f.write(json.dumps(log_stats) + "\n")
+        except Exception as e:
+            print("An error occurred during training:")
+            print(e)
+            print(traceback.format_exc())  # This prints the full traceback of the error
+
+        total_time = time.time() - start_time
+        total_time_str = str(datetime.timedelta(seconds=int(total_time)))
+        print('Training time {}'.format(total_time_str))
+
+    except Exception as e:
+        print("An error occurred during the setup:")
+        print(e)
+        print(traceback.format_exc())  # This prints the full traceback of the error
 
 
 if __name__ == '__main__':
