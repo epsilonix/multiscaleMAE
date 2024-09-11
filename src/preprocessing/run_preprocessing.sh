@@ -19,4 +19,5 @@ python \
 /gpfs/scratch/ss14424/Brain/data/celltype \
 /gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/img_output_16_train_v2 \
 16 \
-train
+#MODE NAMES ARE FULL AND SUBSAMPLE
+subsample

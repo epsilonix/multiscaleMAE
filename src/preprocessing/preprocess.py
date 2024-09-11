@@ -13,6 +13,9 @@ def main():
     tile_size = int(sys.argv[4])
     mode = sys.argv[5]  # Add the mode argument
 
+    if mode not in {"full", "subsample"}:
+        raise ValueError(f"Invalid mode '{mode}'. Mode must be either 'full' or 'subsample'.")
+    
     # List all files ending with .tif
     for file in os.listdir(root_path):
         if file.endswith(".tif"):
