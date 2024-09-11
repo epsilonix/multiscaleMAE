@@ -17,7 +17,7 @@ python \
 /gpfs/scratch/ss14424/singlecell/src/preprocessing/preprocess.py \
 /gpfs/scratch/ss14424/Brain/channels_37/tif \
 /gpfs/scratch/ss14424/Brain/data/celltype \
-/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/img_output_16_train_v2 \
+/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/img_output_16_subsample \
 16 \
 #MODE NAMES ARE FULL AND SUBSAMPLE
 subsample
