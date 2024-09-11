@@ -11,12 +11,12 @@
 
 
 #modes are training and inference
-source activate /gpfs/home/ss14424/.conda/envs/canvas-env
+source activate /gpfs/home/ss14424/.conda/envs/canvasenv
 
 python \
 /gpfs/scratch/ss14424/singlecell/src/preprocessing/preprocess.py \
 /gpfs/scratch/ss14424/Brain/channels_37/tif \
 /gpfs/scratch/ss14424/Brain/data/celltype \
-/gpfs/scratch/ss14424/Brain/channels_37/cells/img_output_16 \
+/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/img_output_16_train \
 16 \
-inference
+train
