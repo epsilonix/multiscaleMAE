@@ -142,6 +142,7 @@ def gen_tiles(image, slide: str, mat_path, tile_size: int = 20,
     # Sample boundaries based on the mode
     sample_boundaries_coords = []
     if mode == 'training':
+        print(f'now in training mode... taking subsample of slides...')
         # Sample up to 100 cells for very common cell types
         cell_type_groups = {cell_type: [] for cell_type in very_common_cell_types}
         other_cell_types = []
@@ -160,8 +161,12 @@ def gen_tiles(image, slide: str, mat_path, tile_size: int = 20,
             sampled_cell_counts[cell_type] += sample_count
 
         sample_boundaries_coords.extend(other_cell_types)
+        print(f'training mode returned {len(sample_boundaries_coords)} slides')
+
     else:
+        print(f'now in inference mode... printing all slides...')
         sample_boundaries_coords = all_boundaries_coords.copy()
+        print(f'inference mode returned {len(sample_boundaries_coords)} slides')
 
     # Plot each boundary and calculate centroids
     for boundary_info in sample_boundaries_coords:
