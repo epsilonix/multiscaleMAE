@@ -14,7 +14,7 @@ def main():
     # Initialize CANVAS
     data_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/img_output_16_train'
     model_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/model_output_20/checkpoint-160.pth'
-    save_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/analysis_output/'
+    save_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/analysis_output_limited/'
     tile_size = 16
     canvas = Canvas(model_path, data_path, save_path, tile_size)
 
