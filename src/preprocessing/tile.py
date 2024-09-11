@@ -70,7 +70,7 @@ def calculate_polygon_area(coords):
 
 def gen_tiles(image, slide: str, mat_path, tile_size: int = 20, 
               output_path: str = None, image_filename: str = None,
-              mode) -> np.ndarray:
+              mode: str = 'full') -> np.ndarray:
     ''' Generate tiles for a given slide '''
     print(f'Slide type is {type(slide)}')
     if output_path is None: output_path = f'{os.path.dirname(slide)}'
