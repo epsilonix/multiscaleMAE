@@ -1,6 +1,6 @@
 import os
 import json
-
+import psutil  # Add this import for memory profiling
 import torch
 import numpy as np
 import pandas as pd
@@ -10,26 +10,38 @@ sys.path.append('/gpfs/scratch/ss14424/singlecell/src')
 
 from tqdm import tqdm
 
+# Memory check function
+def check_memory_usage(step_name):
+    process = psutil.Process(os.getpid())
+    memory_info = process.memory_info()
+    print(f"[{step_name}] Memory Usage: {memory_info.rss / (1024 ** 3):.2f} GB")  # rss is the resident set size
+
 def main():
+    check_memory_usage('Start')  # Check memory usage at the start
     # Initialize CANVAS
     data_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/img_output_16_subsample'
     model_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/model_output_20/checkpoint-160.pth'
     save_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/analysis_output_subsample/'
     tile_size = 16
     canvas = Canvas(model_path, data_path, save_path, tile_size)
+    check_memory_usage('Initialized Canvas')  # Check after initializing Canvas
 
-#    #Generate embeddings
+    # Generate embeddings
     dataloader = canvas.load_dataset()
-    
+    check_memory_usage('Data Loader Created')  # Check after data loader creation
+
     first_batch = next(iter(dataloader))
     print("First Batch:", first_batch)
-    
+    check_memory_usage('First Batch Loaded')  # Check after loading the first batch
+
     model = canvas.load_model(dataloader)
-    canvas.get_tile_embedding(dataloader, model, save_full_emb = False)
+    check_memory_usage('Model Loaded')  # Check after loading the model
 
+    canvas.get_tile_embedding(dataloader, model, save_full_emb=False)
+    check_memory_usage('Tile Embedding Completed')  # Check after generating embeddings
 
-    canvas.clustering(n_clusters = 60)
-    
+    canvas.clustering(n_clusters=60)
+    check_memory_usage('Clustering Completed')  # Check after clustering
     
 class Canvas:
 
@@ -72,7 +84,7 @@ class Canvas:
         return model 
 
 
-    def load_dataset(self, batch_size = 128, num_workers = 40):
+    def load_dataset(self, batch_size = 128, num_workers = 20):
         # Predefined parameters
         input_size = 224
         from torchvision import transforms

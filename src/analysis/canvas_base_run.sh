@@ -4,7 +4,7 @@
 #SBATCH -N 1
 #SBATCH --mem=150G
 #SBATCH --tasks-per-node=1
-#SBATCH --cpus-per-task=40
+#SBATCH --cpus-per-task=20
 #SBATCH --gres=gpu:1
 #SBATCH --job-name=infer_MAE_blankout_limited
 #SBATCH --output=/gpfs/scratch/ss14424/logs/infer_singlecell%j.log
