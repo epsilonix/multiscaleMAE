@@ -84,7 +84,7 @@ class Canvas:
         return model 
 
 
-    def load_dataset(self, batch_size = 64, num_workers = 40):
+    def load_dataset(self, batch_size = 128, num_workers = 40):
         # Predefined parameters
         input_size = 224
         from torchvision import transforms
