@@ -12,7 +12,7 @@ from tqdm import tqdm
 
 def main():
     # Initialize CANVAS
-    data_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/img_output_16'
+    data_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/img_output_16_train'
     model_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/model_output_20/checkpoint-160.pth'
     save_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/analysis_output/'
     tile_size = 16
@@ -72,7 +72,7 @@ class Canvas:
         return model 
 
 
-    def load_dataset(self, batch_size = 64, num_workers = 40):
+    def load_dataset(self, batch_size = 64, num_workers = 20):
         # Predefined parameters
         input_size = 224
         from torchvision import transforms
