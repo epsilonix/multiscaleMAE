@@ -40,7 +40,7 @@ def main():
     canvas.get_tile_embedding(dataloader, model, save_full_emb=False)
     check_memory_usage('Tile Embedding Completed')  # Check after generating embeddings
 
-    canvas.clustering(n_clusters=60)
+    canvas.clustering(n_clusters=50)
     check_memory_usage('Clustering Completed')  # Check after clustering
     
 class Canvas:
