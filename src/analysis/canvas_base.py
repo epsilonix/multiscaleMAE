@@ -14,9 +14,9 @@ ENABLE_BLANKOUTBG = True  # Change this to False if you do not want to enable bl
 
 def main():
     # Initialize CANVAS
-    data_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/img_output_16_subsample'
-    model_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/model_output_20/checkpoint-200.pth'
-    save_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/analysis_output_subsample_v2/'
+    data_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/img_output_16'
+    model_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/model_output_20/checkpoint-250.pth'
+    save_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/analysis_output_subsample_v2_full/'
     tile_size = 16
     canvas = Canvas(model_path, data_path, save_path, tile_size)
 
