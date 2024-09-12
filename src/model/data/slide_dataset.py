@@ -7,6 +7,7 @@ from skimage.io import imsave, imread
 from skimage.transform import resize
 from skimage.draw import polygon
 import json
+import matplotlib.pyplot as plt
 
 class SlideDataset(data.Dataset):
     ''' Dataset for slides '''
