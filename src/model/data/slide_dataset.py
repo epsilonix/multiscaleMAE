@@ -38,19 +38,10 @@ class SlideDataset(data.Dataset):
         if self.blankoutbg:
             boundary = self.boundary[index]  # Assuming boundary is in the format of a mask or coordinates
             tile_pos = (x, y)
-            original_image = image.copy()  # Keep a copy of the original image for comparison
+            print(f'image before transformation: {image}')
             image = self.apply_boundary_mask(image, boundary, tile_pos)
+            print(f'image after transformation: {image}')
             
-            # Print or visualize only the first image
-            if not self.has_printed:
-                self.has_printed = True  # Set the flag to True after first print/visualization
-                print(f"Image before masking at index {index}:")
-                print(original_image)
-                print(f"Image after masking at index {index}:")
-                print(image)
-                # Optionally visualize
-                self.visualize_masking(original_image, image, index)
-
         # Apply transformations if any
         if self.transform is not None:
             transformed_image = self.transform(image)
@@ -88,15 +79,6 @@ class SlideDataset(data.Dataset):
 
         return masked_image
     
-    def visualize_masking(self, original_image, masked_image, index):
-        """Visualizes the original and masked images side by side for verification."""
-        fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-        ax[0].imshow(original_image)
-        ax[0].set_title(f"Original Image {index}")
-        ax[1].imshow(masked_image)
-        ax[1].set_title(f"Masked Image {index}")
-        plt.show()
-        
     def __len__(self):
         return len(self.tile_pos)
 
