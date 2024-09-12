@@ -43,7 +43,9 @@ class SlideDataset(data.Dataset):
         if self.blankoutbg:
             boundary = self.boundary[index]  # Assuming boundary is in the format of a mask or coordinates
             tile_pos = (x, y)
-
+            
+            image = image[:,:,11:14]
+            
             # Save the image before transformation
             before_path = f"/gpfs/scratch/ss14424/image_before_transformation_{index}.png"
             plt.imshow(image, cmap='gray')  # Adjust cmap as needed
