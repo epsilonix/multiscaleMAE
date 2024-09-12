@@ -30,7 +30,7 @@ class SlideDataset(data.Dataset):
         self.boundary = self.load_boundary()
         
         # To control printing for only one image
-        self.debug_printed = False
+        #self.debug_printed = False
 
         
     def __getitem__(self, index):
@@ -43,18 +43,18 @@ class SlideDataset(data.Dataset):
             boundary = self.boundary[index]  # Assuming boundary is in the format of a mask or coordinates
             tile_pos = (x, y)
 
-            # Print the number of zeros before and after masking for the first image
-            if not self.debug_printed and index == 0:  # Modify index to control which image to debug
-                num_zeros_before = np.sum(image == 0)
-                print(f"Number of zeros before transformation at index {index}: {num_zeros_before}")
-                
-                # Apply the mask
-                image = self.apply_boundary_mask(image, boundary, tile_pos)
-                
-                num_zeros_after = np.sum(image == 0)
-                print(f"Number of zeros after transformation at index {index}: {num_zeros_after}")
-                
-                self.debug_printed = True  # Ensure this prints only once
+#            # Print the number of zeros before and after masking for the first image
+#            if not self.debug_printed and index == 0:  # Modify index to control which image to debug
+#                num_zeros_before = np.sum(image == 0)
+#                print(f"Number of zeros before transformation at index {index}: {num_zeros_before}")
+#                
+#                # Apply the mask
+#                image = self.apply_boundary_mask(image, boundary, tile_pos)
+#                
+#                num_zeros_after = np.sum(image == 0)
+#                print(f"Number of zeros after transformation at index {index}: {num_zeros_after}")
+#                
+#                self.debug_printed = True  # Ensure this prints only once
             
         # Apply transformations if any
         if self.transform is not None:
