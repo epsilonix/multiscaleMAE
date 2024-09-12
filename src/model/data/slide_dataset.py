@@ -38,24 +38,44 @@ class SlideDataset(data.Dataset):
         x, y = self.tile_pos[index][0], self.tile_pos[index][1]
         image = self.read_region(x, y, self.tile_size, self.tile_size)
         
-        # Apply boundary mask if blankoutbg is set to True
+        
         if self.blankoutbg:
             boundary = self.boundary[index]  # Assuming boundary is in the format of a mask or coordinates
             tile_pos = (x, y)
 
-#            # Print the number of zeros before and after masking for the first image
-#            if not self.debug_printed and index == 0:  # Modify index to control which image to debug
-#                num_zeros_before = np.sum(image == 0)
-#                print(f"Number of zeros before transformation at index {index}: {num_zeros_before}")
-#                
-#                # Apply the mask
-#                image = self.apply_boundary_mask(image, boundary, tile_pos)
-#                
-#                num_zeros_after = np.sum(image == 0)
-#                print(f"Number of zeros after transformation at index {index}: {num_zeros_after}")
-#                
-#                self.debug_printed = True  # Ensure this prints only once
-            
+            # Print the number of zeros before and after masking for the first image
+            if not self.debug_printed and index == 0:  # Modify index to control which image to debug
+                num_zeros_before = np.sum(image == 0)
+                print(f"Number of zeros before transformation at index {index}: {num_zeros_before}")
+
+                # Save the image before transformation
+                before_path = f"/gpfs/scratch/ss14424/image_before_transformation_{index}.png"
+                plt.imshow(image, cmap='gray')  # Adjust cmap as needed
+                plt.title(f"Image before transformation at index {index}")
+                plt.axis('off')
+                plt.savefig(before_path)
+                plt.close()
+                print(f"Image before transformation saved at: {before_path}")
+
+                # Apply the mask
+                image = self.apply_boundary_mask(image, boundary, tile_pos)
+
+                num_zeros_after = np.sum(image == 0)
+                print(f"Number of zeros after transformation at index {index}: {num_zeros_after}")
+
+                # Save the image after transformation
+                after_path = f"/gpfs/scratch/ss14424/image_after_transformation_{index}.png"
+                plt.imshow(image, cmap='gray')  # Adjust cmap as needed
+                plt.title(f"Image after transformation at index {index}")
+                plt.axis('off')
+                plt.savefig(after_path)
+                plt.close()
+                print(f"Image after transformation saved at: {after_path}")
+
+                self.debug_printed = True  
+                
+                exit()
+        
         # Apply transformations if any
         if self.transform is not None:
             transformed_image = self.transform(image)
