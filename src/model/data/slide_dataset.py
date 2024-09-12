@@ -28,19 +28,33 @@ class SlideDataset(data.Dataset):
         self.tile_pos = self.load_tiles()
         self.celltypes = self.load_celltypes()
         self.boundary = self.load_boundary()
+        
+        # To control printing for only one image
+        self.debug_printed = False
 
+        
     def __getitem__(self, index):
         # Load the original image tile based on the position
         x, y = self.tile_pos[index][0], self.tile_pos[index][1]
-        image = self.read_region(self.tile_pos[index][0], self.tile_pos[index][1], self.tile_size, self.tile_size)
+        image = self.read_region(x, y, self.tile_size, self.tile_size)
         
         # Apply boundary mask if blankoutbg is set to True
         if self.blankoutbg:
             boundary = self.boundary[index]  # Assuming boundary is in the format of a mask or coordinates
             tile_pos = (x, y)
-            print(f'image before transformation: {image}')
-            image = self.apply_boundary_mask(image, boundary, tile_pos)
-            print(f'image after transformation: {image}')
+
+            # Print the number of zeros before and after masking for the first image
+            if not self.debug_printed and index == 0:  # Modify index to control which image to debug
+                num_zeros_before = np.sum(image == 0)
+                print(f"Number of zeros before transformation at index {index}: {num_zeros_before}")
+                
+                # Apply the mask
+                image = self.apply_boundary_mask(image, boundary, tile_pos)
+                
+                num_zeros_after = np.sum(image == 0)
+                print(f"Number of zeros after transformation at index {index}: {num_zeros_after}")
+                
+                self.debug_printed = True  # Ensure this prints only once
             
         # Apply transformations if any
         if self.transform is not None:
