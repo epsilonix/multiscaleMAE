@@ -2,7 +2,7 @@
 #SBATCH -t 0-8:00:00
 #SBATCH -p gpu4_long,gpu8_long,gpu4_medium,gpu8_medium,gpu4_short,gpu8_short
 #SBATCH -N 1
-#SBATCH --mem=150G
+#SBATCH --mem=100G
 #SBATCH --tasks-per-node=1
 #SBATCH --cpus-per-task=20
 #SBATCH --gres=gpu:1
