@@ -14,9 +14,9 @@ ENABLE_BLANKOUTBG = True  # Change this to False if you do not want to enable bl
 
 def main():
     # Initialize CANVAS
-    data_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/img_output_16'
-    model_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/model_output_20/checkpoint-250.pth'
-    save_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/analysis_output_subsample_v2_full/'
+    data_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/img_output_16_subsample'
+    model_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/model_output_20/checkpoint-260.pth'
+    save_path = '/gpfs/scratch/ss14424/Brain/channels_37/cells_blankout/analysis_output_v3_subsample/'
     tile_size = 16
     canvas = Canvas(model_path, data_path, save_path, tile_size)
 
@@ -133,10 +133,24 @@ class Canvas:
                 celltype_list.extend(celltypes)
                 boundary_list.extend(boundaries)
 
-                image_mean_tensor[data_idx:data_idx + temp_size] = img_tensor.mean(axis=(2, 3)).to(torch.float16).cpu().numpy()
-                embedding_mean_tensor[data_idx:data_idx + temp_size] = embedding.mean(axis=1).astype(np.float16)
+                # Apply boundary mask if blankoutbg is enabled
+                if ENABLE_BLANKOUTBG:  # Use ENABLE_BLANKOUTBG to check if masking should be applied
+                    for i in range(temp_size):
+                        # Apply the mask directly on the tensor
+                        tile_pos = locations[i]  # Assuming locations are tuples of (x, y)
+                        boundary = boundaries[i]  # Boundary data
+                        img_tensor[i] = self.apply_boundary_mask(
+                            img_tensor[i],  # Directly use the tensor
+                            boundary, 
+                            tile_pos
+                        )
+
+                # Calculate mean intensities after masking
+                image_mean_tensor[data_idx:data_idx + temp_size] = img_tensor.mean(dim=(2, 3)).to(torch.float16).cpu().numpy()
+                embedding_mean_tensor[data_idx:data_idx + temp_size] = embedding.mean(dim=1).cpu().numpy().astype(np.float16)
+
                 if save_image:
-                    image_tensor[data_idx:data_idx + temp_size] = img_tensor.numpy().astype(np.float16)
+                    image_tensor[data_idx:data_idx + temp_size] = img_tensor.cpu().numpy().astype(np.float16)
                 if save_full_emb:
                     embedding_tensor[data_idx:data_idx + temp_size] = embedding
 
@@ -164,7 +178,6 @@ class Canvas:
         }
         self.step_dict[output_suffix] = tile_dict
         self.flush_step_dict()
-
       
     def proc_embedding(self, img_tensor, model):
         imgs = img_tensor.to(self.device).float()
