@@ -4,6 +4,7 @@ import torch
 import numpy as np
 import pandas as pd
 import sys
+from skimage.draw import polygon
 
 sys.path.append('/gpfs/scratch/ss14424/singlecell/src')
 
