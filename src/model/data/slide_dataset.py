@@ -44,33 +44,33 @@ class SlideDataset(data.Dataset):
             boundary = self.boundary[index]  # Assuming boundary is in the format of a mask or coordinates
             tile_pos = (x, y)
             
-            image = image[:,:,11:14]
+            #image = image[:,:,11:14]
             
-            # Save the image before transformation
-            before_path = f"/gpfs/scratch/ss14424/image_before_transformation_{index}.png"
-            plt.imshow(image, cmap='gray')  # Adjust cmap as needed
-            plt.title(f"Image before transformation at index {index}")
-            plt.axis('off')
-            plt.savefig(before_path)
-            plt.close()
-            print(f"Image before transformation saved at: {before_path}")
+#            # Save the image before transformation
+#            before_path = f"/gpfs/scratch/ss14424/image_before_transformation_{index}.png"
+#            plt.imshow(image, cmap='gray')  # Adjust cmap as needed
+#            plt.title(f"Image before transformation at index {index}")
+#            plt.axis('off')
+#            plt.savefig(before_path)
+#            plt.close()
+#            print(f"Image before transformation saved at: {before_path}")
 
             # Apply the mask
             image = self.apply_boundary_mask(image, boundary, tile_pos)
 
-            num_zeros_after = np.sum(image == 0)
-            print(f"Number of zeros after transformation at index {index}: {num_zeros_after}")
-
-            # Save the image after transformation
-            after_path = f"/gpfs/scratch/ss14424/image_after_transformation_{index}.png"
-            plt.imshow(image, cmap='gray')  # Adjust cmap as needed
-            plt.title(f"Image after transformation at index {index}")
-            plt.axis('off')
-            plt.savefig(after_path)
-            plt.close()
-            print(f"Image after transformation saved at: {after_path}") 
-
-            exit()
+#            num_zeros_after = np.sum(image == 0)
+#            print(f"Number of zeros after transformation at index {index}: {num_zeros_after}")
+#
+#            # Save the image after transformation
+#            after_path = f"/gpfs/scratch/ss14424/image_after_transformation_{index}.png"
+#            plt.imshow(image, cmap='gray')  # Adjust cmap as needed
+#            plt.title(f"Image after transformation at index {index}")
+#            plt.axis('off')
+#            plt.savefig(after_path)
+#            plt.close()
+#            print(f"Image after transformation saved at: {after_path}") 
+#
+#            exit()
         
         # Apply transformations if any
         if self.transform is not None:
