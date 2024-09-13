@@ -292,6 +292,30 @@ class Canvas:
         data_dict = {'labels' : save_path}
         self.step_dict[output_suffix] = data_dict
         self.flush_step_dict()
+        
+    def apply_boundary_mask(self, image, boundary, tile_pos):
+        tile_x, tile_y = tile_pos  # Tile's upper-left corner coordinates
+
+        # Convert the boundary string to a list of [x, y] coordinate pairs
+        boundary = json.loads(boundary)  # Convert string representation to a list of lists
+
+        # Adjust coordinates relative to the tile's position
+        adjusted_boundary = [(x - tile_x, y - tile_y) for x, y in boundary]
+
+        # Separate x and y coordinates for creating the polygon mask
+        rr, cc = zip(*adjusted_boundary)
+
+        # Create a blank mask with the same size as the image
+        mask = np.zeros((self.tile_size, self.tile_size), dtype=np.uint8)
+
+        # Create a polygon mask using the boundary coordinates
+        rr, cc = polygon(cc, rr, mask.shape)  # Notice rr and cc are swapped to match (y, x) format
+        mask[rr, cc] = 1  # Set mask pixels corresponding to the boundary
+
+        # Apply the mask to the image
+        masked_image = image * mask[..., np.newaxis]
+
+        return masked_image
     
 
 if __name__ == '__main__':
