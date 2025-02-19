@@ -1,26 +1,20 @@
 # Multi-scale MAE pipeline
 For analysis of multiplexed images
 
-1. **Convert qptiff file to zarr arrays**
-   - Input: path to qptiff file
-   - Output: zarr arrays saved to disk
-2. **Preprocess and tile image**
-   - Input: path to zarr arrays, tile size, overlap size
-   - Output: tiled zarr arrays saved to disk
-3. **Build pytorch dataloader**
-   - Input: path to tiled zarr arrays, batch size
-   - Output: pytorch dataloader object
-4. **Train masked autoencoder model**
-   - Input: pytorch dataloader object, number of epochs, learning rate
-   - Output: trained masked autoencoder model saved to disk
-5. **Encode all tiles using trained encoder**
-   - Input: path to tiled zarr arrays, trained masked autoencoder model
-   - Output: encoded tiles saved to disk
-6. **Run kmeans clustering on tiles**
-   - Input: encoded tiles, number of clusters
-   - Output: cluster number for each tile saved to disk
-7. **Map cluster color back onto original slide**
-   - Input: path to original slide, cluster number for each tile
-   - Output: original slide with cluster color mapping saved to disk
-
-Let me know if you need any further assistance!
+1. **Use preprocessing/run_preprocessing.sh to convert tif files to zarr arrays and generate tiles**
+   - io.py takes tif files and converts them to zarr arrays.  
+   - tile.py takes zarr arrays and generates tiles of the desired size. 
+   - LTME tiles are 64x64 pixels, and exclude regions with low signal.
+   - SCME tiles are 16x16 pixels and are centered on individual cells, without any masking.
+   - The optional subsample parameter in run_preprocessing.sh is used to subsample the tiles for SCME, to reduce the number of tiles needed for model training.
+   - OPTIONAL: consolidator.py consolidates the channels of the images into a single image with the target channel structure.
+2. **Use model/pretrain.sh to train the masked autoencoder model**
+   - Input parameters are the path to the tiled zarr arrays, the tile size used to generate the tiles, desired batch size, and number of training epochs..
+   - Be sure to select pipeline (SCME for single cell microenvironments, LTME for local tumor microenvironments) 
+3. **Use inference/canvas_base_run.sh to perform inference on all tiles using trained encoder**
+   - Input parameters are the pipeline type (SCME or LTME), the path to the trained model, and the path to the tiled zarr arrays.
+   - Outputs numpy files for tile embeddings, tile location, sample name, image mean, and cluster.
+4. **Use the Jupyter notebooks in analysis/ to perform downstream analysis**
+   - ltme_analysis.ipynb generates the LTME composition map and UMAP
+   - scme_analysis.ipynb generates the SCME composition map and UMAP
+   - ltme_l2_bcell_survival.ipynb performs the LTME L2 and B cell survival analysis
