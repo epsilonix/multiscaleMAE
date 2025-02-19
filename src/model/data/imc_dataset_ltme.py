@@ -5,12 +5,13 @@ import pandas as pd
 import torch.utils.data as data
 from model.data.slide_dataset import SlideDataset
 
+# Declare the paths to the channel txt and csv files as variables near the top
 CHANNEL_TXT_PATH = '/gpfs/scratch/ss14424/Brain/channels_37/channels_37.txt'
 CHANNEL_CSV_PATH = '/gpfs/scratch/ss14424/Brain/channels_37/channels_37.csv'
 
 class NPYDataset(SlideDataset):
 
-    def __init__(self, root_path = None, tile_size = None, transform = None, lazy = True):
+    def __init__(self, root_path=None, tile_size=None, transform=None, lazy=True):
         super().__init__(root_path, tile_size, transform)
         self.slide = self.read_slide(root_path, lazy)
         self.read_counter = 0
@@ -19,9 +20,9 @@ class NPYDataset(SlideDataset):
         ''' Read numpy file on disk mapped to memory '''
         numpy_path = f'{file_path}/data/core.npy'
         if lazy:
-            slide = np.load(numpy_path, mmap_mode = 'r', allow_pickle = True)
+            slide = np.load(numpy_path, mmap_mode='r', allow_pickle=True)
         else:
-            slide = np.load(numpy_path, allow_pickle = True)
+            slide = np.load(numpy_path, allow_pickle=True)
         return slide
 
     def read_region(self, pos_x, pos_y, width, height):
@@ -41,7 +42,7 @@ class NPYDataset(SlideDataset):
 
     def get_slide_dimensions(self):
         ''' Get slide dimensions '''
-        return self.slide.shape[0:2]
+        return self.slide.shape[1:3]
 
     # Generate thumbnail
     def generate_thumbnail(self, scaling_factor):
@@ -54,7 +55,7 @@ class NPYDataset(SlideDataset):
         from skimage.measure import block_reduce
         from tqdm import tqdm
         dims = self.get_slide_dimensions()
-        cache = np.zeros((dims[0] // scaling_factor, dims[1] // scaling_factor, 4), dtype = np.uint8)
+        cache = np.zeros((dims[0] // scaling_factor, dims[1] // scaling_factor, 4), dtype=np.uint8)
         for x in tqdm(range(0, dims[0], tile_size)):
             for y in tqdm(range(0, dims[1], tile_size)):
                 tile = self.read_region(x, y, tile_size, tile_size).swapaxes(0, 1)
@@ -64,10 +65,9 @@ class NPYDataset(SlideDataset):
                 x_end = min(x_reduced + tile_size // scaling_factor, cache.shape[0])
                 y_end = min(y_reduced + tile_size // scaling_factor, cache.shape[1])
                 cache[x_reduced:x_end, y_reduced:y_end, :] = reduced_tile[:x_end - x_reduced, :y_end - y_reduced, :]
-                self.slide = self.read_slide(self.root_path, lazy = True)
         return cache
 
-    def save_thumbnail(self, scaling_factor = 32):
+    def save_thumbnail(self, scaling_factor=32):
         from skimage.io import imsave
         ''' Save thumbnail of the slide '''
         thumbnail = self.generate_thumbnail(scaling_factor)
@@ -76,21 +76,21 @@ class NPYDataset(SlideDataset):
 
 class ZarrDataset(NPYDataset):
 
-    def read_slide(self, file_path, lazy = True):
+    def read_slide(self, file_path, lazy=True):
         ''' Read zarr file on disk '''
         zarr_path = f'{file_path}/data.zarr'
-        slide = zarr.open(zarr_path, mode = 'r')
+        slide = zarr.open(zarr_path, mode='r')
         return slide
 
 class CANVASDataset(ZarrDataset):
 
-    def __init__(self, root_path, tile_size, common_channel_names, transform = None, lazy = True, blankoutbg=False):
+    def __init__(self, root_path, tile_size, common_channel_names: [str], transform=None, lazy=True):
         super().__init__(root_path, tile_size, transform)
         self.root_path = root_path
         self.slide = self.read_slide(root_path, lazy)
         self.read_counter = 0
         self.common_channel_names = common_channel_names
-        self.blankoutbg = blankoutbg
+
         self.channel_idx = self.get_channel_idx(common_channel_names)
 
     def __getitem__(self, index):
@@ -116,29 +116,24 @@ class CANVASDatasetWithLocation(CANVASDataset):
     def __getitem__(self, index):
         image, sample_label = super().__getitem__(index)
         location = self.tile_pos[index]
-        celltype = self.celltypes[index]
-        boundary = self.boundary[index]
-        return image, (sample_label, location, celltype, boundary)
+        return image, (sample_label, location)
 
 class SlidesDataset(data.Dataset):
     ''' Dataset for a list of slides '''
 
-    def __init__(self, slides_root_path=None, tile_size=None, transform=None, dataset_class=None, use_normalization=True, blankoutbg=False):
+    def __init__(self, slides_root_path=None, tile_size=None, transform=None, dataset_class=None, use_normalization=True):
         self.slides_root_path = slides_root_path
         self.tile_size = tile_size
         self.transform = transform
-        self.blankoutbg = blankoutbg
-        
         # Get id and path for all slides
         slide_ids = self.get_slide_paths(slides_root_path)
         self.common_channel_names = self.get_common_channel_names(self.slides_root_path)
 
-        self.slides_dict, self.lengths = self.get_slides(slide_ids, dataset_class, self.common_channel_names,self.blankoutbg)
+        self.slides_dict, self.lengths = self.get_slides(slide_ids, dataset_class, self.common_channel_names)
         self.mean = None
         self.std = None
         self.use_normalization = use_normalization
         self.mean, self.std = self.get_normalization_stats()
-
 
     def __getitem__(self, index):
         for slide_idx, (slide_id, slide) in enumerate(self.slides_dict.items()):
@@ -171,7 +166,7 @@ class SlidesDataset(data.Dataset):
         std_accumulator = np.zeros(37)
         count_accumulator = np.zeros(37)
         stats_path = f'{self.slides_root_path}/../stats'
-        print(f'stats_path is {stats_path}')
+
         if os.path.exists(f'{stats_path}/mean.npy') and os.path.exists(f'{stats_path}/std.npy'):
             mean = np.load(f'{stats_path}/mean.npy')
             std = np.load(f'{stats_path}/std.npy')
@@ -226,7 +221,7 @@ class SlidesDataset(data.Dataset):
         slide_channel_dicts = []
         for slide_id in os.listdir(slides_root_path):
             if os.path.isdir(os.path.join(slides_root_path, slide_id)) and not slide_id.startswith('.') and 'V' not in slide_id:
-                mat = zarr.open(f'{slides_root_path}/{slide_id}/data.zarr', mode = 'r')
+                mat = zarr.open(f'{slides_root_path}/{slide_id}/data.zarr', mode='r')
                 
                 parent_directory = os.path.dirname(os.path.dirname(slides_root_path))
                 channel_path = os.path.join(parent_directory, CHANNEL_CSV_PATH)
@@ -239,7 +234,16 @@ class SlidesDataset(data.Dataset):
 
         # Check if all slides have the same channels
         if not os.path.exists(CHANNEL_TXT_PATH):
-            raise Exception(f'CHANNEL_TXT_PATH is missing!')
+            common_channels = self.get_common_channels(slide_channel_dicts)
+            # Save common channels as txt file
+            
+            with open(CHANNEL_TXT_PATH, 'w') as f:
+                for channel in common_channels:
+                    f.write(f'{channel}\n')
+            if len(set(slide_channels)) > 1 or len(set([tuple(channel_dict.values()) for channel_dict in slide_channel_dicts])) > 1:
+                raise Exception(f'All slides must have the same channels, common channel file is written to {CHANNEL_TXT_PATH}, PLEASE REVIEW')
+            else:
+                raise Exception(f'All slides DO have the same channels, common channel file is written to {CHANNEL_TXT_PATH}, PLEASE REVIEW and remove unnecessary channels')
         return slide_ids
 
     def get_common_channels(self, slide_channel_dicts):
@@ -250,15 +254,13 @@ class SlidesDataset(data.Dataset):
         common_markers = set.intersection(*common_markers)
         return common_markers
 
-    def get_slides(self, slide_ids, dataset_class, common_channel_names, blankoutbg):
-        ''' Initialize SlideDataset instances for each slide '''
+    def get_slides(self, slide_ids, dataset_class, common_channel_names):
         from tqdm import tqdm
         slides_dict = {}
         lengths = []
         for slide_id in tqdm(slide_ids):
             slide_path = os.path.join(self.slides_root_path, slide_id)
-            # Pass the blankoutbg flag when creating each SlideDataset instance
-            slide = dataset_class(slide_path, self.tile_size, common_channel_names, self.transform, blankoutbg=blankoutbg)
+            slide = dataset_class(slide_path, self.tile_size, common_channel_names, self.transform)
             slides_dict[slide_id] = slide
             lengths.append(len(slide))
         return slides_dict, lengths

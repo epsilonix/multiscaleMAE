@@ -2,9 +2,11 @@ import tifffile as tiff
 import numpy as np
 import os
 
+# This code consolidates the channels of the images into a single image with the target channel structure. It is used when not all images have the same channels.
+
 # Define input and output directories
-input_directory = '/gpfs/scratch/ss14424/Brain/BrainData/BRAIN_IMC_MaskTif'
-output_directory = '/gpfs/scratch/ss14424/Brain/BrainData/BRAIN_IMC_MaskTif_csd_2'
+input_directory = ''
+output_directory = ''
 
 # Ensure the output directory exists
 os.makedirs(output_directory, exist_ok=True)

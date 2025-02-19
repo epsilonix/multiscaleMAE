@@ -2,7 +2,7 @@ import os
 import torch
 import numpy as np
 from torchvision import transforms
-from data.imc_dataset import CANVASDataset, SlidesDataset
+from model.data.imc_dataset_scme import CANVASDataset, SlidesDataset
 
 def main():
     root_path = '/gpfs/scratch/jt3545/projects/CODEX/analysis/kidney/data'

@@ -9,13 +9,6 @@
 # DeiT: https://github.com/facebookresearch/deit
 # --------------------------------------------------------
 
-import sys
-sys.path.append('/gpfs/scratch/ss14424/singlecell/src')
-
-print("Current sys.path:")
-for p in sys.path:
-    print(p)
-
 from functools import partial
 
 import torch

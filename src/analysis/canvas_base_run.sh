@@ -9,9 +9,14 @@
 #SBATCH --job-name=infer_MAE_blankout_full
 #SBATCH --output=/gpfs/scratch/ss14424/logs/infer_singlecell%j.log
 
-
 source activate /gpfs/data/tsirigoslab/home/ss14424/.conda/envs/canvasenv
 
-python src/analysis/canvas_base.py
+python src/analysis/canvas_base.py \
+  --pipeline SCME \
+  --model_path "/path/to/your/checkpoint.pth" \
+  --data_path "/path/to/your/img_output" \
+  --save_path "/path/to/your/analysis_output" \
+  --tile_size 16
+
 
 

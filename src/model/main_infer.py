@@ -5,8 +5,7 @@
 # BEiT: https://github.com/microsoft/unilm/tree/master/beit
 # MAE: https://github.com/facebookresearch/mae
 # --------------------------------------------------------
-import sys
-sys.path.append('/gpfs/scratch/ss14424/CANVAS-ss/singlecell')
+# This code is used to generate the reconstructed images shown in Supplementary Figure 1b and 1c.
 
 import argparse
 import matplotlib.pyplot as plt
@@ -37,20 +36,20 @@ import models_mae
 def get_args_parser():
     parser = argparse.ArgumentParser('MAE inference', add_help=False)
     # Model parameters
-    parser.add_argument('--chkpt_dir', default='/gpfs/scratch/ss14424/Brain/cells_csd/model_output_20/checkpoint-300.pth', type=str, metavar='CHKPT',
+    parser.add_argument('--chkpt_dir', default='', type=str, metavar='CHKPT',
                         help='Checkpoint path')
 
     # Dataset parameters
-    parser.add_argument('--data_path', default='/gpfs/scratch/ss14424/Brain/cells_csd/img_output_10', type=str,
+    parser.add_argument('--data_path', default='', type=str,
                         help='dataset path')
     parser.add_argument('--tile_size', default=10, type=int,
                         help='Sample tile size.')
     parser.add_argument('--input_size', default=224, type=int,
                         help='images input size')
 
-    parser.add_argument('--output_dir', default='/gpfs/scratch/ss14424/Brain/cells_csd/reconstruction',
+    parser.add_argument('--output_dir', default='n',
                         help='path where to save, empty for no saving')
-    parser.add_argument('--log_dir', default='/gpfs/scratch/ss14424/logs',
+    parser.add_argument('--log_dir', default='',
                         help='path where to tensorboard log')
     parser.add_argument('--seed', default=0, type=int)
     parser.add_argument('--num_workers', default=10, type=int)
@@ -65,12 +64,7 @@ def get_args_parser():
 
     return parser
 
-# def channel_augment(image):
-#     num_channels = image.shape[0]
-#     augmented_image = image * torch.exp(torch.normal(torch.zeros(num_channels), torch.ones(num_channels) * 0.3).unsqueeze(1).unsqueeze(2))
-#     return augmented_image
-
-                        
+           
 def show_image(image, title='', dapi_index = 0):
     print("image shape")
     print(np.shape(image))
@@ -163,7 +157,7 @@ def main(args):
         transforms.Resize(args.input_size, interpolation = 2),
         ])
 
-    from data.imc_dataset import CANVASDataset, SlidesDataset
+    from model.data.imc_dataset_scme import CANVASDataset, SlidesDataset
     tile_size = args.tile_size
     dataset_train = SlidesDataset(args.data_path, tile_size = tile_size, transform = transform_codex, dataset_class = CANVASDataset)
     

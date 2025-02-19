@@ -1,217 +1,185 @@
 import os
-import zarr
+import json
+import random
 import numpy as np
+import matplotlib.pyplot as plt
 from skimage.measure import block_reduce
 from skimage.io import imsave
-from scipy.io import loadmat
-import matplotlib.pyplot as plt
-import random
-import json
+from skimage.transform import resize
+import zarr
 
-colors = [
-    (0, 0, 139),  # cd117, mast cell, myeloid, darkblue
-    (173, 216, 230),  # cd11c, myeloid, lightblue
-    (135, 206, 250),  # cd14, myeloid, lightblue
-    (212, 226, 228),  # cd163, myeloid, lightblue
-    (70, 130, 180),  # cd16, monocyte, mid blue
-    (149, 229, 68),  # cd20, b cell, green
-    (25, 25, 112),  # cd31, stromal, dark blue
-    (228, 82, 50),  # cd3, t cell, orange
-    (255, 165, 0),  # cd4, t cell, orange
-    (176, 226, 219),  # cd68, myeloid, lightblue
-    (255, 140, 0),  # cd8a, t cell, orange
-    (255, 127, 80),  # cd94, t cell, orange
-    (228, 71, 184),  # dna1, dna, grey
-    (255, 99, 71),  # foxp3, t cell, orange
-    (255, 182, 193),  # GFAP
-    (176, 226, 219),  # hla-dr, antigen, lightgreen
-    (73, 52, 229),  # mpo, neutrophil, purple
-    (0, 255, 255),  # Olig2
-    (255, 255, 0),  # P2PY12
-    (238, 130, 238),  # Sox2
-    (50, 205, 50),  # Sox9
-    (255, 20, 147),  # MeLanA, pink
-    (186, 85, 211),  # PMEL, medium orchid
-    (0, 128, 0),    # PanCK, green 
-    (0, 0, 0),
-    (0, 0, 0),
-    (0, 0, 0),
-    (0, 0, 0),
-    (0, 0, 0),
-    (0, 0, 0),
-    (0, 0, 0),
-    (0, 0, 0),
-    (0, 0, 0),
-    (0, 0, 0),
-    (0, 0, 0),
-    (0, 0, 0),
-    (0, 0, 0),
-    (0, 0, 0),
-    (0, 0, 0),
-    (0, 0, 0),
-    (0, 0, 0)
-]
-
-very_common_cell_types = {'Cancer', 'Astrocytes', 'Cl BMDM', 'Alt BMDM', 'Endothelial cell', 'Cl MG', 'Alt MG'}
-
-def calculate_polygon_area(coords):
-    """Calculate the area of a polygon using the shoelace formula.
-
-    Args:
-    - coords (list of tuples): List of (x, y) tuples for each vertex of the polygon.
-
-    Returns:
-    - float: The area of the polygon.
+def scme_gen_tiles(image, zarr_array, mat_data, tile_size, output_file_path, image_filename, mode='full'):
     """
-    x = np.array([coord[0] for coord in coords])
-    y = np.array([coord[1] for coord in coords])
+    SCME pipeline: Generate composite image and tile positions based on boundaries from MAT file.
+    """
+    # Define colors and common cell types
+    colors = [
+        (0, 0, 139), (173, 216, 230), (135, 206, 250), (212, 226, 228),
+        (70, 130, 180), (149, 229, 68), (25, 25, 112), (228, 82, 50),
+        (255, 165, 0), (176, 226, 219), (255, 140, 0), (255, 127, 80),
+        (228, 71, 184), (255, 99, 71), (255, 182, 193), (176, 226, 219),
+        (73, 52, 229), (0, 255, 255), (255, 255, 0), (238, 130, 238),
+        (50, 205, 50), (255, 20, 147), (186, 85, 211), (0, 128, 0),
+        (0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0),
+        (0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0),
+        (0, 0, 0), (0, 0, 0), (0, 0, 0), (0, 0, 0),
+        (0, 0, 0), (0, 0, 0)
+    ]
+    very_common_cell_types = {'Cancer', 'Astrocytes', 'Cl BMDM', 'Alt BMDM', 'Endothelial cell', 'Cl MG', 'Alt MG'}
 
-    return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
-
-def gen_tiles(image, slide: str, mat_path, tile_size: int = 20, 
-              output_path: str = None, image_filename: str = None,
-              mode: str = 'full') -> np.ndarray:
-    ''' Generate tiles for a given slide '''
-    print(f'Slide type is {type(slide)}')
-    if output_path is None: output_path = f'{os.path.dirname(slide)}'
-    output_path += '/tiles/'
-    os.makedirs(output_path, exist_ok=True)
+    print(f"[SCME] Zarr array type: {type(zarr_array)}")
+    if output_file_path is None:
+        output_file_path = os.path.dirname(zarr_array)
+    output_tiles_path = os.path.join(output_file_path, 'tiles')
+    os.makedirs(output_tiles_path, exist_ok=True)
     
-    # Read slide
-    print('Reading slide...')
-    print(f'IMG has a dimension of {slide.shape}')
-    if isinstance(slide, str):
-        slide = zarr.load(slide)
-    print(f'ZARR IMG has a dimension of {slide.shape}')
+    # Extract boundaries and cell types from MAT data
+    boundaries_info = mat_data['Boundaries']
+    cell_types = mat_data['cellTypes']
+    # Determine correct dimensions (width, height) from image shape
+    correct_dimensions = image.shape[1:3][::-1]
     
-    # Extract 'Boundaries' and 'cellTypes' data
-    boundaries_info = mat_path['Boundaries']
-    cell_types = mat_path['cellTypes']
-
-    # Correct dimensions of the image
-    correct_dimensions = image.shape[1:3][::-1]  # Assuming 'image' is defined elsewhere
-
-    # Initialize a list to hold the coordinates for all boundaries
     all_boundaries_coords = []
-
     for i in range(boundaries_info.shape[1]):
-        # Extract linear indices for the current boundary
-        linear_indices = boundaries_info[0, i].flatten()  # Ensure it's a 1D array
-
-        # Convert linear indices to x and y coordinates
+        linear_indices = boundaries_info[0, i].flatten()
         x_coords, y_coords = np.unravel_index(linear_indices, correct_dimensions)
-
-        # Store the coordinates as tuples in the list
         boundary_coords = list(zip(x_coords, y_coords))
-
-        # Calculate the area of the boundary
+        # Calculate area using the shoelace formula
+        def calculate_polygon_area(coords):
+            x = np.array([pt[0] for pt in coords])
+            y = np.array([pt[1] for pt in coords])
+            return 0.5 * np.abs(np.dot(x, np.roll(y, 1)) - np.dot(y, np.roll(x, 1)))
         area = calculate_polygon_area(boundary_coords)
-
-        # Get the corresponding cell type, handle empty or undefined types
         cell_type = cell_types[i][0][0] if cell_types[i][0].size > 0 else 'Unknown'
-
-        if area > 20 and area < 200:
+        if 20 < area < 200:
             all_boundaries_coords.append((boundary_coords, cell_type))
-
-    # Assuming 'image' and 'colors' are defined elsewhere
+    
     num_channels, height, width = image.shape
     brightness_factor = 3.0
-
-    # Initialize a composite image with 3 channels for RGB
     composite_image = np.zeros((height, width, 3), dtype=np.float32)
     global_max = np.max(image)
     for i in range(num_channels):
-        color = colors[i]
+        color = colors[i] if i < len(colors) else (255, 255, 255)
         channel_normalized = image[i, :, :] / global_max
-        for j in range(3):  # RGB channels
+        for j in range(3):
             composite_image[:, :, j] += channel_normalized * color[j]
-
-    # Normalize the composite image to be in the range [0, 1]
     composite_image = np.clip(composite_image / np.max(composite_image, axis=(0, 1)) * brightness_factor, 0, 1)
-
-    # Plot the composite image
-    plt.figure(figsize=(15, 15))  # Adjust the figure size as needed
+    
+    plt.figure(figsize=(15,15))
     plt.imshow(composite_image)
-
-    # Initialize list to keep track of centroids and their types
+    
     positions = []
-
-    # Dictionary to keep track of sampled cell counts in training mode
     sampled_cell_counts = {cell_type: 0 for cell_type in very_common_cell_types}
-
-    # Sample boundaries based on the mode
     sample_boundaries_coords = []
     if mode == 'subsample':
-        print(f'now in subsampling mode... taking subsample of slides...')
-        # Sample up to 100 cells for very common cell types
+        print("[SCME] Subsampling mode activated...")
         cell_type_groups = {cell_type: [] for cell_type in very_common_cell_types}
         other_cell_types = []
-
         for boundary_info in all_boundaries_coords:
             boundary_coords, cell_type = boundary_info
             if cell_type in very_common_cell_types:
                 cell_type_groups[cell_type].append(boundary_info)
             else:
                 other_cell_types.append(boundary_info)
-
         for cell_type, boundaries in cell_type_groups.items():
             sample_count = min(len(boundaries), 100)
-            sampled_boundaries = random.sample(boundaries, sample_count)
-            sample_boundaries_coords.extend(sampled_boundaries)
-            sampled_cell_counts[cell_type] += sample_count
-
+            if boundaries:
+                sampled_boundaries = random.sample(boundaries, sample_count)
+                sample_boundaries_coords.extend(sampled_boundaries)
+                sampled_cell_counts[cell_type] += sample_count
         sample_boundaries_coords.extend(other_cell_types)
-        print(f'generated {len(sample_boundaries_coords)} slides')
-
+        print(f"[SCME] Generated {len(sample_boundaries_coords)} boundaries after subsampling.")
     else:
-        print(f'now in full mode... printing all slides...')
+        print("[SCME] Full mode activated...")
         sample_boundaries_coords = all_boundaries_coords.copy()
-        print(f'generated {len(sample_boundaries_coords)} slides')
-
-    # Plot each boundary and calculate centroids
+        print(f"[SCME] Generated {len(sample_boundaries_coords)} boundaries.")
+    
     for boundary_info in sample_boundaries_coords:
-        # Extract the boundary coordinates and cell type
         boundary_coords, cell_type = boundary_info
-
-        # Convert list of tuples to a numpy array for easy slicing
         boundary_array = np.array(boundary_coords)
-        plt.plot(boundary_array[:, 0], boundary_array[:, 1], color='cyan', linewidth=0.5)  # Adjust color and linewidth as desired
-
-        # Calculate centroid
+        plt.plot(boundary_array[:, 0], boundary_array[:, 1], color='cyan', linewidth=0.5)
         centroid_x = int(np.round(np.mean(boundary_array[:, 0])))
         centroid_y = int(np.round(np.mean(boundary_array[:, 1])))
-
-        # Size of the square centered on each centroid
-        half_side_length = tile_size / 2  # Half the side length of the square, for a total side length of 10 pixels
-
-        # Exclude centroids within 10 pixels of the boundary
+        half_side_length = tile_size / 2
         if 10 <= centroid_x <= width - 10 and 10 <= centroid_y <= height - 10:
-            top_left_x = centroid_x - half_side_length
-            top_left_y = centroid_y - half_side_length
-            positions.append((top_left_y, top_left_x, cell_type, [(int(y), int(x)) for x, y in boundary_coords]))
-
-    with open(os.path.join(output_path, f'positions_{tile_size}.csv'), 'w') as f:
-        f.write(' ,h,w,celltype,boundary\n')
+            positions.append((centroid_y - half_side_length, centroid_x - half_side_length, cell_type, json.dumps(boundary_coords)))
+    
+    positions_file = os.path.join(output_tiles_path, f'positions_{tile_size}.csv')
+    with open(positions_file, 'w') as f:
+        f.write(" ,h,w,celltype,boundary\n")
         for i, (h, w, celltype, boundary) in enumerate(positions):
-            boundary_str = json.dumps(boundary)
-            f.write(f'{i},{h},{w},{celltype},"{boundary_str}"\n')
-    print(f'Generated {len(positions)} tiles for slide with shape {slide.shape}')
+            f.write(f"{i},{h},{w},{celltype},\"{boundary}\"\n")
+    print(f"[SCME] Generated {len(positions)} tiles for image with shape {image.shape}")
 
-def save_img(output_path: str, task: str, tile_size: int, img: np.ndarray):
-    ''' Save image to output path '''
+def ltme_gen_tiles(slide, tile_size=128, output_path=None):
+    """
+    LTME pipeline: Generate thumbnail, mask, and tile positions.
+    """
+    if output_path is None:
+        output_path = os.path.dirname(slide)
+    output_tiles_path = os.path.join(output_path, 'tiles')
+    os.makedirs(output_tiles_path, exist_ok=True)
+    
+    print("[LTME] Reading slide...")
+    if isinstance(slide, str):
+        slide = zarr.load(slide)
+    print(f"[LTME] Slide shape: {slide.shape}")
+    
+    # Generate thumbnail
+    print("[LTME] Generating thumbnail...")
+    thumbnail = ltme_gen_thumbnail(slide, scaling_factor=tile_size // 4)
+    ltme_save_img(output_tiles_path, 'thumbnail', tile_size // 4, thumbnail)
+    
+    # Generate mask
+    print("[LTME] Generating mask...")
+    mask = ltme_gen_mask(thumbnail)
+    ltme_save_img(output_tiles_path, 'mask', tile_size // 4, mask)
+    
+    # Generate tile positions
+    print("[LTME] Generating tile positions...")
+    tile_img, positions = ltme_gen_tile_positions(slide, mask, tile_size=tile_size)
+    ltme_save_img(output_tiles_path, 'tile_img', tile_size, tile_img)
+    
+    positions_file = os.path.join(output_tiles_path, f'positions_{tile_size}.csv')
+    with open(positions_file, 'w') as f:
+        f.write(" ,h,w\n")
+        for i, (h, w) in enumerate(positions):
+            f.write(f"{i},{h},{w}\n")
+    print(f"[LTME] Generated {len(positions)} tiles for slide with shape {slide.shape}")
+
+# --- LTME Helper Functions ---
+
+def ltme_save_img(output_path, task, tile_size, img):
     img = (np.clip(img, 0, 1) * 255).astype(np.uint8)
-    imsave(os.path.join(output_path, f'{task}_{tile_size}.png'), img)
+    imsave(os.path.join(output_path, f"{task}_{tile_size}.png"), img)
 
-def gen_thumbnail(slide: zarr, scaling_factor: int) -> np.ndarray:
-    ''' Generate thumbnail for a given slide '''
-    # Make sure first channel is smaller than the second and third
+def ltme_gen_thumbnail(slide, scaling_factor):
+    # Ensure slide dimensions are as expected
     assert slide.shape[0] < slide.shape[1] and slide.shape[0] < slide.shape[2]
-    cache = block_reduce(slide, 
-                         block_size=(slide.shape[0], 
-                                     scaling_factor, scaling_factor), 
-                         func=np.mean)
-    # Remove bright pixels top 5 percentile
+    print(f"[LTME] Generating thumbnail with scaling factor {scaling_factor}...")
+    numpy_slide = slide[...]
+    cache = block_reduce(numpy_slide, block_size=(slide.shape[0], scaling_factor, scaling_factor), func=np.mean)
     cache = np.clip(cache, 0, np.percentile(cache, 95))
     cache /= cache.max()
     thumbnail = np.clip(cache, 0, 1).squeeze()
     return thumbnail
+
+def ltme_gen_mask(thumbnail, threshold=0.5):
+    mask = np.where(thumbnail > threshold, 1, 0)
+    return mask
+
+def ltme_gen_tile_positions(slide, mask, tile_size=128, threshold=0.1):
+    _, slide_height, slide_width = slide.shape
+    grid_height, grid_width = slide_height // tile_size, slide_width // tile_size
+    print(f"[LTME] Slide Height: {slide_height}, Width: {slide_width}, Aspect Ratio: {slide_height/slide_width}")
+    print(f"[LTME] Mask Aspect Ratio: {mask.shape[0] / mask.shape[1]}")
+    aspect_ratio_diff = abs(mask.shape[0] / mask.shape[1] - slide_height / slide_width)
+    if aspect_ratio_diff >= 0.05:
+        print(f"[LTME] Aspect ratio difference too large: {aspect_ratio_diff}... skipping")
+        return None, []
+    else:
+        mask_resized = resize(mask, (grid_height, grid_width), order=0, anti_aliasing=False)
+        tile_img = np.where(mask_resized > threshold, 1, 0)
+        hs, ws = np.where(mask_resized > threshold)
+        positions = np.array(list(zip(hs, ws))) * tile_size
+        return tile_img, positions
