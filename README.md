@@ -18,3 +18,6 @@ For analysis of multiplexed images
    - ltme_analysis.ipynb generates the LTME composition map and UMAP
    - scme_analysis.ipynb generates the SCME composition map and UMAP
    - ltme_l2_bcell_survival.ipynb performs the LTME L2 and B cell survival analysis
+
+For recommended hardware settings and estimated runtimes, please refer to the sbatch files.
+

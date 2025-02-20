@@ -9,6 +9,7 @@
 #SBATCH --job-name=train_37chan_20px_blankoutv2
 #SBATCH --output=/gpfs/scratch/ss14424/logs/train_37chan_20px_blankoutv2_%j.log
 
+#Estimated runtime: 3 - 7 days
 source activate /gpfs/data/tsirigoslab/home/ss14424/.conda/envs/canvasenv
 
 torchrun \

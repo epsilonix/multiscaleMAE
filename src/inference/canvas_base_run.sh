@@ -9,6 +9,8 @@
 #SBATCH --job-name=infer_MAE_blankout_full
 #SBATCH --output=/gpfs/scratch/ss14424/logs/infer_singlecell%j.log
 
+# Estimated runtime: < 1 hour for LTME, 6 - 8 hours for SCME.
+
 source activate /gpfs/data/tsirigoslab/home/ss14424/.conda/envs/canvasenv
 
 python src/inference/canvas_base.py \

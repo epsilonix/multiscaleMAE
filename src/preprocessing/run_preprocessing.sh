@@ -12,6 +12,8 @@
 # Modes: FULL or SUBSAMPLE (for SCME)
 # Pipeline: SCME or LTME (this example uses SCME)
 
+# Estimated runtime: 1 - 2 hours
+
 source activate /gpfs/data/tsirigoslab/home/ss14424/.conda/envs/canvasenv
 
 python /gpfs/scratch/ss14424/singlecell/src/preprocessing/preprocess.py \
